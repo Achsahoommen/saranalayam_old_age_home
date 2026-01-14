@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Donate</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>💝 Make a Donation</h2>
+
+<form action="/donate" method="post">
+    <input name="donor" placeholder="Donor Name" required>
+    <input type="number" name="amount" placeholder="Amount (₹)" required>
+    <button>Donate</button>
+</form>
+
+<hr>
+
+<h2>🔎 Verify Donation QR</h2>
+<form action="/verify" method="post">
+    <input name="qr" placeholder="QR Code">
+    <button>Verify</button>
+</form>
+
+<p class="center">
+    <strong>Your contribution helps us provide food, shelter, and medical care to elders.</strong>
+</p>
+
+<p class="center">
+    <a href="/">← Back to Home</a>
+</p>
+
+
+</body>
+</html>

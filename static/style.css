@@ -1,0 +1,382 @@
+/* ---------- GLOBAL ---------- */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(to right, #e8f0ff, #f6fff8);
+    padding: 20px;
+    margin: 0;
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1f3c88;
+    padding: 15px 30px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logo i {
+    color: #a5f3c6;   /* soft green for elder care */
+    font-size: 22px;
+}
+
+
+.nav-links a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+/*----------HERO SECTION----------*/
+/* ---------- HERO ---------- */
+.hero {
+    text-align: center;
+    padding: 70px 20px;
+    background: #ffffff;
+}
+
+.hero h4 {
+    color: #1f3c88;
+    font-size: 28px;   /* Bigger text */
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+
+.hero h1 {
+    color: #1fa65c;
+    font-size: 56px;   /* Bigger heading */
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+
+.hero p {
+    max-width: 900px;
+    margin: auto;
+    font-size: 16px;
+    color: #444;
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    .hero h1 {
+        font-size: 38px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero h4 {
+        font-size: 22px;
+    }
+}
+
+
+/* ---------- SERVICES GRID ---------- */
+.services {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
+    gap: 40px;
+    padding: 60px 80px;
+    background: #f9fdfb;
+}
+
+/* ---------- TABLET ---------- */
+@media (max-width: 1024px) {
+    .services {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 50px 40px;
+    }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 600px) {
+    .services {
+        grid-template-columns: 1fr;
+        padding: 40px 20px;
+    }
+}
+
+.service-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ---------- CTA ---------- */
+.cta {
+    text-align: center;
+    padding: 60px 20px;
+    background: #e9f8f1;
+}
+
+.cta h2 {
+    color: #1f3c88;
+}
+
+.cta p {
+    max-width: 700px;
+    margin: 15px auto;
+}
+
+.cta button {
+    width: auto;
+    padding: 12px 30px;
+}
+/* ---------- TEXT UTILITIES ---------- */
+.center {
+    text-align: center;
+}
+
+.center strong {
+    font-size: 16px;
+    color: #2e7d32;
+}
+
+/* ---------- HEADINGS ---------- */
+h1 {
+    color: #1f3c88;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #2e7d32;
+    border-left: 5px solid #2e7d32;
+    padding-left: 10px;
+}
+
+/* ---------- FORMS ---------- */
+form {
+    background: white;
+    padding: 20px;
+    width: 320px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- INPUTS ---------- */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2c7be5;
+    box-shadow: 0 0 5px rgba(44, 123, 229, 0.4);
+}
+
+/* ---------- BUTTONS ---------- */
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: linear-gradient(to right, #2c7be5, #00bfa5);
+    color: white;
+    font-size: 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+button.secondary {
+    background: linear-gradient(to right, #6a1b9a, #8e24aa);
+}
+
+/* ---------- LINKS ---------- */
+a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #2c7be5;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- HORIZONTAL LINE ---------- */
+hr {
+    border: none;
+    height: 1px;
+    background: #ddd;
+    margin: 30px 0;
+}
+
+/* ---------- INFO SECTIONS ---------- */
+.info-box {
+    background: white;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 700px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.info-box ul {
+    padding-left: 20px;
+}
+
+.info-box li {
+    margin: 6px 0;
+}
+
+/* ---------- ACTION BUTTONS ---------- */
+.action-buttons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.action-buttons button {
+    width: 200px;
+    margin: 10px;
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+    text-align: center;
+    color: #555;
+    margin-top: 30px;
+    font-size: 13px;
+}
+
+/* ================= ADMIN LOGIN PAGE ================= */
+
+body.admin-login {
+    background: #f1f1f1;
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 0;
+}
+
+/* Container */
+.admin-login .login-container {
+    width: 350px;
+    margin: 80px auto;
+    text-align: center;
+}
+
+/* Logo */
+.admin-login .login-logo {
+    font-size: 48px;
+    color: #2271b1;
+    margin-bottom: 20px;
+}
+
+/* Login box */
+.admin-login .login-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.13);
+    text-align: left;
+}
+
+/* Labels */
+.admin-login .login-box label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #1d2327;
+}
+
+/* Inputs */
+.admin-login .login-box input[type="text"],
+.admin-login .login-box input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* Password eye */
+.admin-login .password-wrapper {
+    position: relative;
+}
+
+.admin-login .password-wrapper i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c7781;
+}
+
+/* Actions */
+.admin-login .login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-login .login-actions label {
+    font-size: 13px;
+}
+
+/* Login button */
+.admin-login .login-actions button {
+    background: #2271b1;
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
+}
+
+.admin-login .login-actions button:hover {
+    background: #135e96;
+}
+
+/* Footer links */
+.admin-login .login-footer {
+    margin-top: 15px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.admin-login .login-footer a {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.admin-login .login-footer a:hover {
+    text-decoration: underline;
+}
+
+

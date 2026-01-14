@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Donation List</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>Donation List</h2>
+
+<table>
+<tr>
+  <th>Donor</th>
+  <th>Amount</th>
+  <th>Date</th>
+  <th>QR ID</th>
+</tr>
+
+{% for d in donations %}
+<tr>
+  <td>{{ d['donor'] }}</td>
+  <td>{{ d['amount'] }}</td>
+  <td>{{ d['date'] }}</td>
+  <td>{{ d['qr_id'] }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<a href="/dashboard">← Back to Dashboard</a>
+
+</body>
+</html>

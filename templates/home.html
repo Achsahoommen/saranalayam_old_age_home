@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Saranalayam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Style for hidden contact details */
+        .contact-details {
+            display: none;
+            background-color: #f6f6f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        #contactBtn {
+            background-color: #1f3c88;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #contactBtn:hover {
+            background-color: #3651a3;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">
+        <i class="fas fa-person-cane"></i> Saranalayam
+    </div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about">About Us</a>
+        <a href="/donate">Donate</a>
+        <a href="/login">Admin Login</a>
+    </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <h4>Welcome to Saranalayam</h4>
+    <h1>We make a Difference in your lives</h1>
+    <p>
+        It is difficult to specify the exact age when an elderly patient becomes a patient.
+        It is a gradual process that activates the need for support from family or medical staff,
+        without which the patient may be worse off.
+    </p>
+</section>
+
+<!-- SERVICES GRID -->
+<section class="services">
+    <div class="service-card">
+        <div class="icon">🌲</div>
+        <h3>Amazing Atmosphere</h3>
+        <p>In this extraordinary ambiance, one can lose themselves in deep contemplation and reflection, finding solace and peace amidst everyday life.</p>
+    </div>
+    <div class="service-card">
+        <div class="icon">➕</div>
+        <h3>Latest Medical Care</h3>
+        <p>Staying up-to-date with the latest advancements in medical care greatly improves patient outcomes and healthcare practices.</p>
+    </div>
+    <div class="service-card">
+        <div class="icon">🛡️</div>
+        <h3>Courteous & Caring Staff</h3>
+        <p>Our team is composed of courteous and caring individuals who are passionate about delivering the best possible service.</p>
+    </div>
+    <div class="service-card">
+        <div class="icon">🧘</div>
+        <h3>Yoga for Relaxation</h3>
+        <p>Yoga promotes relaxation, reduces stress, calms anxiety, and improves overall mental and physical well-being.</p>
+    </div>
+    <div class="service-card">
+        <div class="icon">🚶</div>
+        <h3>Assisted Living Support</h3>
+        <p>Support services designed to help individuals who require assistance with daily activities while maintaining dignity.</p>
+    </div>
+    <div class="service-card">
+        <div class="icon">🏥</div>
+        <h3>Hospice Care</h3>
+        <p>An interdisciplinary approach focusing on comfort, dignity, emotional support, and quality of life.</p>
+    </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="cta">
+    <h2>Find The Best, Loving Care Home</h2>
+    <p>
+        We strive to meet the physical & emotional needs of each senior,
+        ensuring they receive the care and support they deserve.
+    </p>
+
+    <a href="/contact">
+        <button id="contactBtn">Contact Us</button>
+    </a>
+</section>
+
+<footer>
+    © Saranalayam Old Age Home, Chengannur
+</footer>
+
+</body>
+</html>
+
+
+

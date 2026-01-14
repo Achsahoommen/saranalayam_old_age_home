@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login – Saranalayam</title>
+
+    <!-- Login CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<!-- IMPORTANT: body class -->
+<body class="admin-login">
+
+<div class="login-container">
+
+    <div class="login-logo">
+        <i class="fab fa-wordpress"></i>
+    </div>
+
+    <form class="login-box" method="POST">
+        <label>Username or Email Address</label>
+        <input type="text" name="username" required>
+
+        <label>Password</label>
+        <div class="password-wrapper">
+            <input type="password" name="password" id="password" required>
+            <i class="fas fa-eye" onclick="togglePassword()"></i>
+        </div>
+
+        <div class="login-actions">
+            <label>
+                <input type="checkbox" name="remember"> Remember Me
+            </label>
+            <button type="submit">Log In</button>
+        </div>
+    </form>
+
+    <div class="login-footer">
+        <p><a href="/forgot-password">Lost your password?</a></p>
+        <p><a href="/">← Go to Saranalayam</a></p>
+    </div>
+
+</div>
+
+<script>
+function togglePassword() {
+    const pwd = document.getElementById("password");
+    pwd.type = pwd.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>
+
+
