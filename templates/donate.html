@@ -1,35 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Donate</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<h2>💝 Make a Donation</h2>
+<div class="donation-container">
 
-<form action="/donate" method="post">
-    <input name="donor" placeholder="Donor Name" required>
-    <input type="number" name="amount" placeholder="Amount (₹)" required>
-    <button>Donate</button>
-</form>
+    <!-- Progress Steps -->
+    <div class="donation-steps">
+        <span class="active">01. Personal Information</span>
+        <span>02. Donation Information</span>
+    </div>
 
-<hr>
+    <h2>Donation – Personal Information</h2>
 
-<h2>🔎 Verify Donation QR</h2>
-<form action="/verify" method="post">
-    <input name="qr" placeholder="QR Code">
-    <button>Verify</button>
-</form>
+    <!-- STEP 1 FORM -->
+    <form action="/donation-step2" method="post">
 
-<p class="center">
-    <strong>Your contribution helps us provide food, shelter, and medical care to elders.</strong>
-</p>
+        <!-- Name -->
+        <label>Name</label>
+        <div class="donation-row">
+            <input name="first_name" placeholder="First Name" required>
+            <input name="last_name" placeholder="Last Name" required>
+        </div>
 
-<p class="center">
-    <a href="/">← Back to Home</a>
-</p>
+        <!-- Address -->
+        <label>Address</label>
+        <input name="address1" placeholder="Street Address" required>
+        <input name="address2" placeholder="Street Address Line 2">
 
+        <div class="donation-row">
+            <input name="city" placeholder="City" required>
+            <input name="region" placeholder="Region / State">
+        </div>
+
+        <div class="donation-row">
+            <input name="zip" placeholder="Postal / Zip Code">
+
+            <!-- Country -->
+            <select name="country" id="countrySelect" required onchange="toggleOtherCountry()">
+                <option value="">Select Country</option>
+                <option>India</option>
+                <option>United States</option>
+                <option>United Kingdom</option>
+                <option>Australia</option>
+                <option>Canada</option>
+                <option value="other">Other</option>
+            </select>
+
+            <input
+                type="text"
+                name="custom_country"
+                id="customCountry"
+                placeholder="Enter your country"
+                style="display:none;"
+            >
+        </div>
+
+        <!-- Email -->
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Email Address" required>
+
+        <!-- Phone -->
+        <label>Phone</label>
+        <div class="donation-row">
+            <select name="country_code" id="countryCodeSelect" required onchange="toggleOtherCode()">
+                <option value="">Code</option>
+                <option value="+91" selected>+91 (India)</option>
+                <option value="+1">+1 (USA)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="other">Other</option>
+            </select>
+
+            <input
+                type="text"
+                name="custom_country_code"
+                id="customCountryCode"
+                placeholder="Enter country code (e.g. +123)"
+                style="display:none;"
+            >
+
+            <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number"
+                required
+            >
+        </div>
+
+        <!-- Submit -->
+        <button class="donation-next-btn">Next</button>
+
+    </form>
+
+    <p class="donation-note">
+        Your contribution helps us provide food, shelter, and medical care to elders.
+    </p>
+
+    <!-- Back to Dashboard -->
+    <div class="back-dashboard-container">
+        <a href="/" class="back-dashboard-btn">← Back to Dashboard</a>
+    </div>
+
+</div>
+
+<!-- JS -->
+<script>
+function toggleOtherCountry() {
+    const select = document.getElementById("countrySelect");
+    const input = document.getElementById("customCountry");
+
+    if (select.value === "other") {
+        input.style.display = "block";
+        input.required = true;
+    } else {
+        input.style.display = "none";
+        input.required = false;
+        input.value = "";
+    }
+}
+
+function toggleOtherCode() {
+    const select = document.getElementById("countryCodeSelect");
+    const input = document.getElementById("customCountryCode");
+
+    if (select.value === "other") {
+        input.style.display = "block";
+        input.required = true;
+    } else {
+        input.style.display = "none";
+        input.required = false;
+        input.value = "";
+    }
+}
+</script>
 
 </body>
 </html>

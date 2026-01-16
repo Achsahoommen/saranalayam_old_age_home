@@ -10,7 +10,7 @@ app.secret_key = 'saranalayam_secret'
 
 DB = 'saranalayam.db'
 
-# ================= DATABASE CONNECTION =================
+# ================= DATABASE =================
 def get_db():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
@@ -42,26 +42,95 @@ def about():
 def contact():
     return render_template('contact.html')
 
+# ================= DONATION STEP 1 =================
+@app.route('/donate', methods=['GET'])
+def donate():
+    return render_template('donate.html')
+
+# ================= DONATION STEP 2 =================
+@app.route('/donation-step2', methods=['POST'])
+def donation_step2():
+    # Save Step 1 info into session
+    session['donor_info'] = request.form.to_dict()
+    return render_template('donate_2.html')
+
+# ================= DONATION FINAL SUBMIT =================
+@app.route('/donate-submit', methods=['POST'])
+def donate_submit():
+    donor_info = session.get('donor_info')
+    if not donor_info:
+        return redirect('/donate')
+
+    # ---------- STEP 1 DATA ----------
+    donor_name = donor_info.get('first_name', '') + " " + donor_info.get('last_name', '')
+    email = donor_info.get('email', '')
+
+    # Country
+    country = donor_info.get('country', '')
+    if country.lower() == 'other':
+        country = donor_info.get('custom_country', '')
+        # Phone
+    country_code = donor_info.get('country_code', '')
+    if country_code.lower() == 'other':
+        country_code = donor_info.get('custom_country_code', '')
+    phone = f"{country_code}{donor_info.get('phone', '')}"
+
+    # ---------- STEP 2 DATA ----------
+    amount = request.form.get('amount')
+    purpose = request.form.get('purpose', 'General Support')
+    payment_method = request.form.get('payment_method')
+
+    if not amount or not payment_method:
+        return redirect('/donate')
+
+    # Generate unique QR
+    qr = 'SAR' + str(random.randint(10000, 99999))
+
+    # ---------- INSERT INTO donation_summary ----------
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        INSERT INTO donation_summary 
+        (donor_name, email, phone, country, amount, purpose, payment_method, date, qr_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        donor_name,
+        email,
+        phone,
+        country,
+        amount,
+        purpose,
+        payment_method,
+        str(date.today()),
+        qr
+    ))
+    db.commit()
+    db.close()
+
+    # Clear session
+    session.pop('donor_info', None)
+
+    # ---------- RENDER SUCCESS ----------
+    return render_template(
+        'success.html',
+        donor=donor_name,
+        amount=amount,
+        payment_method=payment_method,
+        qr=qr
+    )
+
+
 # ================= ADMIN LOGIN =================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # initialize attempts and lock time
     if 'attempts' not in session:
         session['attempts'] = 0
     if 'lock_time' not in session:
         session['lock_time'] = None
 
-    # auto-unlock after 10 minutes
-    if session['lock_time']:
-        elapsed = (date.today() - date.fromisoformat(session['lock_time'])).seconds
-        if elapsed >= 600:
-            session['attempts'] = 0
-            session['lock_time'] = None
-
     if request.method == 'POST':
-        # check if locked
         if session['attempts'] >= 3:
-            return render_template('login.html', error="Account locked. Try again after 10 minutes.")
+            return render_template('login.html', error="Account locked. Try later.")
 
         username = request.form['username']
         password = request.form['password']
@@ -76,21 +145,13 @@ def login():
             session.clear()
             session['admin'] = username
             return redirect('/dashboard')
-        else:
-            session['attempts'] += 1
-            if session['attempts'] >= 3:
-                session['lock_time'] = str(date.today())
-                # send alert email
-                try:
-                    send_otp('ADMIN_EMAIL@gmail.com', 'Multiple failed login attempts detected')
-                except:
-                    pass
-                return render_template('login.html', error="Too many failed attempts. Locked for 10 minutes.")
-            return render_template('login.html', error="Invalid credentials")
+
+        session['attempts'] += 1
+        return render_template('login.html', error="Invalid credentials")
 
     return render_template('login.html')
 
-# ================= ADMIN DASHBOARD =================
+# ================= DASHBOARD =================
 @app.route('/dashboard')
 def dashboard():
     if 'admin' not in session:
@@ -98,15 +159,11 @@ def dashboard():
 
     db = get_db()
     cur = db.cursor()
-
-    # Get latest daily record
     cur.execute("SELECT * FROM daily_records ORDER BY id DESC LIMIT 1")
     latest = cur.fetchone()
-
     db.close()
 
-    return render_template('dashboard.html', latest=latest)
-
+    return render_template('admin_dashboard.html', latest=latest)
 
 # ================= DONATION LIST =================
 @app.route('/donations')
@@ -122,25 +179,6 @@ def donation_list():
 
     return render_template('donations.html', donations=donations)
 
-# ================= DONATION =================
-@app.route('/donate', methods=['GET', 'POST'])
-def donate():
-    if request.method == 'POST':
-        donor = request.form['donor']
-        amount = request.form['amount']
-        qr = 'SAR' + str(random.randint(10000, 99999))
-
-        db = get_db()
-        cur = db.cursor()
-        cur.execute('INSERT INTO donations VALUES (NULL,?,?,?,?)',
-                    (donor, amount, str(date.today()), qr))
-        db.commit()
-        db.close()
-
-        return f'Donation Successful. QR Code ID: {qr}'
-
-    return render_template('donate.html')
-
 # ================= DAILY RECORDS =================
 @app.route('/records', methods=['GET', 'POST'])
 def records():
@@ -149,8 +187,6 @@ def records():
 
     db = get_db()
     cur = db.cursor()
-
-    # Fetch latest record
     cur.execute("SELECT * FROM daily_records ORDER BY id DESC LIMIT 1")
     record = cur.fetchone()
 
@@ -160,14 +196,12 @@ def records():
         staff = request.form['staff']
 
         if record:
-            # UPDATE latest record
             cur.execute("""
                 UPDATE daily_records
                 SET total_inmates=?, hospitalized=?, staff_count=?
                 WHERE id=?
             """, (inmates, hospitalized, staff, record['id']))
         else:
-            # INSERT first record
             cur.execute("""
                 INSERT INTO daily_records VALUES (NULL,?,?,?,?)
             """, (str(date.today()), inmates, hospitalized, staff))
@@ -184,13 +218,11 @@ def records():
 def verify():
     if request.method == 'POST':
         qr = request.form['qr']
-
         db = get_db()
         cur = db.cursor()
         cur.execute('SELECT * FROM donations WHERE qr_id=?', (qr,))
         result = cur.fetchone()
         db.close()
-
         return 'Valid Donation' if result else 'Invalid QR'
 
     return render_template('verify.html')
@@ -201,7 +233,6 @@ def forgot_password():
     if request.method == 'POST':
         email = request.form['email']
         otp = str(random.randint(100000, 999999))
-
         session['otp'] = otp
         session['email'] = email
         send_otp(email, otp)
@@ -215,7 +246,6 @@ def verify_otp():
         if request.form['otp'] == session.get('otp'):
             return redirect('/reset-password')
         return 'Invalid OTP'
-
     return render_template('verify_otp.html')
 
 @app.route('/reset-password', methods=['GET', 'POST'])

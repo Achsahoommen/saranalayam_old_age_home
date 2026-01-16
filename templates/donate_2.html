@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donate – Step 2</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="donation-container">
+
+    <!-- Progress Steps -->
+    <div class="donation-steps">
+        <span>01. Personal Information</span>
+        <span class="active">02. Donation Information</span>
+    </div>
+
+    <h2>Donation Information</h2>
+
+    <form action="/donate-submit" method="post">
+
+        <!-- Donation Type -->
+        <label>Donation Type</label>
+        <input type="text" value="One-Time Donation" readonly>
+
+        <!-- Amount -->
+        <label>Amount (₹)</label>
+        <input
+            type="number"
+            name="amount"
+            placeholder="Enter Amount"
+            min="1"
+            required
+        >
+
+        <!-- Purpose -->
+        <label>Purpose</label>
+        <select name="purpose" required>
+            <option value="General Support">General Support</option>
+            <option value="Food & Nutrition">Food & Nutrition</option>
+            <option value="Medical Care">Medical Care</option>
+        </select>
+
+        <!-- Payment Method -->
+        <label>Payment Method</label>
+        <select name="payment_method" required>
+            <option value="UPI">UPI</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+        </select>
+
+        <!-- Submit -->
+        <button class="donation-next-btn">
+            Confirm & Donate
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 import sqlite3
 
+# Connect to database (creates file if not exists)
 db = sqlite3.connect("saranalayam.db")
 cur = db.cursor()
 
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS admins (
 # Check if 'email' column exists, add if missing
 cur.execute("PRAGMA table_info(admins)")
 columns = [col[1] for col in cur.fetchall()]
+
 if 'email' not in columns:
     cur.execute("ALTER TABLE admins ADD COLUMN email TEXT")
 
@@ -46,6 +48,7 @@ INSERT OR IGNORE INTO admins (username, password, email)
 VALUES ('admin', 'admin123', 'admin@saranalayam.org')
 """)
 
+# Save changes and close DB
 db.commit()
 db.close()
 
