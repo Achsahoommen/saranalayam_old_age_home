@@ -5,37 +5,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Saranalayam</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Style for hidden contact details */
-        .contact-details {
-            display: none;
-            background-color: #f6f6f6;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        #contactBtn {
-            background-color: #1f3c88;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        #contactBtn:hover {
-            background-color: #3651a3;
-        }
-    </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
 <div class="navbar">
-    <div class="logo">
-        <i class="fas fa-person-cane"></i> Saranalayam
+   <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpeg') }}"
+         alt="Saranalayam Old Age Home ">
     </div>
     <div class="nav-links">
         <a href="/">Home</a>

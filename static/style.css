@@ -11,36 +11,61 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #1f3c88;
+    background: #f7faef; /* cream to match logo */
     padding: 15px 30px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
 }
 
-.logo i {
-    color: #a5f3c6;   /* soft green for elder care */
-    font-size: 22px;
+.logo img {
+    height: 75px;
+    width: auto;
+    display: block;
 }
 
+.nav-links {
+    display: flex;
+    align-items: center;
+}
 
 .nav-links a {
-    color: white;
+    color: #2e7d32;
     margin-left: 20px;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .nav-links a:hover {
     text-decoration: underline;
 }
 
+/* Style for hidden contact details */
+        .contact-details {
+            display: none;
+            background-color: #f6f6f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        #contactBtn {
+            background-color: #1f3c88;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #contactBtn:hover {
+            background-color: #3651a3;
+        }
 /*----------HERO SECTION----------*/
 /* ---------- HERO ---------- */
 .hero {
@@ -51,7 +76,7 @@ body {
 
 .hero h4 {
     color: #1f3c88;
-    font-size: 28px;   /* Bigger text */
+    font-size: 56px;   /* Bigger text */
     font-weight: 600;
     margin-bottom: 10px;
 }
@@ -59,7 +84,7 @@ body {
 
 .hero h1 {
     color: #1fa65c;
-    font-size: 56px;   /* Bigger heading */
+    font-size: 28px;   /* Bigger heading */
     font-weight: 700;
     margin: 20px 0;
 }
@@ -197,7 +222,7 @@ button {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
-    background: linear-gradient(to right, #2c7be5, #00bfa5);
+    background: linear-gradient(to right, #466737, #b9d56f);
     color: white;
     font-size: 15px;
     border: none;
