@@ -1,9 +1,10 @@
-/* ---------- GLOBAL ---------- */
+/* ================= GLOBAL STYLES ================= */
 body {
     font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(to right, #e8f0ff, #f6fff8);
+    background: #FBFDF7;
     padding: 20px;
     margin: 0;
+    color: #4A4A4A;
 }
 
 /* ---------- NAVBAR ---------- */
@@ -11,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f7faef; /* cream to match logo */
+    background: #f7faef;
     padding: 15px 30px;
     width: 100%;
     box-sizing: border-box;
@@ -25,7 +26,6 @@ body {
 .logo img {
     height: 75px;
     width: auto;
-    display: block;
 }
 
 .nav-links {
@@ -44,51 +44,55 @@ body {
     text-decoration: underline;
 }
 
-/* Style for hidden contact details */
-        .contact-details {
-            display: none;
-            background-color: #f6f6f6;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+/* ---------- CONTACT DETAILS ---------- */
+/* ---------- CONTACT DETAILS ---------- */
+.contact-details {
+    display: none;
+    background-color: #f7faef;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto 0; /* Center horizontally and add top margin */
+    max-width: 600px;    /* Optional: limit width */
+    text-align: center;   /* Center text inside the box */
+}
 
-        #contactBtn {
-            background-color: #1f3c88;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+/* ---------- CONTACT BUTTON ---------- */
+#contactBtn {
+    background-color: #1f3c88;
+    color: #f7faef;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: block;      /* Make it a block element */
+    margin: 0 auto;      /* Center horizontally */
+}
 
-        #contactBtn:hover {
-            background-color: #3651a3;
-        }
-/*----------HERO SECTION----------*/
-/* ---------- HERO ---------- */
+#contactBtn:hover {
+    background-color: #3651a3;
+}
+
+/* ---------- HERO SECTION ---------- */
 .hero {
     text-align: center;
     padding: 70px 20px;
-    background: #ffffff;
+    background: #f7faef;
 }
 
 .hero h4 {
-    color: #1f3c88;
-    font-size: 56px;   /* Bigger text */
+    color: #416632;
+    font-size: 56px;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
-
 .hero h1 {
-    color: #1fa65c;
-    font-size: 28px;   /* Bigger heading */
+    color: #2e7d32;
+    font-size: 28px;
     font-weight: 700;
     margin: 20px 0;
 }
-
 
 .hero p {
     max-width: 900px;
@@ -102,25 +106,20 @@ body {
     .hero h1 {
         font-size: 38px;
     }
-}
-
-@media (max-width: 600px) {
     .hero h4 {
         font-size: 22px;
     }
 }
 
-
 /* ---------- SERVICES GRID ---------- */
 .services {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
+    grid-template-columns: repeat(3, 1fr);
     gap: 40px;
     padding: 60px 80px;
-    background: #f9fdfb;
+    background: #f7faef;
 }
 
-/* ---------- TABLET ---------- */
 @media (max-width: 1024px) {
     .services {
         grid-template-columns: repeat(2, 1fr);
@@ -128,7 +127,6 @@ body {
     }
 }
 
-/* ---------- MOBILE ---------- */
 @media (max-width: 600px) {
     .services {
         grid-template-columns: 1fr;
@@ -137,7 +135,7 @@ body {
 }
 
 .service-card {
-    background: white;
+    background: #f7faef;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
@@ -149,33 +147,46 @@ body {
 }
 
 /* ---------- CTA ---------- */
+/* ---------- CTA / CARE HOME CENTERED ---------- */
 .cta {
-    text-align: center;
-    padding: 60px 20px;
-    background: #e9f8f1;
+    background: #FBFDF7;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    padding: 40px 20px;       /* Add some padding */
+    text-align: center;       /* Center all content */
+    max-width: 900px;         /* Optional: limit width */
+    margin: 40px auto;        /* Center the section horizontally */
 }
 
 .cta h2 {
     color: #1f3c88;
+    font-size: 28px;
+    margin-bottom: 20px;
 }
 
 .cta p {
     max-width: 700px;
-    margin: 15px auto;
+    margin: 0 auto 30px;      /* Center paragraph and add spacing */
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 .cta button {
-    width: auto;
+    display: inline-block;     /* Keep button inline and centered */
+    background: #1f3c88;
+    color: #f7faef;
+    border: none;
     padding: 12px 30px;
-}
-/* ---------- TEXT UTILITIES ---------- */
-.center {
-    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
-.center strong {
-    font-size: 16px;
-    color: #2e7d32;
+.cta button:hover {
+    background-color: #3651a3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
 /* ---------- HEADINGS ---------- */
@@ -193,15 +204,14 @@ h2 {
 
 /* ---------- FORMS ---------- */
 form {
-    background: white;
+    background: #f7faef;
     padding: 20px;
     width: 320px;
     margin: 20px auto;
     border-radius: 10px;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
 }
 
-/* ---------- INPUTS ---------- */
 input {
     width: 100%;
     padding: 10px;
@@ -217,13 +227,12 @@ input:focus {
     box-shadow: 0 0 5px rgba(44, 123, 229, 0.4);
 }
 
-/* ---------- BUTTONS ---------- */
 button {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
     background: linear-gradient(to right, #2c7be5, #00bfa5);
-    color: white;
+    color: #f7faef;
     font-size: 15px;
     border: none;
     border-radius: 6px;
@@ -240,7 +249,6 @@ button.secondary {
     background: linear-gradient(to right, #6a1b9a, #8e24aa);
 }
 
-/* ---------- LINKS ---------- */
 a {
     display: inline-block;
     margin-top: 10px;
@@ -253,7 +261,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* ---------- HORIZONTAL LINE ---------- */
 hr {
     border: none;
     height: 1px;
@@ -263,7 +270,7 @@ hr {
 
 /* ---------- INFO SECTIONS ---------- */
 .info-box {
-    background: white;
+    background: #f7faef;
     padding: 20px;
     margin: 20px auto;
     max-width: 700px;
@@ -299,37 +306,32 @@ footer {
 }
 
 /* ================= ADMIN LOGIN PAGE ================= */
-
 body.admin-login {
-    background: #f1f1f1;
+    background: #f7faef;
     font-family: "Segoe UI", Arial, sans-serif;
     padding: 0;
 }
 
-/* Container */
 .admin-login .login-container {
     width: 350px;
     margin: 80px auto;
     text-align: center;
 }
 
-/* Logo */
 .admin-login .login-logo {
     font-size: 48px;
     color: #2271b1;
     margin-bottom: 20px;
 }
 
-/* Login box */
 .admin-login .login-box {
-    background: #ffffff;
+    background: #f7faef;
     padding: 25px;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.13);
     text-align: left;
 }
 
-/* Labels */
 .admin-login .login-box label {
     display: block;
     font-size: 14px;
@@ -337,7 +339,6 @@ body.admin-login {
     color: #1d2327;
 }
 
-/* Inputs */
 .admin-login .login-box input[type="text"],
 .admin-login .login-box input[type="password"] {
     width: 100%;
@@ -362,7 +363,6 @@ body.admin-login {
     color: #6c7781;
 }
 
-/* Actions */
 .admin-login .login-actions {
     display: flex;
     justify-content: space-between;
@@ -373,11 +373,10 @@ body.admin-login {
     font-size: 13px;
 }
 
-/* Login button */
 .admin-login .login-actions button {
     background: #2271b1;
     border: none;
-    color: white;
+    color: #f7faef;
     padding: 8px 18px;
     border-radius: 4px;
     cursor: pointer;
@@ -388,7 +387,6 @@ body.admin-login {
     background: #135e96;
 }
 
-/* Footer links */
 .admin-login .login-footer {
     margin-top: 15px;
     font-size: 13px;
@@ -405,17 +403,15 @@ body.admin-login {
 }
 
 /* ================= DONATION PAGE (STEP 1) ================= */
-
 .donation-container {
     max-width: 750px;
     margin: 40px auto;
-    background: #ffffff;
+    background: #f7faef;
     padding: 35px 40px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
-/* Progress steps */
 .donation-steps {
     display: flex;
     justify-content: space-between;
@@ -434,15 +430,12 @@ body.admin-login {
     border-bottom: 3px solid #1f3c88;
 }
 
-/* Title */
 .donation-container h2 {
     text-align: center;
     color: #1f3c88;
-    border: none;
     margin-bottom: 30px;
 }
 
-/* Labels */
 .donation-container label {
     display: block;
     font-weight: 600;
@@ -450,7 +443,6 @@ body.admin-login {
     color: #333;
 }
 
-/* Inputs */
 .donation-container input,
 .donation-container select {
     width: 100%;
@@ -461,7 +453,6 @@ body.admin-login {
     font-size: 14px;
 }
 
-/* Two column rows */
 .donation-row {
     display: flex;
     gap: 15px;
@@ -473,14 +464,13 @@ body.admin-login {
     }
 }
 
-/* Button */
 .donation-next-btn {
     margin-top: 30px;
     width: 100%;
     padding: 14px;
     font-size: 16px;
     background: linear-gradient(to right, #e53935, #e35d5b);
-    color: white;
+    color: #f7faef;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -490,7 +480,6 @@ body.admin-login {
     background: linear-gradient(to right, #d32f2f, #c62828);
 }
 
-/* Footer text */
 .donation-note {
     text-align: center;
     margin-top: 20px;
@@ -523,8 +512,9 @@ body.admin-login {
 
 .donation-summary h3 {
     margin-bottom: 10px;
-    color: #0077b6; /* or your theme color */
+    color: #0077b6;
 }
+
 .donation-summary p {
     font-size: 15px;
     color: #333;
