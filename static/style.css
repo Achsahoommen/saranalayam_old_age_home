@@ -1,10 +1,10 @@
 /* ================= GLOBAL STYLES ================= */
 body {
     font-family: "Segoe UI", Arial, sans-serif;
-    background: #FBFDF7;
+    background: #F9FAF7;           /* Page Background */
     padding: 20px;
     margin: 0;
-    color: #4A4A4A;
+    color: #3F3F46;                /* Body Text */
 }
 
 /* ---------- NAVBAR ---------- */
@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f7faef;
+    background: #2E2B5F;           /* Navbar */
     padding: 15px 30px;
     width: 100%;
     box-sizing: border-box;
@@ -34,7 +34,7 @@ body {
 }
 
 .nav-links a {
-    color: #2e7d32;
+    color: #A7DADB;                /* Logo / Highlight */
     margin-left: 20px;
     text-decoration: none;
     font-weight: 600;
@@ -45,50 +45,60 @@ body {
 }
 
 /* ---------- CONTACT DETAILS ---------- */
-/* ---------- CONTACT DETAILS ---------- */
 .contact-details {
     display: none;
-    background-color: #f7faef;
+    background-color: #EFF1F4;     /* Section Card */
     padding: 20px;
     border-radius: 10px;
-    margin: 20px auto 0; /* Center horizontally and add top margin */
-    max-width: 600px;    /* Optional: limit width */
-    text-align: center;   /* Center text inside the box */
+    margin: 20px auto 0;
+    max-width: 600px;
+    text-align: center;
 }
 
 /* ---------- CONTACT BUTTON ---------- */
 #contactBtn {
-    background-color: #1f3c88;
-    color: #f7faef;
+    background-color: #F2A65A;     /* Primary Button */
+    color: #2E2B5F;
     border: none;
     padding: 12px 25px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    display: block;      /* Make it a block element */
-    margin: 0 auto;      /* Center horizontally */
+    display: block;
+    margin: 0 auto;
 }
 
 #contactBtn:hover {
-    background-color: #3651a3;
+    background-color: #E8B46B;     /* Button Hover */
+}
+
+.location {
+    display: block;
+    text-align: center;
+    font-size: 15px;
+    color: #555;
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 
 /* ---------- HERO SECTION ---------- */
 .hero {
     text-align: center;
     padding: 70px 20px;
-    background: #f7faef;
+    background: #EFF1F4;
+    padding-top: 40px;   /* was probably 60–100px earlier */
+
 }
 
 .hero h4 {
-    color: #416632;
+    color: #2E2B5F;                /* Headings */
     font-size: 56px;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
 .hero h1 {
-    color: #2e7d32;
+    color: #2E2B5F;
     font-size: 28px;
     font-weight: 700;
     margin: 20px 0;
@@ -98,17 +108,13 @@ body {
     max-width: 900px;
     margin: auto;
     font-size: 16px;
-    color: #444;
+    color: #3F3F46;
     line-height: 1.6;
 }
 
 @media (max-width: 600px) {
-    .hero h1 {
-        font-size: 38px;
-    }
-    .hero h4 {
-        font-size: 22px;
-    }
+    .hero h1 { font-size: 38px; }
+    .hero h4 { font-size: 22px; }
 }
 
 /* ---------- SERVICES GRID ---------- */
@@ -117,7 +123,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
     padding: 60px 80px;
-    background: #f7faef;
+    background: #F9FAF7;
 }
 
 @media (max-width: 1024px) {
@@ -135,7 +141,7 @@ body {
 }
 
 .service-card {
-    background: #f7faef;
+    background: #EFF1F4;           /* Section Cards */
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
@@ -147,71 +153,69 @@ body {
 }
 
 /* ---------- CTA ---------- */
-/* ---------- CTA / CARE HOME CENTERED ---------- */
 .cta {
-    background: #FBFDF7;
+    background: #EFF1F4;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    padding: 40px 20px;       /* Add some padding */
-    text-align: center;       /* Center all content */
-    max-width: 900px;         /* Optional: limit width */
-    margin: 40px auto;        /* Center the section horizontally */
+    padding: 40px 20px;
+    text-align: center;
+    max-width: 900px;
+    margin: 40px auto;
 }
 
 .cta h2 {
-    color: #1f3c88;
+    color: #2E2B5F;
     font-size: 28px;
     margin-bottom: 20px;
 }
 
 .cta p {
     max-width: 700px;
-    margin: 0 auto 30px;      /* Center paragraph and add spacing */
+    margin: 0 auto 30px;
     font-size: 16px;
     line-height: 1.6;
 }
 
 .cta button {
-    display: inline-block;     /* Keep button inline and centered */
-    background: #1f3c88;
-    color: #f7faef;
+    background: #F2A65A;
+    color: #2E2B5F;
     border: none;
     padding: 12px 30px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+
 }
 
 .cta button:hover {
-    background-color: #3651a3;
+    background: #E8B46B;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
 /* ---------- HEADINGS ---------- */
 h1 {
-    color: #1f3c88;
+    color: #2E2B5F;
     text-align: center;
-    margin-bottom: 10px;
+     margin-bottom: 10px;
 }
 
 h2 {
-    color: #2e7d32;
-    border-left: 5px solid #2e7d32;
+    color: #2E2B5F;
+    border-left: 5px solid #A7DADB;
     padding-left: 10px;
 }
 
 /* ---------- FORMS ---------- */
 form {
-    background: #f7faef;
+    background: #EFF1F4;
     padding: 20px;
     width: 320px;
     margin: 20px auto;
     border-radius: 10px;
     box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
 }
-
 input {
     width: 100%;
     padding: 10px;
@@ -221,45 +225,47 @@ input {
     font-size: 14px;
 }
 
+
 input:focus {
-    outline: none;
-    border-color: #2c7be5;
-    box-shadow: 0 0 5px rgba(44, 123, 229, 0.4);
+
+    border-color: #A7DADB;
+    box-shadow: 0 0 5px rgba(167, 218, 219, 0.6);
 }
 
 button {
-    width: 100%;
+     width: 100%;
     padding: 10px;
     margin-top: 10px;
-    background: linear-gradient(to right, #2c7be5, #00bfa5);
-    color: #f7faef;
+    color: #2E2B5F;
+    background: #F2A65A;
+    outline: none; 
     font-size: 15px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;   
 }
 
 button:hover {
+    background: #E8B46B;
     transform: translateY(-2px);
     box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
-}
 
-button.secondary {
-    background: linear-gradient(to right, #6a1b9a, #8e24aa);
 }
 
 a {
     display: inline-block;
     margin-top: 10px;
-    color: #2c7be5;
+    color: #2E2B5F;        /* Headings / Brand Primary */
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 a:hover {
+    color: #A7DADB;        /* Icons / Highlights */
     text-decoration: underline;
 }
+
 
 hr {
     border: none;
@@ -268,13 +274,13 @@ hr {
     margin: 30px 0;
 }
 
-/* ---------- INFO SECTIONS ---------- */
+/* ---------- INFO BOX ---------- */
 .info-box {
-    background: #f7faef;
+    background: #EFF1F4;
     padding: 20px;
+    border-radius: 10px;
     margin: 20px auto;
     max-width: 700px;
-    border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
@@ -285,6 +291,7 @@ hr {
 .info-box li {
     margin: 6px 0;
 }
+
 
 /* ---------- ACTION BUTTONS ---------- */
 .action-buttons {
@@ -300,19 +307,36 @@ hr {
 /* ---------- FOOTER ---------- */
 footer {
     text-align: center;
-    color: #555;
+    color: #3F3F46;
     margin-top: 30px;
     font-size: 13px;
 }
 
+.admin-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 10px 0;
+    background-color: #2c7be5;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.admin-btn:hover {
+    background-color: #1a5fc4;
+}
+
 /* ================= ADMIN LOGIN PAGE ================= */
 body.admin-login {
-    background: #f7faef;
+    background: #F9FAF7;              /* Page Background */
     font-family: "Segoe UI", Arial, sans-serif;
     padding: 0;
 }
 
-.admin-login .login-container {
+.admin-login .login-container 
+{
     width: 350px;
     margin: 80px auto;
     text-align: center;
@@ -320,33 +344,64 @@ body.admin-login {
 
 .admin-login .login-logo {
     font-size: 48px;
-    color: #2271b1;
+    color: #2E2B5F;                   /* Headings */
     margin-bottom: 20px;
 }
 
 .admin-login .login-box {
-    background: #f7faef;
+    background: #EFF1F4;              /* Section Card */
     padding: 25px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.13);
-    text-align: left;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 .admin-login .login-box label {
-    display: block;
+    color: #3F3F46;   
+     display: block;
     font-size: 14px;
-    margin-bottom: 5px;
-    color: #1d2327;
+    margin-bottom: 5px;                /* Body Text */
 }
 
 .admin-login .login-box input[type="text"],
 .admin-login .login-box input[type="password"] {
+    border: 1px solid #cfd8dc;
     width: 100%;
     padding: 10px;
-    border: 1px solid #8c8f94;
-    border-radius: 4px;
+     border-radius: 4px;
     margin-bottom: 15px;
     font-size: 14px;
+
+}
+
+.admin-login .login-box input:focus {
+    border-color: #A7DADB;             /* Highlight */
+    box-shadow: 0 0 5px rgba(167,218,219,0.6);
+}
+
+.admin-login .password-wrapper i {
+    color: #A7DADB;  /* Icon / Highlight */
+     position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;                  
+}
+
+.admin-login .login-actions button {
+    background: #F2A65A;               /* Primary Button */
+    color: #2E2B5F;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.admin-login .login-actions button:hover {
+    background: #E8B46B;               /* Button Hover */
+}
+
+.admin-login .login-footer a {
+    color: #2E2B5F;
 }
 
 /* Password eye */
@@ -354,70 +409,62 @@ body.admin-login {
     position: relative;
 }
 
-.admin-login .password-wrapper i {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #6c7781;
-}
-
-.admin-login .login-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .admin-login .login-actions label {
     font-size: 13px;
+    color: #3F3F46;            /* Body Text */
 }
 
 .admin-login .login-actions button {
-    background: #2271b1;
+    background: #F2A65A;       /* Primary Button */
     border: none;
-    color: #f7faef;
+    color: #2E2B5F;            /* Brand Primary Text */
     padding: 8px 18px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     width: auto;
+    transition: background 0.2s, transform 0.2s;
 }
 
 .admin-login .login-actions button:hover {
-    background: #135e96;
+    background: #E8B46B;       /* Button Hover */
+    transform: translateY(-1px);
 }
 
+/* ---------- LOGIN FOOTER ---------- */
 .admin-login .login-footer {
     margin-top: 15px;
     font-size: 13px;
     text-align: center;
+    color: #3F3F46;
 }
 
 .admin-login .login-footer a {
-    color: #2271b1;
+    color: #2E2B5F;            /* Brand Link */
     text-decoration: none;
+    font-weight: 600;
 }
 
 .admin-login .login-footer a:hover {
+    color: #A7DADB;            /* Highlight */
     text-decoration: underline;
 }
 
-/* ================= DONATION PAGE (STEP 1) ================= */
+/* ================= DONATION PAGE ================= */
 .donation-container {
+    background: #EFF1F4;               /* Section Card */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
     max-width: 750px;
     margin: 40px auto;
-    background: #f7faef;
     padding: 35px 40px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
 .donation-steps {
+    color: #777;
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-    color: #888;
-    margin-bottom: 25px;
+     margin-bottom: 25px;
 }
 
 .donation-steps span {
@@ -425,32 +472,38 @@ body.admin-login {
 }
 
 .donation-steps .active {
-    color: #1f3c88;
+    color: #2E2B5F;
     font-weight: 600;
-    border-bottom: 3px solid #1f3c88;
+    border-bottom: 3px solid #A7DADB;  /* Highlight */
 }
 
 .donation-container h2 {
+    color: #2E2B5F; 
     text-align: center;
-    color: #1f3c88;
-    margin-bottom: 30px;
+    margin-bottom: 30px;                   /* Headings */
 }
 
 .donation-container label {
+    color: #3F3F46; 
     display: block;
     font-weight: 600;
-    margin-top: 18px;
-    color: #333;
+    margin-top: 18px;                   /* Body Text */
 }
 
 .donation-container input,
 .donation-container select {
-    width: 100%;
+    border: 1px solid #cfd8dc;
+     width: 100%;
     padding: 12px;
     margin-top: 6px;
     border-radius: 8px;
-    border: 1px solid #cfd8dc;
     font-size: 14px;
+}
+
+.donation-container input:focus,
+.donation-container select:focus {
+    border-color: #A7DADB;
+    box-shadow: 0 0 5px rgba(167,218,219,0.6);
 }
 
 .donation-row {
@@ -465,28 +518,30 @@ body.admin-login {
 }
 
 .donation-next-btn {
+    background: #F2A65A;               /* Primary Button */
+    color: #2E2B5F;
     margin-top: 30px;
     width: 100%;
     padding: 14px;
     font-size: 16px;
-    background: linear-gradient(to right, #e53935, #e35d5b);
-    color: #f7faef;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+
 }
 
 .donation-next-btn:hover {
-    background: linear-gradient(to right, #d32f2f, #c62828);
+    background: #E8B46B;               /* Button Hover */
 }
 
 .donation-note {
+    color: #2E2B5F;
     text-align: center;
     margin-top: 20px;
-    color: #2e7d32;
     font-weight: 600;
 }
 
+/* ---------- SUMMARY TABLE ---------- */
 .summary-table {
     width: 100%;
     border-collapse: collapse;
@@ -496,26 +551,43 @@ body.admin-login {
 
 .summary-table th,
 .summary-table td {
-    border: 1px solid #ddd;
-    padding: 10px 15px;
+    border: 1px solid #ccc;
+    padding: 12px 15px;
     text-align: left;
 }
 
 .summary-table th {
-    background-color: #f2f2f2;
+    background-color: #A7DADB;         /* Highlight */
+    color: #2E2B5F;
     font-weight: bold;
 }
 
 .summary-table tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: #F9FAF7;
 }
 
 .donation-summary h3 {
-    margin-bottom: 10px;
-    color: #0077b6;
+     margin-bottom: 10px;
+    color: #2E2B5F;
 }
 
 .donation-summary p {
     font-size: 15px;
-    color: #333;
+    color: #3F3F46;
+}
+
+/* ---------- FORGOT PASSWORD ---------- */
+.forgot-link {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.forgot-link a {
+    font-size: 14px;
+    color: #5a6cff;
+    text-decoration: none;
+}
+
+.forgot-link a:hover {
+    text-decoration: underline;
 }

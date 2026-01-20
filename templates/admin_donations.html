@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Donations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>Donation List</h2>
+
+<table>
+    <tr>
+        <th>Donor</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>QR ID</th>
+    </tr>
+
+    {% for d in donations %}
+    <tr>
+        <td>{{ d['donor_name'] }}</td>
+        <td>{{ d['amount'] }}</td>
+        <td>{{ d['date'] }}</td>
+        <td>{{ d['qr_id'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="/admin">← Back to Dashboard</a>
+
+</body>
+</html>

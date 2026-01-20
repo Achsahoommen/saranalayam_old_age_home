@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard – Saranalayam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Admin Dashboard – Saranalayam Old Age Home</h1>
+
+<nav>
+    <a href="/records">Update Records</a> |
+    <a href="/donations">Donation List</a> |
+    <a href="/logout">Logout</a>
+</nav>
+
+<hr>
+
+<!-- ================= RECORD UPDATION ================= -->
+<section id="records">
+    <h2>📋 Update Daily Records</h2>
+
+    <form method="POST" action="/update-records">
+        <label>Total Inmates</label>
+        <input type="number" name="inmates" required>
+
+        <label>Hospitalized Inmates</label>
+        <input type="number" name="hospitalized" required>
+
+        <label>Total Staff</label>
+        <input type="number" name="staff" required>
+
+        <button type="submit">Save Records</button>
+    </form>
+</section>
+
+<hr>
+
+<!-- ================= DONATION LIST ================= -->
+<section id="donations">
+    <h2>📊 Donation List</h2>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Donor Name</th>
+            <th>Amount (₹)</th>
+            <th>Date</th>
+            <th>QR ID</th>
+        </tr>
+
+        {% for d in donations %}
+        <tr>
+            <td>{{ d[1] }}</td>
+            <td>{{ d[2] }}</td>
+            <td>{{ d[3] }}</td>
+            <td>{{ d[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+</body>
+</html>

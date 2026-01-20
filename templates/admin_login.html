@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login – Saranalayam</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="login-page">
+
+<div class="login-container">
+
+    <div class="login-logo">
+        <i class="fas fa-user-shield"></i>
+    </div>
+
+    <form class="login-box" method="POST">
+
+        <label>Admin Username</label>
+        <input type="text" name="username" placeholder="Admin username" required>
+
+        <label>Password</label>
+        <div class="password-wrapper">
+            <input type="password" name="password" id="password" required>
+            <i class="fas fa-eye" onclick="togglePassword()"></i>
+        </div>
+
+        <div class="login-actions">
+            <button type="submit">Admin Login</button>
+        </div>
+
+        {% if error %}
+            <p class="error-msg">{{ error }}</p>
+        {% endif %}
+
+    </form>
+
+    <div class="login-footer">
+        <p><a href="/login">← User Login</a></p>
+        <p><a href="/">← Back to Home</a></p>
+    </div>
+
+</div>
+
+<script>
+function togglePassword() {
+    const pwd = document.getElementById("password");
+    pwd.type = pwd.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

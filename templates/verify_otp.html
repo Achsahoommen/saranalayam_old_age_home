@@ -5,23 +5,30 @@
     <title>Verify OTP – Saranalayam</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="admin-login">
+<body class="login-page">
 
 <div class="login-container">
-
     <div class="login-logo">
-        <i class="fas fa-shield-alt"></i>
+        <i class="fas fa-key"></i>
     </div>
 
     <form class="login-box" method="POST">
-        <label>Enter OTP</label>
-        <input type="text" name="otp" required>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
 
-        <button type="submit">Verify OTP</button>
+        <label>Enter OTP</label>
+        <input type="text" name="otp" placeholder="6-digit OTP" required>
+
+        <div class="login-actions">
+            <button type="submit">Verify OTP</button>
+        </div>
     </form>
 
+    <div class="login-footer">
+        <p><a href="/forgot-password">← Resend OTP</a></p>
+    </div>
 </div>
-
 </body>
 </html>
 

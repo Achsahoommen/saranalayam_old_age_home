@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Update Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>Update Daily Records</h2>
+
+<form method="POST" action="/admin/update">
+
+    <label>Total Inmates</label>
+    <input type="number" name="total_inmates"
+           value="{{ record['total_inmates'] if record else '' }}" required>
+
+    <label>Hospitalized</label>
+    <input type="number" name="hospitalized"
+           value="{{ record['hospitalized'] if record else '' }}" required>
+
+    <label>Staff Count</label>
+    <input type="number" name="staff_count"
+           value="{{ record['staff_count'] if record else '' }}" required>
+
+    <button type="submit">Save / Update</button>
+</form>
+
+<br>
+<a href="/admin">← Back to Dashboard</a>
+
+</body>
+</html>

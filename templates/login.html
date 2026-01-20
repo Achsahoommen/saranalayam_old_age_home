@@ -2,44 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Login – Saranalayam</title>
+    <title>Login – Saranalayam</title>
 
-    <!-- Login CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-<!-- IMPORTANT: body class -->
 <body class="admin-login">
 
 <div class="login-container">
 
     <div class="login-logo">
-        <i class="fab fa-wordpress"></i>
+        <i class="fas fa-user"></i>
     </div>
 
-    <form class="login-box" method="POST">
-        <label>Username or Email Address</label>
-        <input type="text" name="username" required>
+   <form method="POST">
+    <label>Email</label>
+    <input type="text" name="identifier" placeholder="Enter your email" required>
 
-        <label>Password</label>
-        <div class="password-wrapper">
-            <input type="password" name="password" id="password" required>
-            <i class="fas fa-eye" onclick="togglePassword()"></i>
-        </div>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Enter your password" required>
 
-        <div class="login-actions">
-            <label>
-                <input type="checkbox" name="remember"> Remember Me
-            </label>
-            <button type="submit">Log In</button>
-        </div>
-    </form>
+    <button type="submit">Login</button>
+
+    <div class="forgot-link">
+        <a href="/forgot-password">Forgot Password?</a>
+    </div>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+</form>
+
+
 
     <div class="login-footer">
-        <p><a href="/forgot-password">Lost your password?</a></p>
+        <p>New user? <a href="/register">Register</a></p>
         <p><a href="/">← Go to Saranalayam</a></p>
     </div>
 
@@ -54,5 +52,3 @@ function togglePassword() {
 
 </body>
 </html>
-
-

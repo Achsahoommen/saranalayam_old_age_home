@@ -1,7 +1,8 @@
 import sqlite3
 
-# Connect to database (creates file if not exists)
-db = sqlite3.connect("saranalayam.db")
+DB = "saranalayam.db"
+
+db = sqlite3.connect(DB)
 cur = db.cursor()
 
 # ---------- ADMINS TABLE ----------
@@ -9,23 +10,33 @@ cur.execute("""
 CREATE TABLE IF NOT EXISTS admins (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE,
+    password TEXT,
+    email TEXT
+)
+""")
+
+# ---------- USERS TABLE ----------
+cur.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    email TEXT UNIQUE,
     password TEXT
 )
 """)
 
-# Check if 'email' column exists, add if missing
-cur.execute("PRAGMA table_info(admins)")
-columns = [col[1] for col in cur.fetchall()]
-
-if 'email' not in columns:
-    cur.execute("ALTER TABLE admins ADD COLUMN email TEXT")
-
 # ---------- DONATIONS TABLE ----------
 cur.execute("""
-CREATE TABLE IF NOT EXISTS donations (
+CREATE TABLE IF NOT EXISTS donation_summary (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    donor TEXT,
-    amount INTEGER,
+    user_email TEXT,
+    donor_name TEXT,
+    email TEXT,
+    phone TEXT,
+    country TEXT,
+    amount REAL,
+    purpose TEXT,
+    payment_method TEXT,
     date TEXT,
     qr_id TEXT UNIQUE
 )
@@ -36,20 +47,20 @@ cur.execute("""
 CREATE TABLE IF NOT EXISTS daily_records (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date TEXT,
-    inmates INTEGER,
+    total_inmates INTEGER,
     hospitalized INTEGER,
-    staff INTEGER
+    staff_count INTEGER
 )
 """)
 
 # ---------- DEFAULT ADMIN ----------
 cur.execute("""
-INSERT OR IGNORE INTO admins (username, password, email)
+            INSERT INTO admins (username, password, email)
 VALUES ('admin', 'admin123', 'admin@saranalayam.org')
 """)
 
-# Save changes and close DB
+
 db.commit()
 db.close()
 
-print("✅ Database initialized successfully with email field")
+print("✅ Database initialized with admin user")
