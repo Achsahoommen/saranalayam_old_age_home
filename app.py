@@ -116,7 +116,7 @@ def login():
             session.clear()
             session['user'] = user['email']
             db.close()
-            return redirect('/donate')  # user donation page
+            return redirect('/user-dashboard')  # user dashboard
 
         db.close()
         return render_template('login.html', error="Invalid credentials")
@@ -152,7 +152,10 @@ def register():
 @app.route('/donate', methods=['GET', 'POST'])
 def donate():
     if 'user' not in session:
-        return redirect('/login')
+        return render_template('donate.html')  # will show login message
+
+    return render_template('donate.html')
+
 
     if request.method == 'POST':
         session['donor_info'] = request.form.to_dict()
@@ -172,8 +175,19 @@ def donation_step2():
 
 @app.route('/donate-submit', methods=['POST'])
 def donate_submit():
-    donor = session['donor_info']
+    if 'user' not in session or 'donor_info' not in session:
+        return redirect('/login')
+
+    donor = session.get('donor_info', {})
+    amount = request.form['amount']
+    purpose = request.form['purpose']
+    payment_method = request.form['payment_method']
+
     qr = 'SAR' + str(random.randint(10000, 99999))
+
+    first_name = donor.get('first_name', '')
+    last_name = donor.get('last_name', '')
+    donor_name = first_name + " " + last_name
 
     db = get_db()
     cur = db.cursor()
@@ -183,13 +197,13 @@ def donate_submit():
         VALUES (?,?,?,?,?,?,?,?,?,?)
     """, (
         session['user'],
-        donor['first_name'] + " " + donor['last_name'],
-        donor['email'],
-        donor['phone'],
-        donor['country'],
-        request.form['amount'],
-        request.form['purpose'],
-        request.form['payment_method'],
+        donor_name,
+        donor.get('email', ''),
+        donor.get('phone', ''),
+        donor.get('country', ''),
+        amount,
+        purpose,
+        payment_method,
         str(date.today()),
         qr
     ))
@@ -197,7 +211,14 @@ def donate_submit():
     db.close()
 
     session.pop('donor_info', None)
-    return render_template('success.html', qr=qr)
+
+    return render_template(
+        'success.html',
+        qr=qr,
+        donor_name=donor_name,
+        amount=amount,
+        payment_method=payment_method
+    )
 
 # ================= ADMIN DASHBOARD =================
 @app.route('/admin')
@@ -246,6 +267,34 @@ def admin_update():
     db.close()
 
     return render_template('admin_update.html', record=record)
+
+# ================= USER DASHBOARD =================
+@app.route('/user-dashboard')
+def user_dashboard():
+    if 'user' not in session:
+        return redirect('/login')
+
+    return render_template('user_dashboard.html')
+
+@app.route('/my-donations')
+def my_donations():
+    if 'user' not in session:
+        return redirect('/login')
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("""
+        SELECT donor_name, amount, purpose, payment_method, date, qr_id
+        FROM donation_summary
+        WHERE user_email=?
+        ORDER BY id DESC
+    """, (session['user'],))
+
+    donations = cur.fetchall()
+    db.close()
+
+    return render_template('my_donations.html', donations=donations)
 
 # ---------------- FORGOT PASSWORD ----------------
 @app.route('/forgot-password', methods=['GET', 'POST'])

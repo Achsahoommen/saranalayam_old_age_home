@@ -18,29 +18,32 @@
     <div class="donation-summary">
     <h3>Donation Summary</h3>
     <table class="summary-table">
-        <tr>
-            <th>Donor</th>
-            <td>{{ donor }}</td>
-        </tr>
-        <tr>
-            <th>Amount</th>
-            <td>₹{{ amount }}</td>
-        </tr>
-        <tr>
-            <th>Payment Method</th>
-            <td>{{ payment_method }}</td>
-        </tr>
-        <tr>
-            <th>Transaction ID</th>
-            <td>{{ qr }}</td>
-        </tr>
+       <tr>
+        <th>Donor</th>
+        <td>{{ donor_name }}</td>
+    </tr>
+    <tr>
+        <th>Amount</th>
+        <td>₹{{ amount }}</td>
+    </tr>
+    <tr>
+        <th>Payment Method</th>
+        <td>{{ payment_method }}</td>
+    </tr>
+    <tr>
+        <th>Transaction ID</th>
+        <td>{{ qr }}</td>
+    </tr>
+
     </table>
 </div>
 
-
-
     <div class="success-actions">
         <a href="/" class="donation-next-btn">Back to Home</a>
+        <a href="/my-donations" class="donation-next-btn">View My Donations</a>
+        <a href="/logout" class="donation-next-btn" style="background:#c0392b;">
+        Logout
+        </a>
     </div>
 
 </div>

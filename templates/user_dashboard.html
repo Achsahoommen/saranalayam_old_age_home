@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="donation-container">
+
+    <h2>Welcome {{ session['user'] }}</h2>
+
+    <br><br>
+
+    <div class="success-actions">
+
+        <a href="/donate" class="donation-next-btn">
+            Make a Donation
+        </a>
+
+        <a href="/my-donations" class="donation-next-btn">
+            My Donations
+        </a>
+
+        <a href="/logout" class="donation-next-btn" style="background:#c0392b;">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

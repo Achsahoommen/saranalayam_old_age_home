@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Donations</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="donation-container">
+
+    <h2>My Donation History</h2>
+
+    {% if donations %}
+    <table class="summary-table">
+        <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Purpose</th>
+            <th>Payment</th>
+            <th>Transaction ID</th>
+        </tr>
+
+        {% for d in donations %}
+        <tr>
+            <td>{{ d['date'] }}</td>
+            <td>₹{{ d['amount'] }}</td>
+            <td>{{ d['purpose'] }}</td>
+            <td>{{ d['payment_method'] }}</td>
+            <td>{{ d['qr_id'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>You have not made any donations yet.</p>
+    {% endif %}
+
+    <br>
+
+    <a href="/donate" class="donation-next-btn">Donate Again</a>
+    <a href="/logout" class="donation-next-btn" style="background:#c0392b;">
+        Logout
+    </a>
+
+</div>
+
+</body>
+</html>
