@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <title>Donate</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body>
-
 <body>
 
 {% if 'user' in session %}
 
 <div class="donation-container">
 
-    <!-- Welcome Message -->
     <h2>Welcome {{ session['user'] }}</h2>
     
-    <!-- Progress Steps -->
     <div class="donation-steps">
         <span class="active">01. Personal Information</span>
         <span>02. Donation Information</span>
@@ -98,10 +95,9 @@
 
 {% else %}
 
-<!-- LOGIN POPUP STYLE MESSAGE -->
 <div class="donation-container" style="text-align:center; padding:60px;">
 
-    <h2 style="color:#2e7d32;">💚 Make a Donation</h2>
+    <h2><i class="fa-solid fa-hand-holding-heart"></i> Make a Donation</h2>
     <p>Please <a href="/login" style="color:#0d47a1; font-weight:bold;">Login</a> to donate</p>
 
     <br>
@@ -112,7 +108,6 @@
 
 {% endif %}
 
-<!-- JS -->
 <script>
 function toggleOtherCountry() {
     const select = document.getElementById("countrySelect");

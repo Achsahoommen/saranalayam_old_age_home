@@ -5,44 +5,6 @@
     <title>Saranalayam</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Donation CTA Styling */
-        .donation-cta {
-            text-align: center;
-            margin: 50px auto;
-            background: #f7faef;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 700px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .donation-cta h2 {
-            color: #2e7d32;
-            margin-bottom: 20px;
-        }
-
-        .donate-btn {
-            background: #2e7d32;
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-            text-decoration: none;
-        }
-
-        .donate-btn:hover {
-            background: #196127;
-        }
-
-        .donation-cta p {
-            font-size: 16px;
-            margin-top: 10px;
-        }
-    </style>
 </head>
 <body>
 
@@ -61,27 +23,14 @@
 
 <!-- HERO -->
 <section class="hero">
-    <h4> Welcome to Saranalayam</h4>
+    <h4>Welcome to Saranalayam</h4>
     <h1><i class="fa-solid fa-hands-holding-heart"></i> We make a Difference in your lives</h1>
     <p>
         <i class="fa-solid fa-user-shield"></i>
-        It is difficult to specify the exact age when an elderly patient becomes a patient.
+        It is difficult to specify the exact age when an elderly patient becomes dependent.
         It is a gradual process that activates the need for support from family or medical staff,
         without which the patient may be worse off.
     </p>
-</section>
-
-<!-- DONATION PROMPT -->
-<section class="donation-cta">
-    <h2><i class="fa-solid fa-hand-holding-heart"></i> Make a Donation</h2>
-
-    {% if session.get('user') %}
-        <a href="/donate" class="donate-btn">
-            <i class="fa-solid fa-arrow-right"></i> Proceed to Donate
-        </a>
-    {% else %}
-        <p>Please <a href="/login">Login</a> to donate</p>
-    {% endif %}
 </section>
 
 <!-- SERVICES -->
