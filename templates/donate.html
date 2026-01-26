@@ -8,7 +8,7 @@
 </head>
 <body>
 
-{% if 'user' in session %}
+{% if session.get('user') %}
 
 <div class="donation-container">
 

@@ -449,6 +449,114 @@ body.admin-login {
     text-decoration: underline;
 }
 
+.admin-page {
+    background: #f4f6f9;
+    font-family: Arial, sans-serif;
+}
+
+.admin-container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.admin-header h2 {
+    margin-bottom: 5px;
+}
+
+.admin-header p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table thead {
+    background: #2e7d32;
+    color: white;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 10px;
+    text-align: center;
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f1f8f4;
+}
+
+.amount {
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.txn-id {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+.admin-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.back-btn {
+    padding: 8px 14px;
+    background: #2e7d32;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #1b5e20;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: center; /* centers the buttons horizontally */
+    gap: 10px;               /* space between buttons */
+    margin: 20px 0;          /* optional spacing from other elements */
+}
+
+.admin-btn {
+    background-color: #007bff; /* blue buttons */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.admin-btn:hover {
+    background-color: #0056b3;
+}
+
 /* ================= DONATION PAGE ================= */
 .donation-container {
     background: #EFF1F4;               /* Section Card */

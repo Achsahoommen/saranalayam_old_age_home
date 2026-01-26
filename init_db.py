@@ -1,66 +1,75 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
+
 
 DB = "saranalayam.db"
 
-db = sqlite3.connect(DB)
-cur = db.cursor()
 
-# ---------- ADMINS TABLE ----------
-cur.execute("""
-CREATE TABLE IF NOT EXISTS admins (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
-    password TEXT,
-    email TEXT
-)
-""")
+def init_db():
+    db = sqlite3.connect(DB)
+    cur = db.cursor()
 
-# ---------- USERS TABLE ----------
-cur.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    email TEXT UNIQUE,
-    password TEXT
-)
-""")
+    # ================= ADMINS =================
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT,
+        email TEXT UNIQUE
+    )
+    """)
 
-# ---------- DONATIONS TABLE ----------
-cur.execute("""
-CREATE TABLE IF NOT EXISTS donation_summary (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_email TEXT,
-    donor_name TEXT,
-    email TEXT,
-    phone TEXT,
-    country TEXT,
-    amount REAL,
-    purpose TEXT,
-    payment_method TEXT,
-    date TEXT,
-    qr_id TEXT UNIQUE
-)
-""")
+    # ================= USERS =================
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT UNIQUE,
+        password TEXT
+    )
+    """)
 
-# ---------- DAILY RECORDS TABLE ----------
-cur.execute("""
-CREATE TABLE IF NOT EXISTS daily_records (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT,
-    total_inmates INTEGER,
-    hospitalized INTEGER,
-    staff_count INTEGER
-)
-""")
+    # ================= DONATIONS =================
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS donation_summary (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_email TEXT,
+        donor_name TEXT,
+        email TEXT,
+        phone TEXT,
+        country TEXT,
+        amount REAL,
+        purpose TEXT,
+        payment_method TEXT,
+        date TEXT,
+        qr_id TEXT UNIQUE
+    )
+    """)
 
-# ---------- DEFAULT ADMIN ----------
-cur.execute("""
-            INSERT INTO admins (username, password, email)
-VALUES ('admin', 'admin123', 'admin@saranalayam.org')
-""")
+    # ================= DAILY RECORDS =================
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS daily_records (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT,
+        total_inmates INTEGER,
+        hospitalized INTEGER,
+        staff_count INTEGER
+    )
+    """)
+
+    # ================= DEFAULT ADMIN =================
+    cur.execute("SELECT * FROM admins WHERE username='admin'")
+    if not cur.fetchone():
+        hashed_password = generate_password_hash("admin123")
+        cur.execute("""
+        INSERT INTO admins (username, password, email)
+        VALUES (?, ?, ?)
+        """, ("admin", hashed_password, "admin@saranalayam.org"))
+
+    db.commit()
+    db.close()
 
 
-db.commit()
-db.close()
-
-print("✅ Database initialized with admin user")
+if __name__ == "__main__":
+    init_db()
+    print("Database initialized successfully.")

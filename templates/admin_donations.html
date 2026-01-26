@@ -2,33 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Donations</title>
+    <title>Admin – Donations</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="admin-page">
 
-<h2>Donation List</h2>
+<div class="admin-container">
 
-<table>
-    <tr>
-        <th>Donor</th>
-        <th>Amount</th>
-        <th>Date</th>
-        <th>QR ID</th>
-    </tr>
+    <!-- Header -->
+    <div class="admin-header">
+        <h2>📊 Donation Records</h2>
+        <p>View all donations made to Saranalayam</p>
+    </div>
 
-    {% for d in donations %}
-    <tr>
-        <td>{{ d['donor_name'] }}</td>
-        <td>{{ d['amount'] }}</td>
-        <td>{{ d['date'] }}</td>
-        <td>{{ d['qr_id'] }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    {% if donations %}
+    <div class="table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Donor</th>
+                    <th>Amount (₹)</th>
+                    <th>Purpose</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th>Transaction ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in donations %}
+                <tr>
+                    <td>{{ d['donor_name'] }}</td>
+                    <td class="amount">₹{{ d['amount'] }}</td>
+                    <td>{{ d['purpose'] }}</td>
+                    <td>{{ d['payment_method'] }}</td>
+                    <td>{{ d['date'] }}</td>
+                    <td class="txn-id">{{ d['qr_id'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="no-data">
+            <p>No donations recorded yet.</p>
+        </div>
+    {% endif %}
 
-<br>
-<a href="/admin">← Back to Dashboard</a>
+    <div class="admin-actions">
+        <a href="/admin" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+</div>
 
 </body>
 </html>
