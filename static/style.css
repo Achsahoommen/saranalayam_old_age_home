@@ -700,4 +700,209 @@ body.admin-login {
     text-decoration: underline;
 }
 
+/* ================= ADMIN DASHBOARD ================= */
+
+.admin-page {
+    background: linear-gradient(to right, #eef2f7, #f9fafc);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-container {
+    width: 100%;
+    max-width: 700px;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.admin-header h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.admin-header p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.admin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-btn {
+    background: #2E2B5F;
+    color: #ffffff;
+    padding: 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+    background: #A7DADB;
+    color: #2E2B5F;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.logout-btn {
+    background: #d9534f;
+}
+
+.logout-btn:hover {
+    background: #b52b27;
+    color: white;
+}
+
+/* ================= USER DONATION PAGE ================= */
+
+.user-page {
+    background: #F9FAF7; /* match global background */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-container {
+    width: 95%;
+    max-width: 1000px;
+    background: #EFF1F4; /* match card theme */
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border-top: 6px solid #A7DADB; /* highlight accent */
+}
+
+
+.user-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.user-header h2 {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.user-header p {
+    color: #666;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modern-table thead {
+    background: #2E2B5F;
+    color: #A7DADB;
+    font-weight: 600;
+}
+
+.modern-table th,
+.modern-table td {
+    padding: 12px;
+    text-align: center;
+}
+
+.modern-table tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.modern-table tbody tr:hover {
+    background: #f4f7fb;
+}
+
+.amount {
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.txn-id {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Buttons */
+.user-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.primary-btn {
+    background: #F2A65A;
+    color: #2E2B5F;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.primary-btn:hover {
+    background: #E8B46B;
+    transform: translateY(-2px);
+}
+
+
+.secondary-btn {
+    background: #c0392b;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background: #992d22;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    width: 220px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border-bottom: 4px solid #A7DADB;
+}
+
+.neutral-btn {
+    background: #6c757d;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.neutral-btn:hover {
+    background: #545b62;
+    transform: translateY(-2px);
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
 

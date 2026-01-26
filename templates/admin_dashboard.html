@@ -5,18 +5,24 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
-<h2>Welcome Admin</h2>
+<body class="admin-page">
 
-<div class="admin-actions">
-    <a href="/admin/donations" class="admin-btn">💰 View Donations</a>
-    <a href="/admin/update" class="admin-btn">📝 Update Daily Records</a>
+<div class="admin-container">
+
+    <div class="admin-header">
+        <h2>Admin Dashboard</h2>
+        <p>Welcome back, Admin 👋 Manage donations and daily updates here.</p>
+    </div>
+
+    <div class="admin-actions">
+        <a href="/admin/donations" class="admin-btn">💰 View Donations</a>
+        <a href="/admin/update" class="admin-btn">📝 Update Daily Records</a>
+        <a href="/logout" class="admin-btn logout-btn">🚪 Logout</a>
+    </div>
+
 </div>
-
-<br>
-<a href="/logout">Logout</a>
-
 
 </body>
 </html>
+

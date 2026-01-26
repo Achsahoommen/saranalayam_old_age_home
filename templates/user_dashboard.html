@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>User Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
-<div class="donation-container">
+<body class="admin-page">
 
-    <h2>Welcome {{ session['user'] }}</h2>
+<div class="admin-container">
 
-    <br><br>
+    <div class="admin-header">
+        <h2>Welcome {{ session['user'] }}</h2>
+        <p>Manage your donations and account from here.</p>
+    </div>
 
-    <div class="success-actions">
-
-        <a href="/donate" class="donation-next-btn">
-            Make a Donation
-        </a>
-
-        <a href="/my-donations" class="donation-next-btn">
-            My Donations
-        </a>
-
-        <a href="/logout" class="donation-next-btn" style="background:#c0392b;">
-            Logout
-        </a>
-
+    <div class="admin-actions">
+        <a href="{{ url_for('donate') }}" class="admin-btn">💰 Donate</a>
+        <a href="{{ url_for('my_donations') }}" class="admin-btn">📄 My Donations</a>
+        <a href="{{ url_for('logout') }}" class="admin-btn logout-btn">🚪 Logout</a>
     </div>
 
 </div>

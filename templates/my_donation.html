@@ -3,46 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title>My Donations</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
-<div class="donation-container">
+<body class="user-page">
 
-    <h2>My Donation History</h2>
+<div class="user-container">
+
+    <div class="user-header">
+        <h2>My Donation History</h2>
+        <p>Thank you for supporting Saranalayam 💚</p>
+    </div>
 
     {% if donations %}
-    <table class="summary-table">
-        <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Purpose</th>
-            <th>Payment</th>
-            <th>Transaction ID</th>
-        </tr>
-
-        {% for d in donations %}
-        <tr>
-            <td>{{ d['date'] }}</td>
-            <td>₹{{ d['amount'] }}</td>
-            <td>{{ d['purpose'] }}</td>
-            <td>{{ d['payment_method'] }}</td>
-            <td>{{ d['qr_id'] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="table-wrapper">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Purpose</th>
+                    <th>Payment</th>
+                    <th>Transaction ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in donations %}
+                <tr>
+                    <td>{{ d['date'] }}</td>
+                    <td class="amount">₹{{ d['amount'] }}</td>
+                    <td>{{ d['purpose'] }}</td>
+                    <td>{{ d['payment_method'] }}</td>
+                    <td class="txn-id">{{ d['qr_id'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p>You have not made any donations yet.</p>
+        <div class="empty-state">
+            <p>You have not made any donations yet.</p>
+            <a href="/donate" class="primary-btn">Make Your First Donation</a>
+        </div>
     {% endif %}
 
-    <br>
+    <div class="user-actions">
+    <a href="/donate" class="primary-btn">Donate Again</a>
+    <a href="/user-dashboard" class="neutral-btn"> ← Back to Dashboard</a>
+    <a href="/logout" class="secondary-btn">Logout</a>
+</div>
 
-    <a href="/donate" class="donation-next-btn">Donate Again</a>
-    <a href="/logout" class="donation-next-btn" style="background:#c0392b;">
-        Logout
-    </a>
 
 </div>
 
 </body>
 </html>
+

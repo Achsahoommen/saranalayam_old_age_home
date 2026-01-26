@@ -5,6 +5,12 @@ from datetime import date
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from send_otp import send_otp
+import razorpay
+from razorpay_utils import client as razorpay_client, RAZORPAY_KEY_ID
+from razorpay_utils import create_order
+from razorpay_utils import verify_payment_signature
+
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "saranalayam_secret")
@@ -163,86 +169,114 @@ def register():
 
     return render_template('register.html')
 
-
-# ================= DONATION STEP 1 =================
 @app.route('/donate', methods=['GET', 'POST'])
 def donate():
-    if 'user' not in session:
+    if 'user' in session:
+        if request.method == 'POST':
+            session['donor_info'] = {
+                "first_name": request.form['first_name'],
+                "last_name": request.form['last_name'],
+                "email": request.form['email'],
+                "phone": request.form['phone'],
+                "country": request.form.get('country')
+            }
+            return redirect('/donate-step-2')
+        return render_template('donate.html', user_name=session.get('user_name'))
+    else:
+        # Guest sees login prompt
         return render_template('donate.html')
 
-    if request.method == 'POST':
-        session['donor_info'] = request.form.to_dict()
-        return redirect('/donation-step2')
-
-    return render_template('donate.html')
-
-
-# ================= DONATION STEP 2 =================
-@app.route('/donation-step2')
-def donation_step2():
-    if 'donor_info' not in session:
-        return redirect('/donate')
-    return render_template('donate_2.html')
-
-
-# ================= DONATION SUBMIT =================
-@app.route('/donate-submit', methods=['POST'])
-def donate_submit():
+@app.route('/donate-step-2', methods=['GET', 'POST'])
+def donate_step_2():
+    if 'user' not in session:
+        return redirect('/login')
     if 'donor_info' not in session:
         return redirect('/donate')
 
     donor = session['donor_info']
 
-    amount = float(request.form['amount'])
-    purpose = request.form['purpose']
-    payment_method = request.form['payment_method']
+    if request.method == 'POST':
+        # Get form data
+        try:
+            amount = float(request.form['amount'])
+        except:
+            return render_template("donate_2.html", donor=donor, error="Enter a valid amount")
+        
+        purpose = request.form['purpose']
+        payment_method = request.form['payment_method']
 
-    country = donor.get('country')
-    if country == "other":
-        country = donor.get('custom_country')
+        # Save donation info in session
+        session['donation_temp'] = {
+            "amount": amount,
+            "purpose": purpose,
+            "payment_method": payment_method
+        }
 
-    code = donor.get('country_code')
-    if code == "other":
-        code = donor.get('custom_country_code')
+        # Create Razorpay order
+        order, error = create_order(amount, donor.get('first_name') + " " + donor.get('last_name'))
+        if error:
+            return render_template("donate_2.html", donor=donor, error=error)
 
-    full_phone = f"{code} {donor.get('phone')}"
+        session['razorpay_order_id'] = order['id']
+
+        # Render Razorpay checkout page
+        return render_template(
+            "razorpay_checkout.html",
+            order_id=order['id'],
+            amount=int(amount*100),  # amount in paise
+            key_id=os.getenv("RAZORPAY_KEY_ID"),
+            donor=donor
+        )
+
+    # GET request shows donation step 2 form
+    return render_template("donate_2.html", donor=donor)
+@app.route('/payment-success', methods=['POST'])
+def payment_success():
+    payment_id = request.form.get('razorpay_payment_id')
+    order_id = request.form.get('razorpay_order_id')
+    signature = request.form.get('razorpay_signature')
+
+    # Verify Razorpay signature using modular utils
+    valid, error = verify_payment_signature(payment_id, order_id, signature)
+    if not valid:
+        return error, 400
+
+    donor = session.get('donor_info')
+    donation = session.get('donation_temp')
+    if not donor or not donation:
+        return redirect('/donate')
+
     qr_id = "TXN" + str(random.randint(100000, 999999))
     today = date.today().strftime("%Y-%m-%d")
 
     db = get_db()
     cur = db.cursor()
-
     cur.execute("""
         INSERT INTO donation_summary
         (user_email, donor_name, email, phone, country,
          amount, purpose, payment_method, date, qr_id)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        session['user'],
+        session.get('user'),
         donor.get('first_name') + " " + donor.get('last_name'),
         donor.get('email'),
-        full_phone,
-        country,
-        amount,
-        purpose,
-        payment_method,
+        donor.get('phone'),
+        donor.get('country'),
+        donation['amount'],
+        donation['purpose'],
+        donation['payment_method'],
         today,
         qr_id
     ))
-
     db.commit()
     db.close()
 
+    # Clear session variables
     session.pop('donor_info', None)
+    session.pop('donation_temp', None)
+    session.pop('razorpay_order_id', None)
 
-    return render_template(
-        'success.html',
-        donor_name=donor.get('first_name') + " " + donor.get('last_name'),
-        amount=amount,
-        payment_method=payment_method,
-        qr=qr_id
-    )
-
+    return render_template('success.html', payment_id=payment_id, donor=donor)
 
 # ================= USER DASHBOARD =================
 @app.route('/user-dashboard')
@@ -412,7 +446,6 @@ def reset_password():
         return redirect('/login')
 
     return render_template('reset_password.html')
-
 
 # ================= LOGOUT =================
 @app.route('/logout')
