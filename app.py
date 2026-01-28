@@ -19,14 +19,14 @@ app.secret_key = os.environ.get("SECRET_KEY", "saranalayam_secret")
 DB = 'saranalayam.db'
 
 
-# ================= DATABASE =================
+# ================= DATABASE =================#
 def get_db():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-# ================= INIT DATABASE =================
+# ================= INIT DATABASE =================#
 def init_db():
     db = sqlite3.connect(DB)
     cur = db.cursor()
@@ -96,7 +96,7 @@ def init_db():
     db.close()
 
 
-# ================= PUBLIC ROUTES =================
+# ================= PUBLIC ROUTES =================#
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -112,7 +112,7 @@ def contact():
     return render_template('contact.html')
 
 
-# ================= LOGIN (ADMIN + USER) =================
+# ================= LOGIN (ADMIN + USER) =================#
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -147,7 +147,7 @@ def login():
     return render_template('login.html')
 
 
-# ================= REGISTER =================
+# ================= REGISTER =================#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -174,6 +174,7 @@ def register():
 
     return render_template('register.html')
 
+# ================= DONATION STEP 1 =================#
 @app.route('/donate', methods=['GET', 'POST'])
 def donate():
     if 'user' in session:
@@ -191,6 +192,7 @@ def donate():
         # Guest sees login prompt
         return render_template('donate.html')
 
+# ================= DONATION STEP 2 =================#
 @app.route('/donate-step-2', methods=['GET', 'POST'])
 def donate_step_2():
     if 'user' not in session:
@@ -236,6 +238,7 @@ def donate_step_2():
     # GET request shows donation step 2 form
     return render_template("donate_2.html", donor=donor)
 
+# ================= PAYMENT SUCCESS =================#
 @app.route('/payment-success', methods=['POST'])
 def payment_success():
 
@@ -338,6 +341,7 @@ def payment_success():
         receipt_no=receipt_no
     )
 
+# ================= DOWNLOAD RECEIPT =================#
 @app.route("/download-receipt/<receipt_no>")
 def download_receipt(receipt_no):
     file_path = f"receipts/{receipt_no}.pdf"
@@ -351,14 +355,14 @@ def payment_failure():
 
 
 
-# ================= USER DASHBOARD =================
+# ================= USER DASHBOARD =================#
 @app.route('/user-dashboard')
 def user_dashboard():
     if 'user' not in session:
         return redirect('/login')
     return render_template('user_dashboard.html')
 
-
+# ================= USER DONATION =================#
 @app.route('/my-donations')
 def my_donations():
     if 'user' not in session:
@@ -376,30 +380,37 @@ def my_donations():
     return render_template('my_donation.html', donations=donations)
 
 
-# ================= ADMIN DASHBOARD =================
+# ================= ADMIN DASHBOARD =================#
 @app.route('/admin')
 def admin_dashboard():
     if 'admin' not in session:
         return redirect('/login')
-
     db = get_db()
     cur = db.cursor()
-
+    # Donations
     cur.execute("SELECT COUNT(*) FROM donation_summary")
     total_donations = cur.fetchone()[0]
-
     cur.execute("SELECT SUM(amount) FROM donation_summary")
     total_amount = cur.fetchone()[0] or 0
-
+    # Daily Records
+    cur.execute("SELECT date, total_inmates FROM daily_records ORDER BY date DESC LIMIT 7")
+    records = cur.fetchall()[::-1]
+    record_dates = [r[0] for r in records]
+    inmate_counts = [r[1] for r in records]
+    cur.execute("SELECT COUNT(*) FROM daily_records")
+    total_records = cur.fetchone()[0]
+    cur.execute("SELECT SUM(total_inmates) FROM daily_records")
+    total_inmates = cur.fetchone()[0] or 0
     db.close()
+    return render_template('admin_dashboard.html',
+                           total_donations=total_donations,
+                           total_amount=total_amount,
+                           record_dates=record_dates,
+                           inmate_counts=inmate_counts,
+                           total_records=total_records,
+                           total_inmates=total_inmates)
 
-    return render_template(
-        'admin_dashboard.html',
-        total_donations=total_donations,
-        total_amount=total_amount
-    )
-
-
+# ================= ADMIN DONATION=================#
 @app.route('/admin/donations')
 def admin_donations():
     if 'admin' not in session:
@@ -407,51 +418,110 @@ def admin_donations():
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT * FROM donation_summary ORDER BY date DESC")
-    donations = cur.fetchall()
-    db.close()
+    cur.execute("SELECT donor_name, amount, purpose, payment_method, date, qr_id FROM donation_summary ORDER BY date DESC")
+    rows = cur.fetchall()
 
+    # Convert rows to list of dicts
+    donations = []
+    for row in rows:
+        donations.append({
+            "donor_name": row[0],
+            "amount": row[1],
+            "purpose": row[2],
+            "payment_method": row[3],
+            "date": row[4].strftime("%Y-%m-%d") if isinstance(row[4], (str, bytes)) == False else row[4],
+            "qr_id": row[5]
+        })
+
+    db.close()
     return render_template('admin_donations.html', donations=donations)
 
-
-@app.route('/admin/update', methods=['GET', 'POST'])
+# ================= ADMIN UPDATE =================#
+@app.route('/admin/update', methods=['GET','POST'])
 def admin_update():
     if 'admin' not in session:
         return redirect('/login')
-
     db = get_db()
     cur = db.cursor()
 
     if request.method == 'POST':
         cur.execute("""
-            INSERT INTO daily_records
-            (date, total_inmates, hospitalized, staff_count)
-            VALUES (?,?,?,?)
+        INSERT INTO daily_records
+        (date, total_inmates, hospitalized, staff_count, guests_arrived)
+        VALUES (?,?,?,?,?)
         """, (
             str(date.today()),
             request.form['total_inmates'],
             request.form['hospitalized'],
-            request.form['staff_count']
+            request.form['staff_count'],
+            request.form['guests_arrived']
         ))
         db.commit()
         db.close()
-        return redirect('/admin')
+        return redirect('/admin/update')
 
+    # Get last record for prefill
     cur.execute("SELECT * FROM daily_records ORDER BY id DESC LIMIT 1")
     record = cur.fetchone()
+    # Get last 7 records for table/chart
+    cur.execute("SELECT * FROM daily_records ORDER BY date DESC LIMIT 7")
+    records = [dict(r) for r in cur.fetchall()]
     db.close()
+    return render_template('admin_update.html', record=record, records=records)
 
-    return render_template('admin_update.html', record=record)
+# ================= EDIT / DELETE RECORD =================
+@app.route('/admin/edit/<int:id>', methods=['GET','POST'])
+def edit_record(id):
+    if 'admin' not in session:
+        return redirect('/login')
+    db = get_db()
+    cur = db.cursor()
+    if request.method == 'POST':
+        cur.execute("""
+        UPDATE daily_records
+        SET total_inmates=?, hospitalized=?, staff_count=?, guests_arrived=?
+        WHERE id=?
+        """, (
+            request.form['total_inmates'],
+            request.form['hospitalized'],
+            request.form['staff_count'],
+            request.form['guests_arrived'],
+            id
+        ))
+        db.commit()
+        db.close()
+        return redirect('/admin/update')
+    cur.execute("SELECT * FROM daily_records WHERE id=?", (id,))
+    record = cur.fetchone()
+    db.close()
+    return render_template('edit_record.html', record=record)
 
+@app.route('/admin/delete/<int:id>')
+def delete_record(id):
+    if 'admin' not in session:
+        return redirect('/login')
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM daily_records WHERE id=?", (id,))
+    db.commit()
+    db.close()
+    return redirect('/admin/update')
+
+
+# ================= ADMIN RECORDS =================#
 @app.route("/admin/records")
 def view_records():
+    if 'admin' not in session:
+        return redirect('/login')
+
     conn = get_db()
     cur = conn.cursor()
     cur.execute("SELECT * FROM daily_records ORDER BY date DESC")
     records = cur.fetchall()
+    conn.close()
     return render_template("view_records.html", records=records)
 
-# ================= FORGOT PASSWORD =================
+# ================= FORGOT PASSWORD =================#
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -487,7 +557,7 @@ def forgot_password():
 
     return render_template('forgot_password.html')
 
-# ---------------- VERIFY OTP ----------------
+# ---------------- VERIFY OTP ----------------#
 @app.route('/verify-otp', methods=['GET', 'POST'])
 def verify_otp():
     if request.method == 'POST':
@@ -498,7 +568,7 @@ def verify_otp():
 
     return render_template('verify_otp.html')
 
-# ---------------- RESET PASSWORD ----------------
+# ---------------- RESET PASSWORD ----------------#
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
     if request.method == 'POST':
@@ -527,14 +597,14 @@ def reset_password():
 
     return render_template('reset_password.html')
 
-# ================= LOGOUT =================
+# ================= LOGOUT =================#
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
 
-# ================= RUN =================
+# ================= RUN =================#
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)

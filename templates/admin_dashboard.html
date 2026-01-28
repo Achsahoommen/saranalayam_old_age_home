@@ -12,18 +12,36 @@
 <div class="admin-container">
 
     <div class="admin-header">
-        <h2>Admin Dashboard</h2>
-        <p>Welcome back, Admin 👋 Manage donations and daily updates here.</p>
+        <h1>Admin Dashboard</h1>
+        <p>Welcome back, Admin 👋</p>
+        <span>Manage donations, daily records, and system updates</span>
     </div>
 
-    <div class="admin-actions">
-        <a href="/admin/donations" class="admin-btn">💰 View Donations</a>
-        <a href="/admin/update" class="admin-btn">📝 Update Daily Records</a>
-        <a href="/logout" class="admin-btn logout-btn">🚪 Logout</a>
+    <div class="admin-grid">
+
+        <a href="/admin/donations" class="admin-card">
+            <div class="icon">💰</div>
+            <h3>View Donations</h3>
+            <p>Check all donation transactions</p>
+        </a>
+
+        <a href="/admin/update" class="admin-card">
+            <div class="icon">📝</div>
+            <h3>Update Daily Records</h3>
+            <p>Modify staff, guest & medical data</p>
+        </a>
+
+        <a href="/logout" class="admin-card logout-card">
+            <div class="icon">🚪</div>
+            <h3>Logout</h3>
+            <p>Securely exit admin panel</p>
+        </a>
+
     </div>
 
 </div>
 
 </body>
 </html>
+
 

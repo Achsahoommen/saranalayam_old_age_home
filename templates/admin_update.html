@@ -5,124 +5,92 @@
     <title>Admin - Update Records</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-
-        input.success {
-            border-color: green;
-        }
-
-        input.warning {
-            border-color: orange;
-        }
-
-        input.error {
-            border-color: red;
-        }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 3px rgba(0,123,255,0.5);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            text-decoration: none;
-            color: #007bff;
-            font-weight: 500;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
+        body { font-family: Arial, sans-serif; background: #f5f6fa; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2, h3 { color: #333; }
+        form label { display: block; margin-top: 15px; font-weight: bold; }
+        form input { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+        form button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+        .records-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .records-table th, .records-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .records-table th { background-color: #007bff; color: #fff; }
+        .action-btn { padding: 5px 10px; margin: 2px; border-radius: 5px; text-decoration: none; color: #fff; }
+        .edit-btn { background-color: #28a745; }
+        .delete-btn { background-color: #dc3545; }
+        #searchInput { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        canvas { margin-top: 30px; }
+        .error { border-color: #dc3545 !important; }
+        .warning { border-color: #ffc107 !important; }
+        .success { border-color: #28a745 !important; }
+        .button-group { margin-top: 20px; }
+        .secondary-btn { margin-left: 10px; padding: 10px 20px; background: #6c757d; color: #fff; border-radius: 5px; text-decoration: none; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h2>Update Daily Records</h2>
 
+    <!-- ========== Update Form ========== -->
     <form id="updateForm" method="POST" action="/admin/update">
-
         <label>Total Inmates</label>
-        <input type="number" id="total_inmates" name="total_inmates"
-               value="{{ record['total_inmates'] if record else '' }}" required>
+        <input type="number" id="total_inmates" name="total_inmates" value="{{ record['total_inmates'] if record else '' }}" required>
 
         <label>Hospitalized</label>
-        <input type="number" id="hospitalized" name="hospitalized"
-               value="{{ record['hospitalized'] if record else '' }}" required>
+        <input type="number" id="hospitalized" name="hospitalized" value="{{ record['hospitalized'] if record else '' }}" required>
 
         <label>Staff Count</label>
-        <input type="number" id="staff_count" name="staff_count"
-               value="{{ record['staff_count'] if record else '' }}" required>
+        <input type="number" id="staff_count" name="staff_count" value="{{ record['staff_count'] if record else '' }}" required>
 
         <label>Guests Arrived</label>
-        <input type="number" id="guests_arrived" name="guests_arrived"
-               value="{{ record['guests_arrived'] if record else '' }}" required>
+        <input type="number" id="guests_arrived" name="guests_arrived" value="{{ record['guests_arrived'] if record else '' }}" required>
 
-        <button type="submit">Save / Update</button>
+        <div class="button-group">
+            <button type="submit">Save / Update</button>
+            <a href="/admin" class="secondary-btn">← Back to Dashboard</a>
+        </div>
     </form>
 
-    <a href="/admin">← Back to Dashboard</a>
+    <!-- ========== Previous Records ========== -->
+    <h3 style="margin-top:40px;">Previous Records</h3>
+    <input type="text" id="searchInput" placeholder="Search by date (YYYY-MM-DD)">
+
+    <table class="records-table" id="recordsTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Total Inmates</th>
+                <th>Hospitalized</th>
+                <th>Staff</th>
+                <th>Guests</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in records %}
+            <tr>
+                <td>{{ r.date }}</td>
+                <td>{{ r.total_inmates }}</td>
+                <td>{{ r.hospitalized }}</td>
+                <td>{{ r.staff_count }}</td>
+                <td>{{ r.guests_arrived }}</td>
+                <td>
+                    <a href="/admin/edit/{{ r.id }}" class="action-btn edit-btn">Edit</a>
+                    <a href="/admin/delete/{{ r.id }}" class="action-btn delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ========== Analytics Chart ========== -->
+    <h3 style="margin-top:40px;">Analytics - Last 7 Records</h3>
+    <canvas id="recordsChart" width="800" height="400"></canvas>
 </div>
 
 <script>
+    // ================= Input Validation =================
     const totalInput = document.getElementById('total_inmates');
     const hospitalInput = document.getElementById('hospitalized');
     const staffInput = document.getElementById('staff_count');
@@ -130,48 +98,53 @@
 
     function validateField(input, conditionError, conditionWarning) {
         const value = parseInt(input.value) || 0;
-        if (conditionError(value)) {
-            input.className = "error";
-        } else if (conditionWarning(value)) {
-            input.className = "warning";
-        } else {
-            input.className = "success";
-        }
+        if (conditionError(value)) input.className = "error";
+        else if (conditionWarning(value)) input.className = "warning";
+        else input.className = "success";
     }
 
     function validateFields() {
         const total = parseInt(totalInput.value) || 0;
-        const hospital = parseInt(hospitalInput.value) || 0;
-        const staff = parseInt(staffInput.value) || 0;
-        const guests = parseInt(guestInput.value) || 0;
 
-        // Hospitalized
-        validateField(hospitalInput,
-            v => v > total,           // error if > total
-            v => v > total * 0.5      // warning if > 50%
-        );
-
-        // Staff
-        validateField(staffInput,
-            v => false,               // no error
-            v => v < 5                // warning if < 5
-        );
-
-        // Guests
-        validateField(guestInput,
-            v => v > total,           // error if > total
-            v => v > total * 0.3      // warning if > 30%
-        );
+        validateField(hospitalInput, v => v > total, v => v > total * 0.5);
+        validateField(staffInput, v => false, v => v < 5);
+        validateField(guestInput, v => v > total, v => v > total * 0.3);
     }
 
-    totalInput.addEventListener('input', validateFields);
-    hospitalInput.addEventListener('input', validateFields);
-    staffInput.addEventListener('input', validateFields);
-    guestInput.addEventListener('input', validateFields);
-
-    // Initial validation
+    [totalInput, hospitalInput, staffInput, guestInput].forEach(input => input.addEventListener('input', validateFields));
     validateFields();
-</script>
 
+    // ================= Search Filter =================
+    const searchInputEl = document.getElementById('searchInput');
+    searchInputEl.addEventListener('keyup', function() {
+        const filter = searchInputEl.value.toLowerCase();
+        const rows = document.querySelectorAll("#recordsTable tbody tr");
+        rows.forEach(row => {
+            const date = row.cells[0].textContent.toLowerCase();
+            row.style.display = date.includes(filter) ? "" : "none";
+        });
+    });
+
+    // ================= Analytics Chart =================
+    const recordsData = JSON.parse('{{ records | tojson | safe }}');
+    const lastRecords = recordsData.slice(-7);
+    const labels = lastRecords.map(r => r.date);
+    const totalData = lastRecords.map(r => r.total_inmates);
+    const hospitalData = lastRecords.map(r => r.hospitalized);
+    const guestsData = lastRecords.map(r => r.guests_arrived);
+
+    new Chart(document.getElementById('recordsChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Total Inmates', data: totalData, backgroundColor: 'rgba(54, 162, 235, 0.6)' },
+                { label: 'Hospitalized', data: hospitalData, backgroundColor: 'rgba(255, 99, 132, 0.6)' },
+                { label: 'Guests', data: guestsData, backgroundColor: 'rgba(255, 206, 86, 0.6)' }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+    });
+</script>
 </body>
 </html>
