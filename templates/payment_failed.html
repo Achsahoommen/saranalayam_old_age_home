@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Failed</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="donation-container">
+
+    <div style="font-size:60px; text-align:center; color:#c0392b;">❌</div>
+
+    <h2 style="text-align:center;">Payment Failed</h2>
+
+    <p style="text-align:center; color:#555;">
+        Unfortunately, your donation could not be processed.
+        No amount has been deducted if the payment was unsuccessful.
+    </p>
+
+    <div class="success-actions" style="text-align:center; margin-top:25px;">
+
+        <a href="/donate" class="home-btn">
+            Try Again
+        </a>
+
+        <a href="/" class="download-btn">
+            Back to Home
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

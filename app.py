@@ -9,7 +9,8 @@ import razorpay
 from razorpay_utils import client as razorpay_client, RAZORPAY_KEY_ID
 from razorpay_utils import create_order
 from razorpay_utils import verify_payment_signature
-
+from receipt_utils import generate_receipt
+from flask import send_file
 
 
 app = Flask(__name__)
@@ -53,19 +54,23 @@ def init_db():
     # DONATIONS
     cur.execute("""
     CREATE TABLE IF NOT EXISTS donation_summary (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT,
-        donor_name TEXT,
-        email TEXT,
-        phone TEXT,
-        country TEXT,
-        amount REAL,
-        purpose TEXT,
-        payment_method TEXT,
-        date TEXT,
-        qr_id TEXT UNIQUE
-    )
-    """)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_email TEXT,
+    donor_name TEXT,
+    email TEXT,
+    phone TEXT,
+    country TEXT,
+    amount REAL,
+    purpose TEXT,
+    payment_method TEXT,
+    date TEXT,
+    qr_id TEXT UNIQUE,
+    payment_id TEXT,
+    order_id TEXT,
+    status TEXT DEFAULT 'Pending'
+)
+""")
+
 
     # DAILY RECORDS
     cur.execute("""
@@ -230,19 +235,46 @@ def donate_step_2():
 
     # GET request shows donation step 2 form
     return render_template("donate_2.html", donor=donor)
+
 @app.route('/payment-success', methods=['POST'])
 def payment_success():
+
     payment_id = request.form.get('razorpay_payment_id')
     order_id = request.form.get('razorpay_order_id')
     signature = request.form.get('razorpay_signature')
 
-    # Verify Razorpay signature using modular utils
+    # ✅ VERIFY SIGNATURE (keep your modular method)
     valid, error = verify_payment_signature(payment_id, order_id, signature)
+
+    # 🔴 IF VERIFICATION FAILS
     if not valid:
-        return error, 400
+
+        donor = session.get("donor_info")
+        donation = session.get("donation_temp")
+
+        if donor and donation:
+            db = get_db()
+            cur = db.cursor()
+
+            cur.execute("""
+                INSERT INTO donation_summary
+                (user_email, donor_name, amount, status)
+                VALUES (?, ?, ?, ?)
+            """, (
+                session.get('user'),
+                donor.get('first_name') + " " + donor.get('last_name'),
+                donation['amount'],
+                "Failed"
+            ))
+
+            db.commit()
+            db.close()
+
+        return redirect("/payment-failed")
 
     donor = session.get('donor_info')
     donation = session.get('donation_temp')
+
     if not donor or not donation:
         return redirect('/donate')
 
@@ -251,11 +283,13 @@ def payment_success():
 
     db = get_db()
     cur = db.cursor()
+
+    # ✅ Insert into DB
     cur.execute("""
         INSERT INTO donation_summary
         (user_email, donor_name, email, phone, country,
-         amount, purpose, payment_method, date, qr_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         amount, purpose, payment_method, date, qr_id, payment_id, order_id, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         session.get('user'),
         donor.get('first_name') + " " + donor.get('last_name'),
@@ -266,17 +300,56 @@ def payment_success():
         donation['purpose'],
         donation['payment_method'],
         today,
-        qr_id
+        qr_id,
+        payment_id,
+        order_id,
+        "Paid"
     ))
+
     db.commit()
+
+    # Get inserted row ID for receipt numbering
+    donation_id = cur.lastrowid
+
+    # Prepare donor data for receipt
+    donor_dict = {
+        "id": donation_id,
+        "first_name": donor.get("first_name"),
+        "last_name": donor.get("last_name"),
+        "email": donor.get("email"),
+        "amount": float(donation["amount"]),
+        "payment_id": payment_id,
+        "date": today
+    }
+
+    # ✅ Generate PDF receipt
+    file_path, receipt_no = generate_receipt(donor_dict)
+
     db.close()
 
-    # Clear session variables
+    # Clear temp session data
     session.pop('donor_info', None)
     session.pop('donation_temp', None)
-    session.pop('razorpay_order_id', None)
 
-    return render_template('success.html', payment_id=payment_id, donor=donor)
+    return render_template(
+        "success.html",
+        donor=donor_dict,
+        payment_id=payment_id,
+        receipt_no=receipt_no
+    )
+
+@app.route("/download-receipt/<receipt_no>")
+def download_receipt(receipt_no):
+    file_path = f"receipts/{receipt_no}.pdf"
+    return send_file(file_path, as_attachment=True)
+
+@app.route("/payment-failure", methods=["POST"])
+def payment_failure():
+    error = request.form.to_dict()
+    print("Razorpay Failure:", error)
+    return "Payment failed. Please try again.", 400
+
+
 
 # ================= USER DASHBOARD =================
 @app.route('/user-dashboard')
@@ -370,6 +443,13 @@ def admin_update():
 
     return render_template('admin_update.html', record=record)
 
+@app.route("/admin/records")
+def view_records():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM daily_records ORDER BY date DESC")
+    records = cur.fetchall()
+    return render_template("view_records.html", records=records)
 
 # ================= FORGOT PASSWORD =================
 @app.route('/forgot-password', methods=['GET', 'POST'])

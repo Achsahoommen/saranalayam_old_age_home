@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Past Records</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background:#f4f6f8; margin:0; padding:20px;}
+        .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+        h2 { text-align:center; margin-bottom:20px;}
+        table { width:100%; border-collapse:collapse; }
+        th, td { padding:12px; border-bottom:1px solid #ddd; text-align:center; }
+        th { background:#007bff; color:#fff; border-radius:6px; }
+        tr:hover { background:#f1f1f1; }
+        a { text-decoration:none; color:#007bff; display:inline-block; margin-top:20px; }
+        a:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Past Daily Records</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Total Inmates</th>
+                <th>Hospitalized</th>
+                <th>Staff Count</th>
+                <th>Guests Arrived</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record['date'] }}</td>
+                <td>{{ record['total_inmates'] }}</td>
+                <td>{{ record['hospitalized'] }}</td>
+                <td>{{ record['staff_count'] }}</td>
+                <td>{{ record['guests_arrived'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="/admin_dashboard">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>

@@ -3,31 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin - Update Records</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input.success {
+            border-color: green;
+        }
+
+        input.warning {
+            border-color: orange;
+        }
+
+        input.error {
+            border-color: red;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 3px rgba(0,123,255,0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Update Daily Records</h2>
+<div class="container">
+    <h2>Update Daily Records</h2>
 
-<form method="POST" action="/admin/update">
+    <form id="updateForm" method="POST" action="/admin/update">
 
-    <label>Total Inmates</label>
-    <input type="number" name="total_inmates"
-           value="{{ record['total_inmates'] if record else '' }}" required>
+        <label>Total Inmates</label>
+        <input type="number" id="total_inmates" name="total_inmates"
+               value="{{ record['total_inmates'] if record else '' }}" required>
 
-    <label>Hospitalized</label>
-    <input type="number" name="hospitalized"
-           value="{{ record['hospitalized'] if record else '' }}" required>
+        <label>Hospitalized</label>
+        <input type="number" id="hospitalized" name="hospitalized"
+               value="{{ record['hospitalized'] if record else '' }}" required>
 
-    <label>Staff Count</label>
-    <input type="number" name="staff_count"
-           value="{{ record['staff_count'] if record else '' }}" required>
+        <label>Staff Count</label>
+        <input type="number" id="staff_count" name="staff_count"
+               value="{{ record['staff_count'] if record else '' }}" required>
 
-    <button type="submit">Save / Update</button>
-</form>
+        <label>Guests Arrived</label>
+        <input type="number" id="guests_arrived" name="guests_arrived"
+               value="{{ record['guests_arrived'] if record else '' }}" required>
 
-<br>
-<a href="/admin">← Back to Dashboard</a>
+        <button type="submit">Save / Update</button>
+    </form>
+
+    <a href="/admin">← Back to Dashboard</a>
+</div>
+
+<script>
+    const totalInput = document.getElementById('total_inmates');
+    const hospitalInput = document.getElementById('hospitalized');
+    const staffInput = document.getElementById('staff_count');
+    const guestInput = document.getElementById('guests_arrived');
+
+    function validateField(input, conditionError, conditionWarning) {
+        const value = parseInt(input.value) || 0;
+        if (conditionError(value)) {
+            input.className = "error";
+        } else if (conditionWarning(value)) {
+            input.className = "warning";
+        } else {
+            input.className = "success";
+        }
+    }
+
+    function validateFields() {
+        const total = parseInt(totalInput.value) || 0;
+        const hospital = parseInt(hospitalInput.value) || 0;
+        const staff = parseInt(staffInput.value) || 0;
+        const guests = parseInt(guestInput.value) || 0;
+
+        // Hospitalized
+        validateField(hospitalInput,
+            v => v > total,           // error if > total
+            v => v > total * 0.5      // warning if > 50%
+        );
+
+        // Staff
+        validateField(staffInput,
+            v => false,               // no error
+            v => v < 5                // warning if < 5
+        );
+
+        // Guests
+        validateField(guestInput,
+            v => v > total,           // error if > total
+            v => v > total * 0.3      // warning if > 30%
+        );
+    }
+
+    totalInput.addEventListener('input', validateFields);
+    hospitalInput.addEventListener('input', validateFields);
+    staffInput.addEventListener('input', validateFields);
+    guestInput.addEventListener('input', validateFields);
+
+    // Initial validation
+    validateFields();
+</script>
 
 </body>
 </html>

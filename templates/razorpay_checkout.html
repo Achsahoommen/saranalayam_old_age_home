@@ -1,50 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Razorpay Checkout</title>
+    <title>Complete Donation</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="/static/style.css">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
+
 <body>
 
-<h2>Processing Donation...</h2>
+<div class="donation-container">
 
-<button id="pay-btn">Pay Now</button>
+    <div class="donation-steps">
+        <span>01. Personal Information</span>
+        <span class="active">02. Payment</span>
+    </div>
 
+    <h2>Complete Your Donation</h2>
+
+    <div class="donation-summary">
+        <p><strong>Amount:</strong> ₹{{ amount // 100 }}</p>
+        <p>Click below to proceed securely with Razorpay.</p>
+    </div>
+
+    <button id="pay-btn" class="donation-next-btn">
+        Pay ₹{{ amount // 100 }} Securely
+    </button>
+
+    <p class="donation-note">
+        🔒 100% Secure Payment | Powered by Razorpay
+    </p>
+    <div class="back-dashboard-container">
+        <a href="/user-dashboard" class="back-dashboard-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-var options = {
-    key: "{{ key_id }}",
-    amount: "{{ amount }}",
-    currency: "INR",
-    name: "Saranalayam Old Age Home",
-    order_id: "{{ order_id }}",
-    handler: function (response) {
-
-        var form = document.createElement("form");
-        form.method = "POST";
-        form.action = "/payment-success";
-
-        var fields = ["razorpay_payment_id", "razorpay_order_id", "razorpay_signature"];
-
-        fields.forEach(function(field){
-            var input = document.createElement("input");
-            input.type = "hidden";
-            input.name = field;
-            input.value = response[field];
-            form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-};
-
-var rzp = new Razorpay(options);
-
-document.getElementById("pay-btn").onclick = function(e){
-    rzp.open();
-    e.preventDefault();
-};
+function pay(amount, order_id) {
+    var options = {
+        "key": "{{ RAZORPAY_KEY_ID }}",  // your test/live key
+        "amount": amount * 100, // in paise
+        "currency": "INR",
+        "name": "Your App Name",
+        "description": "Donation",
+        "order_id": order_id,
+        "handler": function (response){
+            // Payment successful
+            window.location.href = "/payment-success?payment_id=" + response.razorpay_payment_id;
+        },
+        "modal": {
+            "ondismiss": function(){
+                // User closed Razorpay checkout without paying
+                window.location.href = "/dashboard";
+            }
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+}
 </script>
+
 
 </body>
 </html>

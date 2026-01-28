@@ -32,19 +32,22 @@ def init_db():
     # ================= DONATIONS =================
     cur.execute("""
     CREATE TABLE IF NOT EXISTS donation_summary (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT,
-        donor_name TEXT,
-        email TEXT,
-        phone TEXT,
-        country TEXT,
-        amount REAL,
-        purpose TEXT,
-        payment_method TEXT,
-        date TEXT,
-        qr_id TEXT UNIQUE
-    )
-    """)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_email TEXT,
+    donor_name TEXT,
+    email TEXT,
+    phone TEXT,
+    country TEXT,
+    amount REAL,
+    purpose TEXT,
+    payment_method TEXT,
+    date TEXT,
+    qr_id TEXT UNIQUE,
+    payment_id TEXT,
+    order_id TEXT,
+    status TEXT DEFAULT 'Pending'
+)
+""")
 
     # ================= DAILY RECORDS =================
     cur.execute("""
