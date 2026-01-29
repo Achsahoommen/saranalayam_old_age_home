@@ -926,7 +926,7 @@ body.admin-login {
     color: #666;
 }
 
-/*================== ADMIN UPDATE =================
+/*================== ADMIN UPDATE =================*/
 body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f8;
@@ -1012,3 +1012,134 @@ body {
         a:hover {
             text-decoration: underline;
         }
+/*================== VIEW RECORDS =================*/
+body { font-family: 'Segoe UI',
+    sans-serif; 
+    background:#f4f6f8;
+    margin:0;
+    padding:20px;
+}
+.container {
+        max-width:900px;
+        margin:auto;        
+        background:#fff;
+        padding:30px;
+        border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+h2 {
+     text-align:center;
+     margin-bottom:20px;
+}
+table { 
+    width:100%;
+     border-collapse:collapse;
+}
+th, td {
+    padding:12px;
+    border-bottom:1px solid #ddd;
+    text-align:center; 
+}
+th { 
+    background:#007bff;
+    color:#fff;
+    border-radius:6px; 
+}
+tr:hover {
+     background:#f1f1f1; 
+}
+a { 
+    text-decoration:none; 
+    color:#007bff; 
+    display:inline-block; 
+    margin-top:20px; 
+}
+a:hover { 
+    text-decoration:underline;
+ }
+/*================== ADMIN UPDATE =================*/
+body { font-family: Arial, sans-serif;
+    background: #f5f6fa; 
+    padding: 20px; 
+}
+.container { 
+    max-width: 1000px; 
+    margin: auto; 
+    background: #fff; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+}
+h2, h3 { 
+    color: #333; 
+}
+form label { 
+    display: block; 
+    margin-top: 15px; 
+    font-weight: bold; 
+}
+form input { 
+    width: 100%; 
+    padding: 8px; 
+    margin-top: 5px; 
+    border-radius: 5px; 
+    border: 1px solid #ccc; 
+}
+form button { 
+    margin-top: 20px; 
+    padding: 10px 20px; 
+    background: #007bff; 
+    color: #fff; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+.records-table {
+     width: 100%; 
+     border-collapse: collapse;
+     margin-top: 20px; 
+}
+.records-table th, .records-table td { 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    text-align: center; 
+}
+.records-table th { 
+    background-color: #007bff; 
+    color: #fff; 
+}
+.action-btn { padding: 5px 10px; 
+    margin: 2px; 
+    border-radius: 5px; 
+    text-decoration: none; 
+    color: #fff; 
+}
+.edit-btn { 
+    background-color: #28a745; 
+}
+.delete-btn { 
+    background-color: #dc3545; 
+}
+#searchInput { 
+    width: 100%; 
+    padding: 8px; 
+    margin-bottom: 10px; 
+    border-radius: 6px; 
+    border: 1px solid #ccc; 
+}
+canvas { 
+    margin-top: 30px; 
+}
+.error { 
+    border-color: #dc3545 !important; 
+}
+.warning { 
+    border-color: #ffc107 !important; 
+}
+.success { 
+    border-color: #28a745 !important; 
+}
+.button-group { 
+    margin-top: 20px; 
+}
+.secondary-btn { 
+    margin-left: 10px; padding: 10px 20px; background: #6c757d; color: #fff; border-radius: 5px; text-decoration: none; }

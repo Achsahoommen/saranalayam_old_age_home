@@ -203,13 +203,28 @@ def donate_step_2():
     donor = session['donor_info']
 
     if request.method == 'POST':
-        # Get form data
+
+        # Get amount
         try:
             amount = float(request.form['amount'])
+            if amount <= 0:
+                raise ValueError
         except:
             return render_template("donate_2.html", donor=donor, error="Enter a valid amount")
-        
-        purpose = request.form['purpose']
+
+        # Get purpose
+        purpose = request.form.get("purpose")
+
+        if purpose == "Other":
+            purpose = request.form.get("other_purpose", "").strip()
+            if not purpose:
+                return render_template(
+                    "donate_2.html",
+                    donor=donor,
+                    error="Please specify the purpose"
+                )
+
+        # Get payment method
         payment_method = request.form['payment_method']
 
         # Save donation info in session
@@ -220,7 +235,11 @@ def donate_step_2():
         }
 
         # Create Razorpay order
-        order, error = create_order(amount, donor.get('first_name') + " " + donor.get('last_name'))
+        order, error = create_order(
+            amount,
+            donor.get('first_name') + " " + donor.get('last_name')
+        )
+
         if error:
             return render_template("donate_2.html", donor=donor, error=error)
 
@@ -230,13 +249,13 @@ def donate_step_2():
         return render_template(
             "razorpay_checkout.html",
             order_id=order['id'],
-            amount=int(amount*100),  # amount in paise
+            amount=int(amount * 100),  # amount in paise
             key_id=os.getenv("RAZORPAY_KEY_ID"),
             donor=donor
         )
 
-    # GET request shows donation step 2 form
     return render_template("donate_2.html", donor=donor)
+
 
 # ================= PAYMENT SUCCESS =================#
 @app.route('/payment-success', methods=['POST'])

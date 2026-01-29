@@ -11,18 +11,29 @@
         <h2>Donation – Step 2</h2>
 
         <form action="/donate-step-2" method="POST">
+            
             <label>Amount (INR)</label>
             <input type="number" name="amount" placeholder="Enter amount" required min="1">
 
             <label>Purpose</label>
-            <input type="text" name="purpose" placeholder="Purpose of donation" required>
+            <select name="purpose" id="purpose" required>
+                <option value="General Support">General Support</option>
+                <option value="Food & Nutrition">Food & Nutrition</option>
+                <option value="Medical Care">Medical Care</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <input 
+                type="text" 
+                name="other_purpose" 
+                id="otherPurposeInput" 
+                placeholder="Please specify the purpose"
+                style="display:none; margin-top:10px;"
+            >
 
             <label>Payment Method</label>
             <select name="payment_method" required>
                 <option value="Razorpay">Razorpay</option>
-                <option value="UPI">UPI</option>
-                <option value="Netbanking">Netbanking</option>
-                <option value="Card">Credit/Debit Card</option>
             </select>
 
             <button type="submit" class="donation-next-btn">Donate Now</button>
@@ -34,5 +45,22 @@
             </a>
         </div>
     </div>
+
+    <!-- Script must be placed AFTER elements -->
+    <script>
+    document.getElementById("purpose").addEventListener("change", function () {
+        const otherInput = document.getElementById("otherPurposeInput");
+        
+        if (this.value === "Other") {
+            otherInput.style.display = "block";
+            otherInput.required = true;
+        } else {
+            otherInput.style.display = "none";
+            otherInput.required = false;
+            otherInput.value = "";
+        }
+    });
+    </script>
+
 </body>
 </html>

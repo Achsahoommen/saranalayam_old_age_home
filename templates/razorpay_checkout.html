@@ -23,9 +23,16 @@
         <p>Click below to proceed securely with Razorpay.</p>
     </div>
 
-    <button id="pay-btn" class="donation-next-btn">
-        Pay ₹{{ amount // 100 }} Securely
+    <button 
+        id="pay-btn" 
+        class="donation-next-btn"
+        data-amount="{{ amount }}"
+        data-order="{{ order_id }}"
+        data-key="{{ key_id }}"
+    >
+    Pay ₹{{ amount // 100 }} Securely
     </button>
+
 
     <p class="donation-note">
         🔒 100% Secure Payment | Powered by Razorpay
@@ -39,28 +46,55 @@
 </div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-function pay(amount, order_id) {
+document.getElementById("pay-btn").addEventListener("click", function () {
+
+    const button = this;
+
+    const amount = button.dataset.amount;
+    const orderId = button.dataset.order;
+    const key = button.dataset.key;
+
     var options = {
-        "key": "{{ RAZORPAY_KEY_ID }}",  // your test/live key
-        "amount": amount * 100, // in paise
-        "currency": "INR",
-        "name": "Your App Name",
-        "description": "Donation",
-        "order_id": order_id,
-        "handler": function (response){
-            // Payment successful
-            window.location.href = "/payment-success?payment_id=" + response.razorpay_payment_id;
+        key: key,
+        amount: amount,
+        currency: "INR",
+        name: "Saranalayam",
+        description: "Donation",
+        order_id: orderId,
+
+        handler: function (response) {
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/payment-success";
+
+            var fields = {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+            };
+
+            for (var key in fields) {
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
         },
-        "modal": {
-            "ondismiss": function(){
-                // User closed Razorpay checkout without paying
-                window.location.href = "/dashboard";
+
+        modal: {
+            ondismiss: function () {
+                window.location.href = "/user-dashboard";
             }
         }
     };
-    var rzp1 = new Razorpay(options);
-    rzp1.open();
-}
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+});
 </script>
 
 
