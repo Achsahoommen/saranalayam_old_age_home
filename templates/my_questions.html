@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 30px;
+    background: #f4f7fb;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+
+/* Question Card */
+.question-item {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.question-header {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid #2c7be5;
+}
+
+.question-header:hover {
+    background: #f2f6ff;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pending {
+    background: #fdecea;
+    color: #e74c3c;
+}
+
+.replied {
+    background: #eafaf1;
+    color: #27ae60;
+}
+
+.question-body {
+    display: none;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.reply-box {
+    margin-top: 12px;
+    padding: 12px;
+    background: #eaf6ff;
+    border-left: 4px solid #2c7be5;
+    border-radius: 6px;
+}
+
+/* Back Button */
+.user-actions {
+    margin-top: 25px;
+}
+
+.neutral-btn {
+    background: #2c7be5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.neutral-btn:hover {
+    background: #1a5ec8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>My Questions & Replies</h2>
+
+{% if questions %}
+    {% for q in questions %}
+    <div class="question-item">
+
+        <div class="question-header">
+            <span>{{ q['question'][:60] }}...</span>
+
+            {% if q['status'] == "Pending" %}
+                <span class="status-badge pending">Pending</span>
+            {% else %}
+                <span class="status-badge replied">Replied</span>
+            {% endif %}
+        </div>
+
+        <div class="question-body">
+            <p><strong>Full Question:</strong> {{ q['question'] }}</p>
+
+            {% if q['reply'] %}
+                <div class="reply-box">
+                    <strong>Admin Reply:</strong><br>
+                    {{ q['reply'] }}
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endfor %}
+{% else %}
+    <p>You have not asked any questions yet.</p>
+{% endif %}
+
+<div class="user-actions">
+    <a href="/user-dashboard" class="neutral-btn">← Back to Dashboard</a>
+</div>
+
+</div>
+
+<script>
+// Accordion toggle
+document.querySelectorAll(".question-header").forEach(header => {
+    header.addEventListener("click", function () {
+        const body = this.nextElementSibling;
+        body.style.display = body.style.display === "block" ? "none" : "block";
+    });
+});
+</script>
+
+</body>
+</html>

@@ -24,11 +24,7 @@
 
         <label>Guests Arrived</label>
         <input type="number" id="guests_arrived" name="guests_arrived" value="{{ record['guests_arrived'] if record else '' }}" required>
-
-        <div class="button-group">
-            <button type="submit">Save / Update</button>
-            <a href="/admin" class="secondary-btn">← Back to Dashboard</a>
-        </div>
+        <button type="submit">{{ 'Update Record' if record else 'Add Record' }}</button>
     </form>
 
     <!-- ========== Previous Records ========== -->
@@ -125,5 +121,8 @@
         options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
     });
 </script>
+    <div class="admin-actions">
+        <a href="/admin" class="back-btn">← Back to Dashboard</a>
+    </div>
 </body>
 </html>

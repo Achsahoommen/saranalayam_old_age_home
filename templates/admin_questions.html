@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 30px;
+    background: #f4f7fb;
+}
+
+.admin-container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+h2 {
+    margin-bottom: 25px;
+    color: #2c3e50;
+}
+
+/* ===== TOP CONTROLS ===== */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-box input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 250px;
+}
+
+.filter select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* ===== QUESTION ACCORDION ===== */
+.question-item {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+.question-header {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-left: 5px solid #2c7be5;
+}
+
+.question-header:hover {
+    background: #f2f6ff;
+}
+
+.question-header h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pending {
+    background: #fdecea;
+    color: #e74c3c;
+}
+
+.replied {
+    background: #eafaf1;
+    color: #27ae60;
+}
+
+.question-body {
+    display: none;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.question-body p {
+    margin-bottom: 8px;
+}
+
+/* ===== REPLY FORM ===== */
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+    background: #2c7be5;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-weight: 500;
+}
+
+button:hover {
+    background: #1a5ec8;
+}
+
+/* BACK BUTTON */
+.admin-actions {
+    margin-top: 30px;
+}
+
+.back-btn {
+    background: #27ae60;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background: #1e874b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-container">
+    <h2>Visitor Questions</h2>
+
+    <!-- SEARCH + FILTER -->
+    <div class="top-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search by name or question...">
+        </div>
+
+        <div class="filter">
+            <select id="statusFilter">
+                <option value="all">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Replied">Replied</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- QUESTIONS -->
+    {% for q in questions %}
+    <div class="question-item" data-status="{{ q['status'] }}">
+
+        <div class="question-header">
+            <h4>{{ q['name'] }} — {{ q['question'][:50] }}...</h4>
+
+            {% if q['status'] == "Pending" %}
+                <span class="status-badge pending">Pending</span>
+            {% else %}
+                <span class="status-badge replied">Replied</span>
+            {% endif %}
+        </div>
+
+        <div class="question-body">
+            <p><strong>Name:</strong> {{ q['name'] }}</p>
+            <p><strong>Email:</strong> {{ q['email'] }}</p>
+            <p><strong>Full Question:</strong> {{ q['question'] }}</p>
+
+            {% if q['reply'] %}
+                <p><strong>Admin Reply:</strong> {{ q['reply'] }}</p>
+            {% else %}
+                <form method="POST">
+                    <input type="hidden" name="question_id" value="{{ q['id'] }}">
+                    <textarea name="reply" rows="3" placeholder="Write your reply..." required></textarea>
+                    <button type="submit">Send Reply</button>
+                </form>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <div class="admin-actions">
+        <a href="/admin" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+</div>
+
+<script>
+// Accordion Toggle
+document.querySelectorAll(".question-header").forEach(header => {
+    header.addEventListener("click", function () {
+        const body = this.nextElementSibling;
+        body.style.display = body.style.display === "block" ? "none" : "block";
+    });
+});
+
+// Search Function
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    const value = this.value.toLowerCase();
+    document.querySelectorAll(".question-item").forEach(item => {
+        item.style.display = item.innerText.toLowerCase().includes(value) ? "" : "none";
+    });
+});
+
+// Filter Function
+document.getElementById("statusFilter").addEventListener("change", function() {
+    const value = this.value;
+    document.querySelectorAll(".question-item").forEach(item => {
+        if (value === "all" || item.dataset.status === value) {
+            item.style.display = "";
+        } else {
+            item.style.display = "none";
+        }
+    });
+});
+</script>
+
+</body>
+</html>
+

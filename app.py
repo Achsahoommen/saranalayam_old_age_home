@@ -83,6 +83,19 @@ def init_db():
     )
     """)
 
+    #QUESTIONS
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS questions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT,
+        question TEXT,
+            reply TEXT,
+        status TEXT DEFAULT 'Pending',
+        date TEXT
+    )
+    """)
+
     # DEFAULT ADMIN (only if not exists)
     cur.execute("SELECT * FROM admins WHERE username='admin'")
     if not cur.fetchone():
@@ -106,6 +119,9 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
 
 @app.route('/contact')
 def contact():
@@ -539,6 +555,78 @@ def view_records():
     records = cur.fetchall()
     conn.close()
     return render_template("view_records.html", records=records)
+
+# ================= ADMIN - VIEW & REPLY QUESTIONS =================#
+@app.route("/admin/questions", methods=["GET", "POST"])
+def admin_questions():
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == "POST":
+        question_id = request.form["question_id"]
+        reply = request.form["reply"]
+
+        cur.execute("""
+            UPDATE questions
+            SET reply = ?, status = ?
+            WHERE id = ?
+        """, (reply, "Replied", question_id))
+
+        db.commit()
+
+    cur.execute("SELECT * FROM questions ORDER BY id DESC")
+    questions = cur.fetchall()
+    db.close()
+
+    return render_template("admin_questions.html", questions=questions)
+
+# ================= SAVE VISITOR QUESTION =================#
+@app.route("/ask_question", methods=["POST"])
+def ask_question():
+
+    if 'user' not in session:
+        return redirect('/login')
+
+    question = request.form["question"]
+    name = session.get("user_name")
+    email = session.get("user")
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("""
+        INSERT INTO questions (name, email, question, status, date)
+        VALUES (?, ?, ?, ?, ?)
+    """, (name, email, question, "Pending", str(date.today())))
+
+    db.commit()
+    db.close()
+
+    return redirect("/faq")
+
+# ================= USER - VIEW MY QUESTIONS =================#
+@app.route('/my-questions')
+def my_questions():
+    if 'user' not in session:
+        return redirect('/login')
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("""
+        SELECT * FROM questions
+        WHERE email = ?
+        ORDER BY id DESC
+    """, (session['user'],))
+
+    questions = cur.fetchall()
+    db.close()
+
+    return render_template('my_questions.html', questions=questions)
 
 # ================= FORGOT PASSWORD =================#
 @app.route('/forgot-password', methods=['GET', 'POST'])

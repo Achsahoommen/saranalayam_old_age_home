@@ -60,6 +60,19 @@ def init_db():
     )
     """)
 
+    #================== QUESTIONS =================
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS questions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT,
+        question TEXT,
+            reply TEXT,
+        status TEXT DEFAULT 'Pending',
+        date TEXT
+    )
+    """)
+
     # ================= DEFAULT ADMIN =================
     cur.execute("SELECT * FROM admins WHERE username='admin'")
     if not cur.fetchone():
