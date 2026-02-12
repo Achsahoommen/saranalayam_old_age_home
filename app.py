@@ -609,24 +609,34 @@ def ask_question():
     return redirect("/faq")
 
 # ================= USER - VIEW MY QUESTIONS =================#
-@app.route('/my-questions')
-def my_questions():
-    if 'user' not in session:
-        return redirect('/login')
+@app.route("/view-replies")
+def view_replies():
+    if "user" not in session:
+        return redirect("/login")
 
     db = get_db()
     cur = db.cursor()
 
+    # Get logged-in user's questions
     cur.execute("""
-        SELECT * FROM questions
+        SELECT question, reply, status
+        FROM questions
         WHERE email = ?
         ORDER BY id DESC
-    """, (session['user'],))
+    """, (session["user"],))
 
-    questions = cur.fetchall()
-    db.close()
+    rows = cur.fetchall()
 
-    return render_template('my_questions.html', questions=questions)
+    questions = []
+    for row in rows:
+        questions.append({
+            "question": row[0],
+            "reply": row[1],
+            "status": row[2]
+        })
+
+    return render_template("my_questions.html", questions=questions)
+
 
 # ================= FORGOT PASSWORD =================#
 @app.route('/forgot-password', methods=['GET', 'POST'])

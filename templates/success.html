@@ -4,73 +4,7 @@
     <meta charset="UTF-8">
     <title>Donation Successful</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="/static/style.css">
-
-    <style>
-        .success-icon {
-            font-size: 60px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .receipt-box {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            margin-top: 20px;
-        }
-
-        .receipt-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 15px;
-        }
-
-        .receipt-row span:first-child {
-            font-weight: 600;
-            color: #555;
-        }
-
-        .receipt-row span:last-child {
-            font-weight: 600;
-            color: #2E2B5F;
-        }
-
-        .success-actions {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .success-actions a {
-            margin: 8px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .home-btn {
-            background: #F2A65A;
-            color: #2E2B5F;
-        }
-
-        .home-btn:hover {
-            background: #E8B46B;
-        }
-
-        .download-btn {
-            background: #2E2B5F;
-            color: #A7DADB;
-        }
-
-        .download-btn:hover {
-            background: #A7DADB;
-            color: #2E2B5F;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>

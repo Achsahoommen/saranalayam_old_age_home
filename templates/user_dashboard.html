@@ -7,25 +7,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body class="admin-page">
+<body class="user-page">
 
-<div class="admin-container">
+<div class="user-dashboard-container">
 
-    <div class="admin-header">
+    <div class="user-header">
         <h2>Welcome {{ session['user'] }}</h2>
         <p>Manage your donations and account from here.</p>
     </div>
 
-    <div class="admin-actions">
-        <a href="{{ url_for('donate') }}" class="admin-btn">💰 Donate</a>
-        <a href="{{ url_for('my_donations') }}" class="admin-btn">📄 My Donations</a>
-        <a href="/faq" class="admin-btn">❓ FAQ</a>
-        <a href="/my-questions" class="admin-btn">📩 View Replies</a>
-        <a href="{{ url_for('logout') }}" class="admin-btn">🚪 Logout</a>
+    <div class="admin-dashboard-container">
+
+        <div class="user-grid">
+
+            <a href="/donate" class="user-action-card">
+                <div class="icon">💰</div>
+                <h3>Donate</h3>
+                <p>Make a new donation</p>
+            </a>
+
+            <a href="/my-donations" class="user-action-card">
+                <div class="icon">📄</div>
+                <h3>My Donations</h3>
+                <p>View your past donations</p>
+            </a>
+
+            <a href="/faq" class="user-action-card">
+                <div class="icon">❓</div>
+                <h3>FAQ</h3>
+                <p>Frequently asked questions</p>
+            </a>
+
+            <a href="/view-replies" class="user-action-card">
+                <div class="icon">📩</div>
+                <h3>View Replies</h3>
+                <p>See admin responses</p>
+            </a>
+
+            <a href="/logout" class="user-action-card logout-card">
+                <div class="icon">🚪</div>
+                <h3>Logout</h3>
+                <p>Securely exit your account</p>
+            </a>
+
+        </div>
     </div>
-
-
-</div>
-
 </body>
 </html>
