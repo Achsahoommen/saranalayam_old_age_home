@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Analytics Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Advanced Analytics Dashboard</h2>
+
+    <!-- SUMMARY CARDS -->
+    <div style="display:flex; gap:20px; margin-bottom:30px;">
+        <div class="card">Total Active: {{ total_active }}</div>
+        <div class="card">Male: {{ male }}</div>
+        <div class="card">Female: {{ female }}</div>
+    </div>
+
+    <!-- CHART 1 -->
+    <h3>Inmate Growth (Last 30 Days)</h3>
+    <canvas id="growthChart"></canvas>
+
+    <!-- CHART 2 -->
+    <h3>Hospitalized vs Discharged</h3>
+    <canvas id="statusChart"></canvas>
+
+    <!-- CHART 3 -->
+    <h3>Hospitalization Trend</h3>
+    <canvas id="hospitalChart"></canvas>
+
+    <!-- CHART 4 -->
+    <h3>Gender Distribution</h3>
+    <canvas id="genderChart"></canvas>
+
+    <br>
+    <a href="/admin" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<!-- PASS FLASK DATA SAFELY -->
+<script id="analytics-data" type="application/json">
+{
+    "records": {{ records | tojson | safe }},
+    "male": {{ male | tojson }},
+    "female": {{ female | tojson }}
+}
+</script>
+<script>
+const data = JSON.parse(document.getElementById("analytics-data").textContent);
+
+const records = data.records;
+const maleCount = data.male;
+const femaleCount = data.female;
+
+/* Prepare Data */
+const labels = records.map(r => r.date).reverse();
+const totalData = records.map(r => r.total_inmates).reverse();
+const hospitalData = records.map(r => r.hospitalized).reverse();
+const dischargeData = records.map(r => r.discharged).reverse();
+
+/* Growth Chart */
+new Chart(document.getElementById("growthChart"), {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Total Inmates",
+            data: totalData,
+            borderColor: "blue",
+            fill: false,
+            tension: 0.3
+        }]
+    }
+});
+
+/* Hospitalized vs Discharged */
+new Chart(document.getElementById("statusChart"), {
+    type: "bar",
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: "Hospitalized",
+                data: hospitalData,
+                backgroundColor: "orange"
+            },
+            {
+                label: "Discharged",
+                data: dischargeData,
+                backgroundColor: "green"
+            }
+        ]
+    }
+});
+
+/* Hospital Trend */
+new Chart(document.getElementById("hospitalChart"), {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Hospitalized",
+            data: hospitalData,
+            borderColor: "red",
+            fill: false,
+            tension: 0.3
+        }]
+    }
+});
+
+/* Gender Pie */
+new Chart(document.getElementById("genderChart"), {
+    type: "pie",
+    data: {
+        labels: ["Male", "Female"],
+        datasets: [{
+            data: [maleCount, femaleCount],
+            backgroundColor: ["#3498db", "#e84393"]
+        }]
+    }
+});
+</script>
+
+
+</body>
+</html>
+

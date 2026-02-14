@@ -16,7 +16,11 @@ from flask import send_file
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "saranalayam_secret")
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
+# This part ensures the folder actually exists on your computer
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 DB = 'saranalayam.db'
 
 
@@ -72,15 +76,38 @@ def init_db():
     )
     """)
 
-    # DAILY RECORDS
+    # ---------- DAILY RECORDS ----------
     cur.execute("""
     CREATE TABLE IF NOT EXISTS daily_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT,
+        date TEXT UNIQUE,
+
         total_inmates INTEGER,
+        male_inmates INTEGER,
+        female_inmates INTEGER,
+
+        new_admissions INTEGER,
+        discharged INTEGER,
+
         hospitalized INTEGER,
         staff_count INTEGER,
         guests_arrived INTEGER
+    )
+    """)
+
+    # ---------- INMATES ----------
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS inmates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        age INTEGER,
+        gender TEXT,
+        admission_date TEXT,
+        status TEXT DEFAULT 'Active',
+        illness TEXT,
+        hospital_details TEXT,
+        notes TEXT,
+        date_of_death TEXT
     )
     """)
 
@@ -517,44 +544,79 @@ def admin_update():
     db.close()
     return render_template('admin_update.html', record=record, records=records)
 
-# ================= EDIT / DELETE RECORD =================
-@app.route('/admin/edit/<int:id>', methods=['GET','POST'])
-def edit_record(id):
-    if 'admin' not in session:
-        return redirect('/login')
+# ================= ADMIN INMATES =================#
+@app.route("/admin/inmates")
+def view_inmates():
+    if "admin" not in session:
+        return redirect("/")
+
     db = get_db()
-    cur = db.cursor()
-    if request.method == 'POST':
-        cur.execute("""
-        UPDATE daily_records
-        SET total_inmates=?, hospitalized=?, staff_count=?, guests_arrived=?
-        WHERE id=?
+    inmates = db.execute(
+        "SELECT * FROM inmates ORDER BY admission_date DESC"
+    ).fetchall()
+
+    return render_template("inmates.html", inmates=inmates)
+
+# ================= ADMIN ADD INMATE =================#
+@app.route("/admin/inmates/add", methods=["GET", "POST"])
+def add_inmate():
+    if "admin" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+        db = get_db()
+        db.execute("""
+            INSERT INTO inmates
+            (name, age, gender, admission_date, illness, hospital_details, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
-            request.form['total_inmates'],
-            request.form['hospitalized'],
-            request.form['staff_count'],
-            request.form['guests_arrived'],
-            id
+            request.form["name"],
+            request.form["age"],
+            request.form["gender"],
+            request.form["admission_date"],
+            request.form["illness"],
+            request.form["hospital_details"],
+            request.form["notes"]
         ))
         db.commit()
-        db.close()
-        return redirect('/admin/update')
-    cur.execute("SELECT * FROM daily_records WHERE id=?", (id,))
-    record = cur.fetchone()
-    db.close()
-    return render_template('edit_record.html', record=record)
+        return redirect("/admin/inmates")
 
-@app.route('/admin/delete/<int:id>')
-def delete_record(id):
-    if 'admin' not in session:
-        return redirect('/login')
+    return render_template("add_inmate.html")
+
+@app.route("/admin/analytics")
+def analytics_dashboard():
+    if "admin" not in session:
+        return redirect("/")
+
     db = get_db()
-    cur = db.cursor()
-    cur.execute("DELETE FROM daily_records WHERE id=?", (id,))
-    db.commit()
-    db.close()
-    return redirect('/admin/update')
 
+    total_active = db.execute(
+        "SELECT COUNT(*) FROM inmates WHERE status='Active'"
+    ).fetchone()[0]
+
+    male = db.execute(
+        "SELECT COUNT(*) FROM inmates WHERE gender='Male' AND status='Active'"
+    ).fetchone()[0]
+
+    female = db.execute(
+        "SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'"
+    ).fetchone()[0]
+
+    records = db.execute("""
+        SELECT date, total_inmates, new_admissions,
+               discharged, hospitalized
+        FROM daily_records
+        ORDER BY date DESC
+        LIMIT 30
+    """).fetchall()
+
+    return render_template(
+        "analytics.html",
+        total_active=total_active,
+        male=male,
+        female=female,
+        records=records
+    )
 
 # ================= ADMIN RECORDS =================#
 @app.route("/admin/records")
@@ -701,8 +763,8 @@ def add_blog():
             cur.execute("UPDATE blog_posts SET title=?, content=?, image_filename=? WHERE id=?", 
                        (title, content, filename, post_id))
         else: # Insert new
-            cur.execute("INSERT INTO blog_posts (title, content, image_filename, date_posted, author) VALUES (?,?,?,?,?)",
-                       (title, content, filename, today, author))
+            cur.execute("INSERT INTO blog_posts (title, content, image_filename, date_posted) VALUES (?,?,?,?)",
+                       (title, content, filename, today))
         
         db.commit()
         return redirect('/admin/add-blog')

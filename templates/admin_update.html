@@ -5,124 +5,158 @@
     <title>Admin - Update Records</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
 <div class="update-container">
     <h2>Update Daily Records</h2>
 
-    <!-- ========== Update Form ========== -->
-    <form id="updateForm" method="POST" action="/admin/update">
+    <!-- ================= ADD / UPDATE FORM ================= -->
+    <form method="POST" action="/admin/update">
+
         <label>Total Inmates</label>
-        <input type="number" id="total_inmates" name="total_inmates" value="{{ record['total_inmates'] if record else '' }}" required>
+        <input type="number" id="total_inmates" name="total_inmates"
+               value="{{ record['total_inmates'] if record else '' }}" required>
 
         <label>Hospitalized</label>
-        <input type="number" id="hospitalized" name="hospitalized" value="{{ record['hospitalized'] if record else '' }}" required>
+        <input type="number" id="hospitalized" name="hospitalized"
+               value="{{ record['hospitalized'] if record else '' }}" required>
+
+        <label>Discharged</label>
+        <input type="number" id="discharged" name="discharged"
+               value="{{ record['discharged'] if record else '' }}" required>
+
+        <label>Male Inmates</label>
+        <input type="number" id="male_count" name="male_count"
+               value="{{ record['male_count'] if record else '' }}" required>
+
+        <label>Female Inmates</label>
+        <input type="number" id="female_count" name="female_count"
+               value="{{ record['female_count'] if record else '' }}" required>
+
+        <label>New Inmates</label>
+        <input type="number" id="new_inmates" name="new_inmates"
+               value="{{ record['new_inmates'] if record else '' }}" required>
 
         <label>Staff Count</label>
-        <input type="number" id="staff_count" name="staff_count" value="{{ record['staff_count'] if record else '' }}" required>
+        <input type="number" id="staff_count" name="staff_count"
+               value="{{ record['staff_count'] if record else '' }}" required>
 
         <label>Guests Arrived</label>
-        <input type="number" id="guests_arrived" name="guests_arrived" value="{{ record['guests_arrived'] if record else '' }}" required>
-        <button type="submit">{{ 'Update Record' if record else 'Add Record' }}</button>
+        <input type="number" id="guests_arrived" name="guests_arrived"
+               value="{{ record['guests_arrived'] if record else '' }}" required>
+
+        <button type="submit">
+            {{ 'Update Record' if record else 'Add Record' }}
+        </button>
     </form>
 
-    <!-- ========== Previous Records ========== -->
+    <!-- ================= PREVIOUS RECORDS ================= -->
     <h3 style="margin-top:40px;">Previous Records</h3>
-    <input type="text" id="searchInput" placeholder="Search by date (YYYY-MM-DD)">
+
+    <input type="text" id="searchInput"
+           placeholder="Search by date (YYYY-MM-DD)">
 
     <table class="records-table" id="recordsTable">
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Total Inmates</th>
+                <th>Total</th>
                 <th>Hospitalized</th>
+                <th>Discharged</th>
+                <th>Male</th>
+                <th>Female</th>
+                <th>New</th>
                 <th>Staff</th>
                 <th>Guests</th>
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
             {% for r in records %}
             <tr>
                 <td>{{ r.date }}</td>
                 <td>{{ r.total_inmates }}</td>
                 <td>{{ r.hospitalized }}</td>
+                <td>{{ r.discharged }}</td>
+                <td>{{ r.male_count }}</td>
+                <td>{{ r.female_count }}</td>
+                <td>{{ r.new_inmates }}</td>
                 <td>{{ r.staff_count }}</td>
                 <td>{{ r.guests_arrived }}</td>
                 <td>
                     <a href="/admin/edit/{{ r.id }}" class="action-btn edit-btn">Edit</a>
-                    <a href="/admin/delete/{{ r.id }}" class="action-btn delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                    <a href="/admin/delete/{{ r.id }}"
+                       class="action-btn delete-btn"
+                       onclick="return confirm('Are you sure?')">Delete</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- ========== Analytics Chart ========== -->
-    <h3 style="margin-top:40px;">Analytics - Last 7 Records</h3>
-    <canvas id="recordsChart" width="800" height="400"></canvas>
+    <!-- ================= NAVIGATION ================= -->
+    <div class="admin-actions">
+        <a href="/admin/analytics" class="action-btn">📊 View Analytics</a>
+        <a href="/admin" class="back-btn">← Back to Dashboard</a>
+    </div>
 </div>
 
+<!-- ================= JAVASCRIPT ================= -->
 <script>
-    // ================= Input Validation =================
-    const totalInput = document.getElementById('total_inmates');
-    const hospitalInput = document.getElementById('hospitalized');
-    const staffInput = document.getElementById('staff_count');
-    const guestInput = document.getElementById('guests_arrived');
 
-    function validateField(input, conditionError, conditionWarning) {
-        const value = parseInt(input.value) || 0;
-        if (conditionError(value)) input.className = "error";
-        else if (conditionWarning(value)) input.className = "warning";
-        else input.className = "success";
-    }
+    // ===== Search Filter =====
+    const searchInput = document.getElementById("searchInput");
 
-    function validateFields() {
-        const total = parseInt(totalInput.value) || 0;
-
-        validateField(hospitalInput, v => v > total, v => v > total * 0.5);
-        validateField(staffInput, v => false, v => v < 5);
-        validateField(guestInput, v => v > total, v => v > total * 0.3);
-    }
-
-    [totalInput, hospitalInput, staffInput, guestInput].forEach(input => input.addEventListener('input', validateFields));
-    validateFields();
-
-    // ================= Search Filter =================
-    const searchInputEl = document.getElementById('searchInput');
-    searchInputEl.addEventListener('keyup', function() {
-        const filter = searchInputEl.value.toLowerCase();
+    searchInput.addEventListener("keyup", function () {
+        const filter = searchInput.value.toLowerCase();
         const rows = document.querySelectorAll("#recordsTable tbody tr");
+
         rows.forEach(row => {
             const date = row.cells[0].textContent.toLowerCase();
             row.style.display = date.includes(filter) ? "" : "none";
         });
     });
 
-    // ================= Analytics Chart =================
-    const recordsData = JSON.parse('{{ records | tojson | safe }}');
-    const lastRecords = recordsData.slice(-7);
-    const labels = lastRecords.map(r => r.date);
-    const totalData = lastRecords.map(r => r.total_inmates);
-    const hospitalData = lastRecords.map(r => r.hospitalized);
-    const guestsData = lastRecords.map(r => r.guests_arrived);
 
-    new Chart(document.getElementById('recordsChart'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                { label: 'Total Inmates', data: totalData, backgroundColor: 'rgba(54, 162, 235, 0.6)' },
-                { label: 'Hospitalized', data: hospitalData, backgroundColor: 'rgba(255, 99, 132, 0.6)' },
-                { label: 'Guests', data: guestsData, backgroundColor: 'rgba(255, 206, 86, 0.6)' }
-            ]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
-    });
+    // ===== Smart Validation =====
+    const totalInput = document.getElementById("total_inmates");
+    const hospitalInput = document.getElementById("hospitalized");
+    const dischargedInput = document.getElementById("discharged");
+    const maleInput = document.getElementById("male_count");
+    const femaleInput = document.getElementById("female_count");
+
+    function validate() {
+        const total = parseInt(totalInput.value) || 0;
+        const male = parseInt(maleInput.value) || 0;
+        const female = parseInt(femaleInput.value) || 0;
+        const hospital = parseInt(hospitalInput.value) || 0;
+        const discharged = parseInt(dischargedInput.value) || 0;
+
+        // Gender must match total
+        if (male + female !== total) {
+            maleInput.className = "error";
+            femaleInput.className = "error";
+        } else {
+            maleInput.className = "success";
+            femaleInput.className = "success";
+        }
+
+        // Hospitalized cannot exceed total
+        hospitalInput.className = hospital > total ? "error" : "success";
+
+        // Discharged cannot exceed total
+        dischargedInput.className = discharged > total ? "error" : "success";
+    }
+
+    [totalInput, hospitalInput, dischargedInput,
+     maleInput, femaleInput].forEach(input =>
+        input.addEventListener("input", validate)
+    );
+
 </script>
-    <div class="admin-actions">
-        <a href="/admin" class="back-btn">← Back to Dashboard</a>
-    </div>
+
 </body>
 </html>
+

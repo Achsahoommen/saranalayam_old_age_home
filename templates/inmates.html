@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inmate Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h2>Inmate Records</h2>
+
+    <div style="margin-bottom:20px;">
+        <a href="/admin/inmates/add" class="back-btn">➕ Add New Inmate</a>
+        <a href="/admin" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Admission Date</th>
+                <th>Status</th>
+                <th>Illness</th>
+                <th>Hospital</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for inmate in inmates %}
+            <tr>
+                <td>{{ inmate['name'] }}</td>
+                <td>{{ inmate['age'] }}</td>
+                <td>{{ inmate['gender'] }}</td>
+                <td>{{ inmate['admission_date'] }}</td>
+                <td>
+                    {% if inmate['status'] == 'Active' %}
+                        <span style="color:green;">Active</span>
+                    {% elif inmate['status'] == 'Discharged' %}
+                        <span style="color:orange;">Discharged</span>
+                    {% else %}
+                        <span style="color:red;">Deceased</span>
+                    {% endif %}
+                </td>
+                <td>{{ inmate['illness'] }}</td>
+                <td>{{ inmate['hospital_details'] }}</td>
+                <td>{{ inmate['notes'] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>
