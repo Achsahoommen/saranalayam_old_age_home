@@ -32,22 +32,22 @@ def init_db():
     # ================= DONATIONS =================
     cur.execute("""
     CREATE TABLE IF NOT EXISTS donation_summary (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_email TEXT,
-    donor_name TEXT,
-    email TEXT,
-    phone TEXT,
-    country TEXT,
-    amount REAL,
-    purpose TEXT,
-    payment_method TEXT,
-    date TEXT,
-    qr_id TEXT UNIQUE,
-    payment_id TEXT,
-    order_id TEXT,
-    status TEXT DEFAULT 'Pending'
-)
-""")
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_email TEXT,
+        donor_name TEXT,
+        email TEXT,
+        phone TEXT,
+        country TEXT,
+        amount REAL,
+        purpose TEXT,
+        payment_method TEXT,
+        date TEXT,
+        qr_id TEXT UNIQUE,
+        payment_id TEXT,
+        order_id TEXT,
+        status TEXT DEFAULT 'Pending'
+    )
+    """)
 
     # ================= DAILY RECORDS =================
     cur.execute("""
@@ -56,9 +56,22 @@ def init_db():
         date TEXT,
         total_inmates INTEGER,
         hospitalized INTEGER,
-        staff_count INTEGER
+        staff_count INTEGER,
+        guests_arrived INTEGER
     )
     """)
+
+    # BLOG POSTS
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS blog_posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        image_filename TEXT,
+        date_posted TEXT
+    )
+    """)
+
 
     #================== QUESTIONS =================
     cur.execute("""
@@ -67,7 +80,7 @@ def init_db():
         name TEXT,
         email TEXT,
         question TEXT,
-            reply TEXT,
+        reply TEXT,
         status TEXT DEFAULT 'Pending',
         date TEXT
     )

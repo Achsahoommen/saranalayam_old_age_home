@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Stories | Saranalayam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-slate-50 font-sans text-gray-900">
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Saranalayam Old Age Home">
+    </div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about">About Us</a>
+        <a href="/faq">FAQ</a>
+        <a href="/blog">Blogs</a>
+        <a href="/donate">Donate</a>
+        <a href="/login">Login</a>
+    </div>
+</div>
+
+    <header class="bg-white py-16 text-center border-b border-slate-100">
+        <h1 class="text-5xl font-black text-slate-800 mb-4">Our Stories</h1>
+        <p class="text-slate-500 text-lg">Updates from the Saranalayam community.</p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-16">
+        {% if posts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for post in posts %}
+            <article class="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col border border-slate-50">
+                <div class="h-64 bg-slate-200">
+                    {% if post.image_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="flex items-center justify-center h-full text-slate-300 bg-slate-100">
+                        <i class="fa-solid fa-image text-5xl"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="p-8 flex-grow">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4 leading-tight border-l-4 border-blue-600 pl-4">
+                        {{ post.title }}
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed line-clamp-3 mb-6">
+                        {{ post.content }}
+                    </p>
+                    <a href="/blog/{{ post.id }}" class="inline-flex items-center font-bold text-blue-700 hover:text-blue-900 group">
+                        Read Full Story 
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <p class="text-slate-400 text-xl">No stories published yet.</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-10 text-center">
+        <p class="text-sm">© 2026 Saranalayam Old Age Home</p>
+    </footer>
+
+</body>
+</html>

@@ -9,6 +9,21 @@
 </head>
 <body>
 
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Saranalayam Old Age Home">
+    </div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about">About Us</a>
+        <a href="/faq">FAQ</a>
+        <a href="/blog">Blogs</a>
+        <a href="/donate">Donate</a>
+        <a href="/login">Login</a>
+    </div>
+</div>
+
 {% if 'user' in session %}
 
 <div class="donation-container">
@@ -101,9 +116,6 @@
     <h2><i class="fa-solid fa-hand-holding-heart"></i> Make a Donation</h2>
     <p>Please <a href="/login" style="color:#0d47a1; font-weight:bold;">Login</a> to donate</p>
 
-    <br>
-
-    <a href="/" class="donation-next-btn">Back to Home</a>
 
 </div>
 

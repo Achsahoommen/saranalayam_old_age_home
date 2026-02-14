@@ -4,6 +4,7 @@ import random
 from datetime import date
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from send_otp import send_otp
 import razorpay
 from razorpay_utils import client as razorpay_client, RAZORPAY_KEY_ID
@@ -54,23 +55,22 @@ def init_db():
     # DONATIONS
     cur.execute("""
     CREATE TABLE IF NOT EXISTS donation_summary (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_email TEXT,
-    donor_name TEXT,
-    email TEXT,
-    phone TEXT,
-    country TEXT,
-    amount REAL,
-    purpose TEXT,
-    payment_method TEXT,
-    date TEXT,
-    qr_id TEXT UNIQUE,
-    payment_id TEXT,
-    order_id TEXT,
-    status TEXT DEFAULT 'Pending'
-)
-""")
-
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_email TEXT,
+        donor_name TEXT,
+        email TEXT,
+        phone TEXT,
+        country TEXT,
+        amount REAL,
+        purpose TEXT,
+        payment_method TEXT,
+        date TEXT,
+        qr_id TEXT UNIQUE,
+        payment_id TEXT,
+        order_id TEXT,
+        status TEXT DEFAULT 'Pending'
+    )
+    """)
 
     # DAILY RECORDS
     cur.execute("""
@@ -79,9 +79,11 @@ def init_db():
         date TEXT,
         total_inmates INTEGER,
         hospitalized INTEGER,
-        staff_count INTEGER
+        staff_count INTEGER,
+        guests_arrived INTEGER
     )
     """)
+
 
     #QUESTIONS
     cur.execute("""
@@ -93,6 +95,17 @@ def init_db():
             reply TEXT,
         status TEXT DEFAULT 'Pending',
         date TEXT
+    )
+    """)
+
+    # BLOG POSTS
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS blog_posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        image_filename TEXT,
+        date_posted TEXT
     )
     """)
 
@@ -637,6 +650,93 @@ def view_replies():
 
     return render_template("my_questions.html", questions=questions)
 
+# ================= BLOG ROUTES =================#
+
+# 1. PUBLIC BLOG FEED
+@app.route('/blog')
+def blog_index():
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT * FROM blog_posts ORDER BY id DESC")
+    posts = cur.fetchall()
+    db.close()
+    return render_template('blog.html', posts=posts)
+
+# 2. VIEW SINGLE POST
+@app.route('/blog/<int:post_id>')
+def view_post(post_id):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT * FROM blog_posts WHERE id = ?", (post_id,))
+    post = cur.fetchone()
+    db.close()
+    if post is None:
+        return "Post not found", 404
+    return render_template('view_post.html', post=post)
+
+# 3. ADMIN BLOG MANAGEMENT (Add & Edit)
+@app.route('/admin/add-blog', methods=['GET', 'POST'])
+def add_blog():
+    if 'admin' not in session:
+        return redirect('/login')
+
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        author = session.get('admin')
+        today = date.today().strftime("%B %d, %Y")
+        
+        file = request.files.get('image')
+        filename = request.form.get('old_image')
+        
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        post_id = request.form.get('post_id')
+        if post_id: # Update existing
+            cur.execute("UPDATE blog_posts SET title=?, content=?, image_filename=? WHERE id=?", 
+                       (title, content, filename, post_id))
+        else: # Insert new
+            cur.execute("INSERT INTO blog_posts (title, content, image_filename, date_posted, author) VALUES (?,?,?,?,?)",
+                       (title, content, filename, today, author))
+        
+        db.commit()
+        return redirect('/admin/add-blog')
+
+    cur.execute("SELECT * FROM blog_posts ORDER BY id DESC")
+    posts = cur.fetchall()
+    db.close()
+    return render_template('admin_add_blog.html', posts=posts, edit_post=None)
+
+# 4. FETCH POST FOR EDITING
+@app.route('/admin/edit-blog/<int:id>')
+def edit_blog(id):
+    if 'admin' not in session:
+        return redirect('/login')
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT * FROM blog_posts WHERE id=?", (id,))
+    post = cur.fetchone()
+    cur.execute("SELECT * FROM blog_posts ORDER BY id DESC")
+    all_posts = cur.fetchall()
+    db.close()
+    return render_template('admin_add_blog.html', posts=all_posts, edit_post=post)
+
+# 5. DELETE POST
+@app.route('/admin/delete-blog/<int:id>')
+def delete_blog(id):
+    if 'admin' not in session:
+        return redirect('/login')
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM blog_posts WHERE id=?", (id,))
+    db.commit()
+    db.close()
+    return redirect('/admin/add-blog')
 
 # ================= FORGOT PASSWORD =================#
 @app.route('/forgot-password', methods=['GET', 'POST'])
