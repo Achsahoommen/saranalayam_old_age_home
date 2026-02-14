@@ -1069,6 +1069,14 @@ a:hover {
     gap: 18px 25px;
     margin-bottom: 30px;
 }
+.update-container form input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: 0.3s ease;
+}
+
 
 .update-container form label {
     font-weight: 600;
@@ -1215,6 +1223,67 @@ a:hover {
     }
 
 }
+.action-buttons {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.extra-buttons {
+    text-align: center;
+}
+
+.manage-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+
+.manage-btn:hover {
+    background: #1e40af;
+}
+
+.back-btn {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #555;
+}
+
+/* ================= LIVE STATUS SUMMARY ================= */
+.summary-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #f4f7fb, #eef3ff);
+    padding: 18px 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    font-weight: 600;
+    color: #2E2B5F;
+}
+
+.summary-box p {
+    margin: 0;
+    font-size: 15px;
+}
+
+.summary-box strong {
+    color: #1f1b4a;
+}
+@media (max-width: 768px) {
+    .summary-box {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
 
 /*================== FAQ =================*/
 .faq-section {

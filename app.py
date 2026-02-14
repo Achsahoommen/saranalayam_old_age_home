@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, jsonify, render_template, request, redirect, session
 import sqlite3
 import random
 from datetime import date
@@ -80,36 +80,38 @@ def init_db():
     cur.execute("""
     CREATE TABLE IF NOT EXISTS daily_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT UNIQUE,
-
+        date TEXT UNIQUE,  -- Added UNIQUE here to support REPLACE logic
         total_inmates INTEGER,
+        active_inmates INTEGER,  -- Ensure this is added
+        hospitalized INTEGER,
+        discharged INTEGER,
         male_inmates INTEGER,
         female_inmates INTEGER,
-
-        new_admissions INTEGER,
-        discharged INTEGER,
-
-        hospitalized INTEGER,
+        new_inmates INTEGER,
         staff_count INTEGER,
         guests_arrived INTEGER
     )
     """)
 
+
     # ---------- INMATES ----------
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS inmates (
+    CREATE TABLE IF NOT EXISTS inmates(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
+        name TEXT,
         age INTEGER,
         gender TEXT,
         admission_date TEXT,
-        status TEXT DEFAULT 'Active',
+        status TEXT,
         illness TEXT,
         hospital_details TEXT,
         notes TEXT,
-        date_of_death TEXT
+        date_of_death TEXT,
+        previous_status TEXT,
+        status_updated_date TEXT
     )
     """)
+
 
 
     #QUESTIONS
@@ -119,7 +121,7 @@ def init_db():
         name TEXT,
         email TEXT,
         question TEXT,
-            reply TEXT,
+        reply TEXT,
         status TEXT DEFAULT 'Pending',
         date TEXT
     )
@@ -510,41 +512,145 @@ def admin_donations():
 
     db.close()
     return render_template('admin_donations.html', donations=donations)
-
 # ================= ADMIN UPDATE =================#
-@app.route('/admin/update', methods=['GET','POST'])
+@app.route('/admin/update', methods=['GET', 'POST'])
 def admin_update():
     if 'admin' not in session:
         return redirect('/login')
+
     db = get_db()
     cur = db.cursor()
 
     if request.method == 'POST':
+        # ==== CAPTURE FORM DATA ====
+        hospitalized_data = request.form.get('hospitalized_names', '').strip()
+        discharged_data = request.form.get('discharged_names', '').strip()
+        new_inmates = int(request.form.get('new_inmates', 0))
+        staff_count = int(request.form.get('staff_count', 0))
+        guests_arrived = int(request.form.get('guests_visited', 0))
+
+        # ==== UPDATE HOSPITALIZED ====
+        if hospitalized_data:
+            if "||" in hospitalized_data:  # DECREASE or INCREASE scenario
+                names_part, status_part = hospitalized_data.split("||")
+                names_list = [n.strip() for n in names_part.split(",") if n.strip()]
+                status_list = [s.strip().capitalize() for s in status_part.split(",") if s.strip()]
+
+                for name, new_status in zip(names_list, status_list):
+                    if new_status == "SKIP":
+                        continue  # leave current status unchanged
+                    if new_status == "Hospitalized":  # increase
+                        cur.execute("""
+                            UPDATE inmates
+                            SET status='Hospitalized', previous_status='Active', status_updated_date=?
+                            WHERE name=? AND status='Active'
+                        """, (str(date.today()), name))
+                    elif new_status in ["Active","Discharged"]:  # decrease
+                        cur.execute("""
+                            UPDATE inmates
+                            SET status=?, previous_status='Hospitalized', status_updated_date=?
+                            WHERE name=?
+                        """, (new_status, str(date.today()), name))
+
+        # ==== UPDATE DISCHARGED ====
+        if discharged_data:
+            names_list = [n.strip() for n in discharged_data.split(",") if n.strip()]
+            for name in names_list:
+                cur.execute("""
+                    UPDATE inmates
+                    SET status='Discharged', previous_status=status, status_updated_date=?
+                    WHERE name=? AND status IN ('Active','Hospitalized')
+                """, (str(date.today()), name))
+
+        db.commit()
+
+        # ==== AUTO CALCULATE COUNTS ====
+        cur.execute("SELECT COUNT(*) FROM inmates")
+        total = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Hospitalized'")
+        hospitalized_count = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Discharged'")
+        discharged_count = cur.fetchone()[0]
+
+        active = total - hospitalized_count - discharged_count
+
+        cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Male' AND status='Active'")
+        male = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'")
+        female = cur.fetchone()[0]
+
+        # ==== SAVE DAILY SNAPSHOT ====
         cur.execute("""
-        INSERT INTO daily_records
-        (date, total_inmates, hospitalized, staff_count, guests_arrived)
-        VALUES (?,?,?,?,?)
+            INSERT OR REPLACE INTO daily_records
+            (date, total_inmates, active_inmates, male_inmates, female_inmates,
+             new_inmates, discharged, hospitalized,
+             staff_count, guests_arrived)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             str(date.today()),
-            request.form['total_inmates'],
-            request.form['hospitalized'],
-            request.form['staff_count'],
-            request.form['guests_arrived']
+            total,
+            active,
+            male,
+            female,
+            new_inmates,
+            discharged_count,
+            hospitalized_count,
+            staff_count,
+            guests_arrived
         ))
+
         db.commit()
         db.close()
         return redirect('/admin/update')
 
-    # Get last record for prefill
-    cur.execute("SELECT * FROM daily_records ORDER BY id DESC LIMIT 1")
-    record = cur.fetchone()
-    # Get last 7 records for table/chart
-    cur.execute("SELECT * FROM daily_records ORDER BY date DESC LIMIT 7")
-    records = [dict(r) for r in cur.fetchall()]
-    db.close()
-    return render_template('admin_update.html', record=record, records=records)
+    # ===== GET: AUTO COUNTS FOR PAGE =====
+    cur.execute("SELECT COUNT(*) FROM inmates")
+    total = cur.fetchone()[0]
 
-# ================= ADMIN INMATES =================#
+    cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Hospitalized'")
+    hospitalized = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Discharged'")
+    discharged = cur.fetchone()[0]
+
+    active = total - hospitalized - discharged
+
+    cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Male' AND status='Active'")
+    male = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'")
+    female = cur.fetchone()[0]
+
+    # ===== LAST 7 RECORDS =====
+    cur.execute("SELECT * FROM daily_records ORDER BY date DESC LIMIT 7")
+    records = [dict(row) for row in cur.fetchall()]
+
+    db.close()
+
+    return render_template(
+        'admin_update.html',
+        records=records,
+        total=total,
+        active=active,
+        male=male,
+        female=female,
+        hospitalized=hospitalized,
+        discharged=discharged
+    )
+
+@app.route('/admin/hospitalized-list')
+def hospitalized_list():
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT name FROM inmates WHERE status='Hospitalized'")
+    inmates = [{"name": row[0]} for row in cur.fetchall()]
+    db.close()
+    return jsonify(inmates)
+
+#=============INMATES =================#
 @app.route("/admin/inmates")
 def view_inmates():
     if "admin" not in session:
@@ -567,28 +673,70 @@ def add_inmate():
         db = get_db()
         db.execute("""
             INSERT INTO inmates
-            (name, age, gender, admission_date, illness, hospital_details, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (name, age, gender, admission_date,status,illness, hospital_details, notes,date_of_death)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
         """, (
             request.form["name"],
             request.form["age"],
             request.form["gender"],
             request.form["admission_date"],
+            request.form["status"],
             request.form["illness"],
             request.form["hospital_details"],
-            request.form["notes"]
+            request.form["notes"],
+            request.form.get("date_of_death")
         ))
         db.commit()
         return redirect("/admin/inmates")
 
     return render_template("add_inmate.html")
 
+@app.route("/admin/edit-inmate/<int:id>", methods=["GET", "POST"])
+def edit_inmate(id):
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == "POST":
+        cur.execute("""
+            UPDATE inmates SET
+            name=?,
+            age=?,
+            gender=?,
+            admission_date=?,
+            status=?,
+            illness=?,
+            hospital_details=?,
+            notes=?,
+            date_of_death=?
+            WHERE id=?
+        """, (
+            request.form["name"],
+            request.form["age"],
+            request.form["gender"],
+            request.form["admission_date"],
+            request.form["status"],
+            request.form["illness"],
+            request.form["hospital_details"],
+            request.form["notes"],
+            request.form.get("date_of_death"),  
+            id
+        ))
+
+        db.commit()
+        return redirect("/admin/inmates")
+
+    cur.execute("SELECT * FROM inmates WHERE id=?", (id,))
+    inmate = cur.fetchone()
+
+    return render_template("edit_inmate.html", inmate=inmate)
+#=================== ADMIN ANALYTICS =================#
 @app.route("/admin/analytics")
 def analytics_dashboard():
     if "admin" not in session:
         return redirect("/")
 
     db = get_db()
+    db.row_factory = sqlite3.Row  # Make sure this exists
 
     total_active = db.execute(
         "SELECT COUNT(*) FROM inmates WHERE status='Active'"
@@ -602,13 +750,16 @@ def analytics_dashboard():
         "SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'"
     ).fetchone()[0]
 
-    records = db.execute("""
-        SELECT date, total_inmates, new_admissions,
-               discharged, hospitalized
+    rows = db.execute("""
+        SELECT date, total_inmates, new_inmates,
+        discharged, hospitalized
         FROM daily_records
         ORDER BY date DESC
         LIMIT 30
     """).fetchall()
+
+    # ✅ CONVERT ROW OBJECTS TO DICTIONARIES
+    records = [dict(row) for row in rows]
 
     return render_template(
         "analytics.html",
@@ -617,6 +768,70 @@ def analytics_dashboard():
         female=female,
         records=records
     )
+# ================= ADMIN EDIT DAILY RECORD =================
+@app.route("/admin/edit/<int:id>", methods=["GET", "POST"])
+def admin_edit(id):
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    db = get_db()
+    cur = db.cursor()
+
+    # ===== UPDATE MODE =====
+    if request.method == "POST":
+
+        cur.execute("""
+            UPDATE daily_records SET
+                total_inmates=?,
+                male_inmates=?,
+                female_inmates=?,
+                new_admissions=?,
+                discharged=?,
+                hospitalized=?,
+                staff_count=?,
+                guests_arrived=?
+            WHERE id=?
+        """, (
+            request.form['total_inmates'],
+            request.form['male_count'],
+            request.form['female_count'],
+            request.form['new_inmates'],
+            request.form['discharged'],
+            request.form['hospitalized'],
+            request.form['staff_count'],
+            request.form['guests_arrived'],
+            id
+        ))
+
+        db.commit()
+        db.close()
+
+        return redirect("/admin/update")
+
+    # ===== GET RECORD =====
+    cur.execute("SELECT * FROM daily_records WHERE id=?", (id,))
+    record = dict(cur.fetchone())
+
+    db.close()
+
+    return render_template("admin_edit_record.html", record=record)
+
+# ================= ADMIN DELETE DAILY RECORD =================
+@app.route("/admin/delete/<int:id>")
+def admin_delete(id):
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("DELETE FROM daily_records WHERE id=?", (id,))
+    db.commit()
+    db.close()
+
+    return redirect("/admin/update")
 
 # ================= ADMIN RECORDS =================#
 @app.route("/admin/records")

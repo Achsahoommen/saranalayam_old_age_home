@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Inmate</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit Inmate Details</h2>
+
+    <form method="POST">
+
+        <!-- FULL NAME -->
+        <label>Full Name</label>
+        <input type="text" name="name" value="{{ inmate.name }}" required>
+
+        <!-- AGE -->
+        <label>Age</label>
+        <input type="number" name="age" value="{{ inmate.age }}" required>
+
+        <!-- GENDER -->
+        <label>Gender</label>
+        <select name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male" {{ 'selected' if inmate.gender == 'Male' else '' }}>Male</option>
+            <option value="Female" {{ 'selected' if inmate.gender == 'Female' else '' }}>Female</option>
+        </select>
+
+        <!-- STATUS -->
+        <label>Status</label>
+        <select name="status" id="status" onchange="toggleDeathDate()" required>
+            <option value="">Select Status</option>
+            <option value="Active" {{ 'selected' if inmate.status == 'Active' else '' }}>Active</option>
+            <option value="Hospitalized" {{ 'selected' if inmate.status == 'Hospitalized' else '' }}>Hospitalized</option>
+            <option value="Discharged" {{ 'selected' if inmate.status == 'Discharged' else '' }}>Discharged</option>
+            <option value="Deceased" {{ 'selected' if inmate.status == 'Deceased' else '' }}>Deceased</option>
+        </select>
+
+        <!-- DATE OF DEATH -->
+        <div id="death-date-field" style="display: none;">
+            <label>Date of Death</label>
+            <input type="date" name="date_of_death" value="{{ inmate.date_of_death }}">
+        </div>
+
+        <!-- ADMISSION DATE -->
+        <label>Admission Date</label>
+        <input type="date" name="admission_date" value="{{ inmate.admission_date }}" required>
+
+        <!-- MEDICAL CONDITION -->
+        <label>Medical Condition</label>
+        <input type="text" name="illness" value="{{ inmate.illness }}">
+
+        <!-- HOSPITAL DETAILS -->
+        <label>Hospital Details</label>
+        <input type="text" name="hospital_details" value="{{ inmate.hospital_details }}">
+
+        <!-- NOTES -->
+        <label>Additional Notes</label>
+        <textarea name="notes" rows="3">{{ inmate.notes }}</textarea>
+
+        <button type="submit">Update Inmate</button>
+    </form>
+
+    <br>
+    <a href="/admin/inmates" class="back-btn">← Back to Inmates</a>
+
+</div>
+
+<!-- JAVASCRIPT -->
+<script>
+function toggleDeathDate() {
+    var status = document.getElementById("status").value;
+    var deathField = document.getElementById("death-date-field");
+
+    if (status === "Deceased") {
+        deathField.style.display = "block";
+    } else {
+        deathField.style.display = "none";
+    }
+}
+
+// Run on page load
+window.onload = function() {
+    toggleDeathDate();
+};
+</script>
+
+</body>
+</html>
+

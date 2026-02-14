@@ -49,38 +49,38 @@ def init_db():
     )
     """)
 
-        # ---------- DAILY RECORDS ----------
+    # ---------- DAILY RECORDS ----------
     cur.execute("""
     CREATE TABLE IF NOT EXISTS daily_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT UNIQUE,
-
+        date TEXT UNIQUE,  -- Added UNIQUE here to support REPLACE logic
         total_inmates INTEGER,
+        active_inmates INTEGER,  -- Ensure this is added
+        hospitalized INTEGER,
+        discharged INTEGER,
         male_inmates INTEGER,
         female_inmates INTEGER,
-
-        new_admissions INTEGER,
-        discharged INTEGER,
-
-        hospitalized INTEGER,
+        new_inmates INTEGER,
         staff_count INTEGER,
         guests_arrived INTEGER
     )
     """)
 
-    # ---------- INMATES ----------
+        # ---------- INMATES ----------
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS inmates (
+    CREATE TABLE IF NOT EXISTS inmates(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
+        name TEXT,
         age INTEGER,
         gender TEXT,
         admission_date TEXT,
-        status TEXT DEFAULT 'Active',
+        status TEXT,
         illness TEXT,
         hospital_details TEXT,
         notes TEXT,
-        date_of_death TEXT
+        date_of_death TEXT,
+        previous_status TEXT,
+        status_updated_date TEXT
     )
     """)
     

@@ -11,57 +11,49 @@
 <div class="update-container">
     <h2>Update Daily Records</h2>
 
-    <!-- ================= ADD / UPDATE FORM ================= -->
-    <form method="POST" action="/admin/update">
+    <!-- ================= LIVE STATUS ================= -->
+    <h3>Current Status (Live Data)</h3>
+    <div class="summary-box">
+        <p><strong>Total Inmates:</strong> {{ total }}</p>
+        <p><strong>Active:</strong> {{ active }}</p>
+        <p><strong>Hospitalized:</strong> {{ hospitalized }}</p>
+        <p><strong>Discharged:</strong> {{ discharged }}</p>
+        <p><strong>Male:</strong> {{ male }}</p>
+        <p><strong>Female:</strong> {{ female }}</p>
+    </div>
 
-        <label>Total Inmates</label>
-        <input type="number" id="total_inmates" name="total_inmates"
-               value="{{ record['total_inmates'] if record else '' }}" required>
+    <!-- ================= UPDATE FORM ================= -->
+    <form method="POST" action="/admin/update">
+        <!-- Hidden fields for JS -->
+        <input type="hidden" name="hospitalized_names" id="hospitalized_names">
+        <input type="hidden" name="discharged_names" id="discharged_names">
 
         <label>Hospitalized</label>
-        <input type="number" id="hospitalized" name="hospitalized"
-               value="{{ record['hospitalized'] if record else '' }}" required>
+        <input type="number" name="hospitalized" value="{{ hospitalized }}" required>
 
         <label>Discharged</label>
-        <input type="number" id="discharged" name="discharged"
-               value="{{ record['discharged'] if record else '' }}" required>
+        <input type="number" name="discharged" value="{{ discharged }}" required>
 
-        <label>Male Inmates</label>
-        <input type="number" id="male_count" name="male_count"
-               value="{{ record['male_count'] if record else '' }}" required>
+        <label>New Inmates Today</label>
+        <input type="number" name="new_inmates" required>
 
-        <label>Female Inmates</label>
-        <input type="number" id="female_count" name="female_count"
-               value="{{ record['female_count'] if record else '' }}" required>
+        <label>Staff Count Today</label>
+        <input type="number" name="staff_count" required>
 
-        <label>New Inmates</label>
-        <input type="number" id="new_inmates" name="new_inmates"
-               value="{{ record['new_inmates'] if record else '' }}" required>
+        <label>Guests Visited Today</label>
+        <input type="number" name="guests_visited" required>
 
-        <label>Staff Count</label>
-        <input type="number" id="staff_count" name="staff_count"
-               value="{{ record['staff_count'] if record else '' }}" required>
-
-        <label>Guests Arrived</label>
-        <input type="number" id="guests_arrived" name="guests_arrived"
-               value="{{ record['guests_arrived'] if record else '' }}" required>
-
-        <button type="submit">
-            {{ 'Update Record' if record else 'Add Record' }}
-        </button>
+        <button type="submit" class="btn-primary">Update Record</button>
     </form>
 
-    <!-- ================= PREVIOUS RECORDS ================= -->
+    <!-- ================= HISTORY ================= -->
     <h3 style="margin-top:40px;">Previous Records</h3>
-
-    <input type="text" id="searchInput"
-           placeholder="Search by date (YYYY-MM-DD)">
-
-    <table class="records-table" id="recordsTable">
+    <table class="records-table">
         <thead>
             <tr>
                 <th>Date</th>
                 <th>Total</th>
+                <th>Active</th>
                 <th>Hospitalized</th>
                 <th>Discharged</th>
                 <th>Male</th>
@@ -69,94 +61,129 @@
                 <th>New</th>
                 <th>Staff</th>
                 <th>Guests</th>
-                <th>Actions</th>
             </tr>
         </thead>
-
         <tbody>
-            {% for r in records %}
+        {% for r in records %}
             <tr>
                 <td>{{ r.date }}</td>
                 <td>{{ r.total_inmates }}</td>
+                <td>{{ r.active_inmates }}</td>
                 <td>{{ r.hospitalized }}</td>
                 <td>{{ r.discharged }}</td>
-                <td>{{ r.male_count }}</td>
-                <td>{{ r.female_count }}</td>
+                <td>{{ r.male_inmates }}</td>
+                <td>{{ r.female_inmates }}</td>
                 <td>{{ r.new_inmates }}</td>
                 <td>{{ r.staff_count }}</td>
                 <td>{{ r.guests_arrived }}</td>
-                <td>
-                    <a href="/admin/edit/{{ r.id }}" class="action-btn edit-btn">Edit</a>
-                    <a href="/admin/delete/{{ r.id }}"
-                       class="action-btn delete-btn"
-                       onclick="return confirm('Are you sure?')">Delete</a>
-                </td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
 
-    <!-- ================= NAVIGATION ================= -->
     <div class="admin-actions">
-        <a href="/admin/analytics" class="action-btn">📊 View Analytics</a>
         <a href="/admin" class="back-btn">← Back to Dashboard</a>
     </div>
 </div>
 
-<!-- ================= JAVASCRIPT ================= -->
+<script id="stats-data" type="application/json">
+{
+    "hospitalized": {{ hospitalized | default(0) }},
+    "discharged": {{ discharged | default(0) }}
+}
+</script>
+
 <script>
+const stats = JSON.parse(document.getElementById("stats-data").textContent);
+let previousHospitalized = stats.hospitalized;
+let previousDischarged = stats.discharged;
 
-    // ===== Search Filter =====
-    const searchInput = document.getElementById("searchInput");
+document.querySelector("form").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-    searchInput.addEventListener("keyup", function () {
-        const filter = searchInput.value.toLowerCase();
-        const rows = document.querySelectorAll("#recordsTable tbody tr");
+    const newHospitalized = parseInt(document.querySelector('input[name="hospitalized"]').value) || 0;
+    const newDischarged = parseInt(document.querySelector('input[name="discharged"]').value) || 0;
 
-        rows.forEach(row => {
-            const date = row.cells[0].textContent.toLowerCase();
-            row.style.display = date.includes(filter) ? "" : "none";
-        });
-    });
+    // ---------- HOSPITALIZED INCREASE ----------
+    // ---------- HOSPITALIZED INCREASE ----------
+if (newHospitalized > previousHospitalized) {
+    const diff = newHospitalized - previousHospitalized;
+    const names = [];
 
-
-    // ===== Smart Validation =====
-    const totalInput = document.getElementById("total_inmates");
-    const hospitalInput = document.getElementById("hospitalized");
-    const dischargedInput = document.getElementById("discharged");
-    const maleInput = document.getElementById("male_count");
-    const femaleInput = document.getElementById("female_count");
-
-    function validate() {
-        const total = parseInt(totalInput.value) || 0;
-        const male = parseInt(maleInput.value) || 0;
-        const female = parseInt(femaleInput.value) || 0;
-        const hospital = parseInt(hospitalInput.value) || 0;
-        const discharged = parseInt(dischargedInput.value) || 0;
-
-        // Gender must match total
-        if (male + female !== total) {
-            maleInput.className = "error";
-            femaleInput.className = "error";
-        } else {
-            maleInput.className = "success";
-            femaleInput.className = "success";
+    for (let i = 0; i < diff; i++) {
+        let name = prompt(`Enter name of hospitalized inmate #${i + 1}:`);
+        while (!name || !name.trim()) {
+            name = prompt(`Name cannot be empty! Enter name of hospitalized inmate #${i + 1}:`);
         }
-
-        // Hospitalized cannot exceed total
-        hospitalInput.className = hospital > total ? "error" : "success";
-
-        // Discharged cannot exceed total
-        dischargedInput.className = discharged > total ? "error" : "success";
+        names.push(name.trim());
     }
 
-    [totalInput, hospitalInput, dischargedInput,
-     maleInput, femaleInput].forEach(input =>
-        input.addEventListener("input", validate)
-    );
+    // Status is automatically "Hospitalized"
+    const statuses = names.map(() => "Hospitalized");
+    document.getElementById("hospitalized_names").value = names.join(",") + "||" + statuses.join(",");
+}
 
+    // ---------- HOSPITALIZED DECREASE ----------
+    if (newHospitalized < previousHospitalized) {
+        const diff = previousHospitalized - newHospitalized;
+
+        try {
+            const res = await fetch("/admin/hospitalized-list");
+            const data = await res.json();
+            const hospitalizedInmates = data.slice(0, diff);
+
+            const names = [];
+            const statuses = [];
+
+            for (let inmate of hospitalizedInmates) {
+                // 1️⃣ Ask name first (confirm which inmate leaving)
+                const nameConfirmed = prompt(`Confirm inmate leaving hospital:`);
+                const finalName = nameConfirmed ? nameConfirmed.trim() : inmate.name;
+
+                // 2️⃣ Optional status change
+                let status = prompt(`Enter new status for ${finalName} (Active / Discharged, leave blank to keep current):`);
+                if (status) {
+                    status = status.trim().charAt(0).toUpperCase() + status.trim().slice(1);
+                    while (!["Active","Discharged"].includes(status)) {
+                        status = prompt(`Invalid! Enter 'Active' or 'Discharged' for ${finalName} (leave blank to keep current):`);
+                        if (!status) break;
+                        status = status.trim().charAt(0).toUpperCase() + status.trim().slice(1);
+                    }
+                } else {
+                    status = "SKIP"; // indicates no change
+                }
+
+                names.push(finalName);
+                statuses.push(status);
+            }
+
+            document.getElementById("hospitalized_names").value = names.join(",") + "||" + statuses.join(",");
+        } catch(err) {
+            alert("Error fetching hospitalized list: " + err);
+            return;
+        }
+    }
+
+    // ---------- DISCHARGED INCREASE ----------
+    if (newDischarged > previousDischarged) {
+        const diff = newDischarged - previousDischarged;
+        const names = prompt(`${diff} inmate(s) were discharged.\nEnter names separated by commas:`);
+
+        if (!names) {
+            alert("You must enter names!");
+            return;
+        }
+
+        document.getElementById("discharged_names").value = names;
+    }
+
+    // Submit the form after hidden inputs are ready
+    this.submit();
+});
 </script>
 
 </body>
 </html>
+
+
 

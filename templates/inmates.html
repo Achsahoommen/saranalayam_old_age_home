@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Inmate Records</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -14,7 +15,7 @@
         <a href="/admin" class="back-btn">← Back to Dashboard</a>
     </div>
 
-    <table>
+    <table class="inmate-table">
         <thead>
             <tr>
                 <th>Name</th>
@@ -25,6 +26,7 @@
                 <th>Illness</th>
                 <th>Hospital</th>
                 <th>Notes</th>
+                <th>Actions</th> <!-- NEW COLUMN -->
             </tr>
         </thead>
 
@@ -35,18 +37,30 @@
                 <td>{{ inmate['age'] }}</td>
                 <td>{{ inmate['gender'] }}</td>
                 <td>{{ inmate['admission_date'] }}</td>
+
                 <td>
                     {% if inmate['status'] == 'Active' %}
-                        <span style="color:green;">Active</span>
+                        <span style="color:green; font-weight:600;">Active</span>
                     {% elif inmate['status'] == 'Discharged' %}
-                        <span style="color:orange;">Discharged</span>
+                        <span style="color:orange; font-weight:600;">Discharged</span>
+                    {% elif inmate['status'] == 'Hospitalized' %}
+                        <span style="color:#2563eb; font-weight:600;">Hospitalized</span>
                     {% else %}
-                        <span style="color:red;">Deceased</span>
+                        <span style="color:red; font-weight:600;">Deceased</span>
                     {% endif %}
                 </td>
+
                 <td>{{ inmate['illness'] }}</td>
                 <td>{{ inmate['hospital_details'] }}</td>
                 <td>{{ inmate['notes'] }}</td>
+
+                <!-- EDIT BUTTON -->
+                <td>
+                    <a href="/admin/edit-inmate/{{ inmate['id'] }}" class="edit-btn">
+                        ✏ Edit
+                    </a>
+                </td>
+
             </tr>
         {% endfor %}
         </tbody>
@@ -56,3 +70,4 @@
 
 </body>
 </html>
+

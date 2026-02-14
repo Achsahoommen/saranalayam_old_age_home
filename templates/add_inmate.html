@@ -2,7 +2,21 @@
 <html>
 <head>
     <title>Add Inmate</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        function toggleDeathDate() {
+            var status = document.getElementById("status").value;
+            var deathField = document.getElementById("death-date-field");
+
+            if (status === "Deceased") {
+                deathField.style.display = "block";
+            } else {
+                deathField.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
 
@@ -23,6 +37,22 @@
             <option>Male</option>
             <option>Female</option>
         </select>
+
+        <!-- STATUS FIELD -->
+        <label>Status</label>
+        <select name="status" id="status" onchange="toggleDeathDate()" required>
+            <option value="">Select Status</option>
+            <option value="Active">Active</option>
+            <option value="Hospitalized">Hospitalized</option>
+            <option value="Discharged">Discharged</option>
+            <option value="Deceased">Deceased</option>
+        </select>
+
+        <!-- DATE OF DEATH (Hidden by default) -->
+        <div id="death-date-field" style="display:none;">
+            <label>Date of Death</label>
+            <input type="date" name="date_of_death">
+        </div>
 
         <label>Admission Date</label>
         <input type="date" name="admission_date" required>
@@ -46,3 +76,5 @@
 
 </body>
 </html>
+
+
