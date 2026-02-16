@@ -24,6 +24,7 @@
 
     <!-- ================= UPDATE FORM ================= -->
     <form method="POST" action="/admin/update">
+
         <!-- Hidden fields for JS -->
         <input type="hidden" name="hospitalized_names" id="hospitalized_names">
         <input type="hidden" name="discharged_names" id="discharged_names">
@@ -61,6 +62,7 @@
                 <th>New</th>
                 <th>Staff</th>
                 <th>Guests</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -76,11 +78,28 @@
                 <td>{{ r.new_inmates }}</td>
                 <td>{{ r.staff_count }}</td>
                 <td>{{ r.guests_arrived }}</td>
+
+                <!-- ACTIONS -->
+                <td>
+                    <a href="/admin/edit/{{ r.id }}" class="btn-edit">Edit</a>
+
+                    <form action="/admin/delete/{{ r.id }}" 
+                          method="POST"
+                          style="display:inline;"
+                          onsubmit="return confirm('Are you sure you want to delete this record?');">
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
+ <!-- ================= ANALYTICS BUTTON ================= -->
+    <div style="margin-left:20px;">
+        <a href="/admin/analytics" class="btn-analysis">
+            📊 View Analytics
+        </a>
+    </div>
     <div class="admin-actions">
         <a href="/admin" class="back-btn">← Back to Dashboard</a>
     </div>
@@ -104,23 +123,43 @@ document.querySelector("form").addEventListener("submit", async function (e) {
     const newHospitalized = parseInt(document.querySelector('input[name="hospitalized"]').value) || 0;
     const newDischarged = parseInt(document.querySelector('input[name="discharged"]').value) || 0;
 
-    // ---------- HOSPITALIZED INCREASE ----------
-    // ---------- HOSPITALIZED INCREASE ----------
+// ---------- HOSPITALIZED INCREASE ----------
 if (newHospitalized > previousHospitalized) {
-    const diff = newHospitalized - previousHospitalized;
-    const names = [];
 
-    for (let i = 0; i < diff; i++) {
-        let name = prompt(`Enter name of hospitalized inmate #${i + 1}:`);
-        while (!name || !name.trim()) {
-            name = prompt(`Name cannot be empty! Enter name of hospitalized inmate #${i + 1}:`);
-        }
-        names.push(name.trim());
+    const diff = newHospitalized - previousHospitalized;
+
+    // Ask all names at once
+    let namesInput = prompt(
+        `${diff} inmate(s) hospitalized.\nEnter names separated by commas:`
+    );
+
+    if (!namesInput) {
+        alert("You must enter inmate names!");
+        return;
     }
 
-    // Status is automatically "Hospitalized"
+    const names = namesInput.split(",")
+        .map(n => n.trim())
+        .filter(n => n !== "");
+
+    if (names.length !== diff) {
+        alert(`You must enter exactly ${diff} name(s).`);
+        return;
+    }
+
+    // Ask hospital name once (same hospital for all)
+    let hospital = prompt("Enter hospital name:");
+    while (!hospital || !hospital.trim()) {
+        hospital = prompt("Hospital name cannot be empty. Enter hospital name:");
+    }
+
     const statuses = names.map(() => "Hospitalized");
-    document.getElementById("hospitalized_names").value = names.join(",") + "||" + statuses.join(",");
+    const hospitals = names.map(() => hospital.trim());
+
+    document.getElementById("hospitalized_names").value =
+        names.join(",") + "||" +
+        statuses.join(",") + "||" +
+        hospitals.join(",");
 }
 
     // ---------- HOSPITALIZED DECREASE ----------

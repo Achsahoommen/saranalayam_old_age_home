@@ -470,7 +470,7 @@ def admin_dashboard():
     cur.execute("SELECT SUM(amount) FROM donation_summary")
     total_amount = cur.fetchone()[0] or 0
     # Daily Records
-    cur.execute("SELECT date, total_inmates FROM daily_records ORDER BY date DESC LIMIT 7")
+    cur.execute("SELECT date, total_inmates FROM daily_records ORDER BY date DESC LIMIT 30")
     records = cur.fetchall()[::-1]
     record_dates = [r[0] for r in records]
     inmate_counts = [r[1] for r in records]
@@ -519,52 +519,84 @@ def admin_update():
         return redirect('/login')
 
     db = get_db()
+    db.row_factory = sqlite3.Row
     cur = db.cursor()
 
+    # ================= POST =================
     if request.method == 'POST':
-        # ==== CAPTURE FORM DATA ====
+
+    # ==== CAPTURE FORM DATA ====
         hospitalized_data = request.form.get('hospitalized_names', '').strip()
         discharged_data = request.form.get('discharged_names', '').strip()
         new_inmates = int(request.form.get('new_inmates', 0))
         staff_count = int(request.form.get('staff_count', 0))
         guests_arrived = int(request.form.get('guests_visited', 0))
 
-        # ==== UPDATE HOSPITALIZED ====
+        # ================= UPDATE HOSPITALIZED ===============
         if hospitalized_data:
-            if "||" in hospitalized_data:  # DECREASE or INCREASE scenario
-                names_part, status_part = hospitalized_data.split("||")
-                names_list = [n.strip() for n in names_part.split(",") if n.strip()]
-                status_list = [s.strip().capitalize() for s in status_part.split(",") if s.strip()]
 
-                for name, new_status in zip(names_list, status_list):
-                    if new_status == "SKIP":
-                        continue  # leave current status unchanged
-                    if new_status == "Hospitalized":  # increase
-                        cur.execute("""
-                            UPDATE inmates
-                            SET status='Hospitalized', previous_status='Active', status_updated_date=?
-                            WHERE name=? AND status='Active'
-                        """, (str(date.today()), name))
-                    elif new_status in ["Active","Discharged"]:  # decrease
-                        cur.execute("""
-                            UPDATE inmates
-                            SET status=?, previous_status='Hospitalized', status_updated_date=?
-                            WHERE name=?
-                        """, (new_status, str(date.today()), name))
+            parts = hospitalized_data.split("||")
 
-        # ==== UPDATE DISCHARGED ====
+            names = [n.strip() for n in parts[0].split(",") if n.strip()]
+            statuses = [s.strip().capitalize() for s in parts[1].split(",") if s.strip()]
+            hospitals = parts[2].split(",") if len(parts) > 2 else [None] * len(names)
+
+            for name, status, hospital in zip(names, statuses, hospitals):
+
+                if status == "SKIP":
+                    continue
+
+                # 🔹 INCREASE
+                if status == "Hospitalized":
+                    cur.execute("""
+                        UPDATE inmates
+                        SET status = ?,
+                            hospital_details = ?,
+                            previous_status = 'Active',
+                            status_updated_date = ?
+                        WHERE name = ? AND status = 'Active'
+                    """, (
+                        status,
+                        hospital,
+                        str(date.today()),
+                        name
+                    ))
+
+                # 🔹 DECREASE
+                elif status in ["Active", "Discharged"]:
+                    cur.execute("""
+                        UPDATE inmates
+                        SET status = ?,
+                            hospital_details = NULL,
+                            previous_status = 'Hospitalized',
+                            status_updated_date = ?
+                        WHERE name = ?
+                    """, (
+                        status,
+                        str(date.today()),
+                        name
+                    ))
+
+        # ================= UPDATE DISCHARGED =================
         if discharged_data:
             names_list = [n.strip() for n in discharged_data.split(",") if n.strip()]
+
             for name in names_list:
                 cur.execute("""
                     UPDATE inmates
-                    SET status='Discharged', previous_status=status, status_updated_date=?
-                    WHERE name=? AND status IN ('Active','Hospitalized')
-                """, (str(date.today()), name))
+                    SET status = 'Discharged',
+                        hospital_details = NULL,
+                        previous_status = status,
+                        status_updated_date = ?
+                    WHERE name = ? AND status IN ('Active','Hospitalized')
+                """, (
+                    str(date.today()),
+                    name
+                ))
 
         db.commit()
 
-        # ==== AUTO CALCULATE COUNTS ====
+        # ================= AUTO CALCULATE COUNTS =============
         cur.execute("SELECT COUNT(*) FROM inmates")
         total = cur.fetchone()[0]
 
@@ -582,7 +614,7 @@ def admin_update():
         cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'")
         female = cur.fetchone()[0]
 
-        # ==== SAVE DAILY SNAPSHOT ====
+        # ================= SAVE DAILY SNAPSHOT ===============
         cur.execute("""
             INSERT OR REPLACE INTO daily_records
             (date, total_inmates, active_inmates, male_inmates, female_inmates,
@@ -604,9 +636,11 @@ def admin_update():
 
         db.commit()
         db.close()
+
         return redirect('/admin/update')
 
-    # ===== GET: AUTO COUNTS FOR PAGE =====
+    # ================= GET =================
+
     cur.execute("SELECT COUNT(*) FROM inmates")
     total = cur.fetchone()[0]
 
@@ -624,7 +658,6 @@ def admin_update():
     cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'")
     female = cur.fetchone()[0]
 
-    # ===== LAST 7 RECORDS =====
     cur.execute("SELECT * FROM daily_records ORDER BY date DESC LIMIT 7")
     records = [dict(row) for row in cur.fetchall()]
 
@@ -641,6 +674,8 @@ def admin_update():
         discharged=discharged
     )
 
+
+# ===== ROUTE TO FETCH CURRENT HOSPITALIZED LIST =====
 @app.route('/admin/hospitalized-list')
 def hospitalized_list():
     db = get_db()
@@ -649,6 +684,7 @@ def hospitalized_list():
     inmates = [{"name": row[0]} for row in cur.fetchall()]
     db.close()
     return jsonify(inmates)
+
 
 #=============INMATES =================#
 @app.route("/admin/inmates")
@@ -755,7 +791,7 @@ def analytics_dashboard():
         discharged, hospitalized
         FROM daily_records
         ORDER BY date DESC
-        LIMIT 30
+        LIMIT 90
     """).fetchall()
 
     # ✅ CONVERT ROW OBJECTS TO DICTIONARIES
