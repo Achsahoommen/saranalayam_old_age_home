@@ -160,31 +160,10 @@ body {
     background: #F9FAF7;
 }
 
-@media (max-width: 1024px) {
-    .services {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 50px 40px;
-    }
-}
-
-@media (max-width: 600px) {
-    .services {
-        grid-template-columns: 1fr;
-        padding: 40px 20px;
-    }
-}
-
 .service-card {
-    background: #EFF1F4;           /* Section Cards */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    transition: transform 0.2s ease;
+    padding: 10px 0;
 }
 
-.service-card:hover {
-    transform: translateY(-5px);
-}
 
 /* ---------- CTA ---------- */
 .cta {

@@ -822,7 +822,7 @@ def admin_edit(id):
                 total_inmates=?,
                 male_inmates=?,
                 female_inmates=?,
-                new_admissions=?,
+                new_inmates=?,
                 discharged=?,
                 hospitalized=?,
                 staff_count=?,
@@ -852,23 +852,6 @@ def admin_edit(id):
     db.close()
 
     return render_template("admin_edit_record.html", record=record)
-
-# ================= ADMIN DELETE DAILY RECORD =================
-@app.route("/admin/delete/<int:id>")
-def admin_delete(id):
-
-    if "admin" not in session:
-        return redirect("/login")
-
-    db = get_db()
-    cur = db.cursor()
-
-    cur.execute("DELETE FROM daily_records WHERE id=?", (id,))
-    db.commit()
-    db.close()
-
-    return redirect("/admin/update")
-
 # ================= ADMIN RECORDS =================#
 @app.route("/admin/records")
 def view_records():
