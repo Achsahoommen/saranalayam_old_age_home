@@ -15,7 +15,10 @@ from flask import send_file
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "saranalayam_secret")
+secret_key = os.environ.get("SECRET_KEY")
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable is not set!")
+app.secret_key = secret_key
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # This part ensures the folder actually exists on your computer
@@ -23,134 +26,11 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 DB = 'saranalayam.db'
 
-
-# ================= DATABASE =================#
+# ================= DATABASE CONNECTION ================= #
 def get_db():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     return conn
-
-
-# ================= INIT DATABASE =================#
-def init_db():
-    db = sqlite3.connect(DB)
-    cur = db.cursor()
-
-    # ADMINS
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS admins (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT,
-        email TEXT UNIQUE
-    )
-    """)
-
-    # USERS
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT UNIQUE,
-        password TEXT
-    )
-    """)
-
-    # DONATIONS
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS donation_summary (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT,
-        donor_name TEXT,
-        email TEXT,
-        phone TEXT,
-        country TEXT,
-        amount REAL,
-        purpose TEXT,
-        payment_method TEXT,
-        date TEXT,
-        qr_id TEXT UNIQUE,
-        payment_id TEXT,
-        order_id TEXT,
-        status TEXT DEFAULT 'Pending'
-    )
-    """)
-
-    # ---------- DAILY RECORDS ----------
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS daily_records (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT UNIQUE,  -- Added UNIQUE here to support REPLACE logic
-        total_inmates INTEGER,
-        active_inmates INTEGER,  -- Ensure this is added
-        hospitalized INTEGER,
-        discharged INTEGER,
-        male_inmates INTEGER,
-        female_inmates INTEGER,
-        new_inmates INTEGER,
-        staff_count INTEGER,
-        guests_arrived INTEGER
-    )
-    """)
-
-
-    # ---------- INMATES ----------
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS inmates(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        age INTEGER,
-        gender TEXT,
-        admission_date TEXT,
-        status TEXT,
-        illness TEXT,
-        hospital_details TEXT,
-        notes TEXT,
-        date_of_death TEXT,
-        previous_status TEXT,
-        status_updated_date TEXT
-    )
-    """)
-
-
-
-    #QUESTIONS
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS questions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT,
-        question TEXT,
-        reply TEXT,
-        status TEXT DEFAULT 'Pending',
-        date TEXT
-    )
-    """)
-
-    # BLOG POSTS
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS blog_posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        image_filename TEXT,
-        date_posted TEXT
-    )
-    """)
-
-    # DEFAULT ADMIN (only if not exists)
-    cur.execute("SELECT * FROM admins WHERE username='admin'")
-    if not cur.fetchone():
-        hashed_password = generate_password_hash("admin123")
-        cur.execute("""
-        INSERT INTO admins (username, password, email)
-        VALUES (?, ?, ?)
-        """, ("admin", hashed_password, "admin@saranalayam.org"))
-
-    db.commit()
-    db.close()
-
-
 # ================= PUBLIC ROUTES =================#
 @app.route('/')
 def home():
@@ -225,7 +105,7 @@ def register():
             )
             db.commit()
             return redirect('/login')
-        except:
+        except sqlite3.IntegrityError:
             return render_template('register.html', error="Email already exists")
         finally:
             db.close()
@@ -512,7 +392,8 @@ def admin_donations():
 
     db.close()
     return render_template('admin_donations.html', donations=donations)
-# ================= ADMIN UPDATE =================#
+
+# ================= ADMIN UPDATE =================
 @app.route('/admin/update', methods=['GET', 'POST'])
 def admin_update():
     if 'admin' not in session:
@@ -525,57 +406,36 @@ def admin_update():
     # ================= POST =================
     if request.method == 'POST':
 
-    # ==== CAPTURE FORM DATA ====
+        # ==== CAPTURE FORM DATA ====
         hospitalized_data = request.form.get('hospitalized_names', '').strip()
         discharged_data = request.form.get('discharged_names', '').strip()
+        deceased_data = request.form.get('deceased_names', '').strip()
+
         new_inmates = int(request.form.get('new_inmates', 0))
         staff_count = int(request.form.get('staff_count', 0))
         guests_arrived = int(request.form.get('guests_visited', 0))
 
-        # ================= UPDATE HOSPITALIZED ===============
+        # ================= UPDATE HOSPITALIZED =================
         if hospitalized_data:
-
             parts = hospitalized_data.split("||")
 
             names = [n.strip() for n in parts[0].split(",") if n.strip()]
-            statuses = [s.strip().capitalize() for s in parts[1].split(",") if s.strip()]
-            hospitals = parts[2].split(",") if len(parts) > 2 else [None] * len(names)
+            hospital = parts[1] if len(parts) > 1 else None
 
-            for name, status, hospital in zip(names, statuses, hospitals):
-
-                if status == "SKIP":
-                    continue
-
-                # 🔹 INCREASE
-                if status == "Hospitalized":
-                    cur.execute("""
-                        UPDATE inmates
-                        SET status = ?,
-                            hospital_details = ?,
-                            previous_status = 'Active',
-                            status_updated_date = ?
-                        WHERE name = ? AND status = 'Active'
-                    """, (
-                        status,
-                        hospital,
-                        str(date.today()),
-                        name
-                    ))
-
-                # 🔹 DECREASE
-                elif status in ["Active", "Discharged"]:
-                    cur.execute("""
-                        UPDATE inmates
-                        SET status = ?,
-                            hospital_details = NULL,
-                            previous_status = 'Hospitalized',
-                            status_updated_date = ?
-                        WHERE name = ?
-                    """, (
-                        status,
-                        str(date.today()),
-                        name
-                    ))
+            for name in names:
+                cur.execute("""
+                    UPDATE inmates
+                    SET status = 'Hospitalized',
+                        hospital_details = ?,
+                        previous_status = 'Active',
+                        status_updated_date = ?,
+                        date_of_death = NULL
+                    WHERE name = ? AND status = 'Active'
+                """, (
+                    hospital,
+                    str(date.today()),
+                    name
+                ))
 
         # ================= UPDATE DISCHARGED =================
         if discharged_data:
@@ -587,17 +447,39 @@ def admin_update():
                     SET status = 'Discharged',
                         hospital_details = NULL,
                         previous_status = status,
-                        status_updated_date = ?
+                        status_updated_date = ?,
+                        date_of_death = NULL
                     WHERE name = ? AND status IN ('Active','Hospitalized')
                 """, (
                     str(date.today()),
                     name
                 ))
 
+        # ================= UPDATE DECEASED =================
+        if deceased_data:
+            names_list = [n.strip() for n in deceased_data.split(",") if n.strip()]
+
+            for name in names_list:
+                cur.execute("""
+                    UPDATE inmates
+                    SET status = 'Deceased',
+                        hospital_details = NULL,
+                        previous_status = status,
+                        status_updated_date = ?,
+                        date_of_death = ?
+                    WHERE name = ? AND status != 'Deceased'
+                """, (
+                    str(date.today()),
+                    str(date.today()),
+                    name
+                ))
+
         db.commit()
 
-        # ================= AUTO CALCULATE COUNTS =============
-        cur.execute("SELECT COUNT(*) FROM inmates")
+        # ================= AUTO CALCULATE COUNTS =================
+
+        # Total excluding deceased (recommended)
+        cur.execute("SELECT COUNT(*) FROM inmates WHERE status != 'Deceased'")
         total = cur.fetchone()[0]
 
         cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Hospitalized'")
@@ -605,6 +487,9 @@ def admin_update():
 
         cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Discharged'")
         discharged_count = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Deceased'")
+        deceased_count = cur.fetchone()[0]
 
         active = total - hospitalized_count - discharged_count
 
@@ -614,13 +499,13 @@ def admin_update():
         cur.execute("SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'")
         female = cur.fetchone()[0]
 
-        # ================= SAVE DAILY SNAPSHOT ===============
+        # ================= SAVE DAILY SNAPSHOT =================
         cur.execute("""
             INSERT OR REPLACE INTO daily_records
             (date, total_inmates, active_inmates, male_inmates, female_inmates,
-             new_inmates, discharged, hospitalized,
+             new_inmates, discharged, hospitalized, deceased,
              staff_count, guests_arrived)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             str(date.today()),
             total,
@@ -630,6 +515,7 @@ def admin_update():
             new_inmates,
             discharged_count,
             hospitalized_count,
+            deceased_count,
             staff_count,
             guests_arrived
         ))
@@ -641,7 +527,7 @@ def admin_update():
 
     # ================= GET =================
 
-    cur.execute("SELECT COUNT(*) FROM inmates")
+    cur.execute("SELECT COUNT(*) FROM inmates WHERE status != 'Deceased'")
     total = cur.fetchone()[0]
 
     cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Hospitalized'")
@@ -649,6 +535,9 @@ def admin_update():
 
     cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Discharged'")
     discharged = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM inmates WHERE status='Deceased'")
+    deceased = cur.fetchone()[0]
 
     active = total - hospitalized - discharged
 
@@ -671,20 +560,9 @@ def admin_update():
         male=male,
         female=female,
         hospitalized=hospitalized,
-        discharged=discharged
+        discharged=discharged,
+        deceased=deceased
     )
-
-
-# ===== ROUTE TO FETCH CURRENT HOSPITALIZED LIST =====
-@app.route('/admin/hospitalized-list')
-def hospitalized_list():
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT name FROM inmates WHERE status='Hospitalized'")
-    inmates = [{"name": row[0]} for row in cur.fetchall()]
-    db.close()
-    return jsonify(inmates)
-
 
 #=============INMATES =================#
 @app.route("/admin/inmates")
@@ -727,8 +605,12 @@ def add_inmate():
 
     return render_template("add_inmate.html")
 
+#=============ADMIN EDIT INMATES =================#
 @app.route("/admin/edit-inmate/<int:id>", methods=["GET", "POST"])
 def edit_inmate(id):
+    if "admin" not in session:   
+        return redirect("/login")
+    
     db = get_db()
     cur = db.cursor()
 
@@ -765,6 +647,7 @@ def edit_inmate(id):
     inmate = cur.fetchone()
 
     return render_template("edit_inmate.html", inmate=inmate)
+
 #=================== ADMIN ANALYTICS =================#
 @app.route("/admin/analytics")
 def analytics_dashboard():
@@ -772,8 +655,9 @@ def analytics_dashboard():
         return redirect("/")
 
     db = get_db()
-    db.row_factory = sqlite3.Row  # Make sure this exists
+    db.row_factory = sqlite3.Row
 
+    # ===== CURRENT LIVE COUNTS =====
     total_active = db.execute(
         "SELECT COUNT(*) FROM inmates WHERE status='Active'"
     ).fetchone()[0]
@@ -786,24 +670,48 @@ def analytics_dashboard():
         "SELECT COUNT(*) FROM inmates WHERE gender='Female' AND status='Active'"
     ).fetchone()[0]
 
+    hospitalized = db.execute(
+        "SELECT COUNT(*) FROM inmates WHERE status='Hospitalized'"
+    ).fetchone()[0]
+
+    discharged = db.execute(
+        "SELECT COUNT(*) FROM inmates WHERE status='Discharged'"
+    ).fetchone()[0]
+
+    deceased = db.execute(
+        "SELECT COUNT(*) FROM inmates WHERE status='Deceased'"
+    ).fetchone()[0]
+
+    # ===== FETCH LAST 90 DAYS DATA =====
     rows = db.execute("""
-        SELECT date, total_inmates, new_inmates,
-        discharged, hospitalized
+        SELECT date,
+               total_inmates,
+               active_inmates,
+               new_inmates,
+               discharged,
+               hospitalized,
+               deceased
         FROM daily_records
         ORDER BY date DESC
         LIMIT 90
     """).fetchall()
 
-    # ✅ CONVERT ROW OBJECTS TO DICTIONARIES
+    # Convert Row objects to dictionaries
     records = [dict(row) for row in rows]
+
+    db.close()
 
     return render_template(
         "analytics.html",
         total_active=total_active,
         male=male,
         female=female,
+        hospitalized=hospitalized,
+        discharged=discharged,
+        deceased=deceased,
         records=records
     )
+
 # ================= ADMIN EDIT DAILY RECORD =================
 @app.route("/admin/edit/<int:id>", methods=["GET", "POST"])
 def admin_edit(id):
@@ -812,31 +720,47 @@ def admin_edit(id):
         return redirect("/login")
 
     db = get_db()
+    db.row_factory = sqlite3.Row
     cur = db.cursor()
 
     # ===== UPDATE MODE =====
     if request.method == "POST":
 
+        total_inmates = int(request.form['total_inmates'])
+        active_inmates = int(request.form['active_inmates'])
+        male_inmates = int(request.form['male_inmates'])
+        female_inmates = int(request.form['female_inmates'])
+        new_inmates = int(request.form['new_inmates'])
+        hospitalized = int(request.form['hospitalized'])
+        discharged = int(request.form['discharged'])
+        deceased = int(request.form['deceased'])
+        staff_count = int(request.form['staff_count'])
+        guests_arrived = int(request.form['guests_arrived'])
+
         cur.execute("""
             UPDATE daily_records SET
                 total_inmates=?,
+                active_inmates=?,
                 male_inmates=?,
                 female_inmates=?,
                 new_inmates=?,
-                discharged=?,
                 hospitalized=?,
+                discharged=?,
+                deceased=?,
                 staff_count=?,
                 guests_arrived=?
             WHERE id=?
         """, (
-            request.form['total_inmates'],
-            request.form['male_count'],
-            request.form['female_count'],
-            request.form['new_inmates'],
-            request.form['discharged'],
-            request.form['hospitalized'],
-            request.form['staff_count'],
-            request.form['guests_arrived'],
+            total_inmates,
+            active_inmates,
+            male_inmates,
+            female_inmates,
+            new_inmates,
+            hospitalized,
+            discharged,
+            deceased,
+            staff_count,
+            guests_arrived,
             id
         ))
 
@@ -847,11 +771,18 @@ def admin_edit(id):
 
     # ===== GET RECORD =====
     cur.execute("SELECT * FROM daily_records WHERE id=?", (id,))
-    record = dict(cur.fetchone())
+    row = cur.fetchone()
+
+    if not row:
+        db.close()
+        return redirect("/admin/update")
+
+    record = dict(row)
 
     db.close()
 
     return render_template("admin_edit_record.html", record=record)
+
 # ================= ADMIN RECORDS =================#
 @app.route("/admin/records")
 def view_records():
@@ -943,7 +874,7 @@ def view_replies():
             "reply": row[1],
             "status": row[2]
         })
-
+    db.close()
     return render_template("my_questions.html", questions=questions)
 
 # ================= BLOG ROUTES =================#
@@ -1119,5 +1050,4 @@ def logout():
 
 # ================= RUN =================#
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)

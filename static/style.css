@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #2E2B5F;           /* Navbar */
+    background: #2f7d6a;       /* Navbar */
     padding: 15px 30px;
     width: 100%;
     box-sizing: border-box;
@@ -24,8 +24,10 @@ body {
 }
 
 .logo img {
-    height: 75px;
+    height: 55px;
     width: auto;
+    object-fit: contain;
+    background: transparent;
 }
 
 .nav-links {
@@ -34,7 +36,7 @@ body {
 }
 
 .nav-links a {
-    color: #A7DADB;                /* Logo / Highlight */
+    color: #ffffff;                /* Logo / Highlight */
     margin-left: 20px;
     text-decoration: none;
     font-weight: 600;
@@ -47,7 +49,7 @@ body {
 /* ---------- CONTACT DETAILS ---------- */
 .contact-details {
     display: none;
-    background-color: #EFF1F4;     /* Section Card */
+    background-color: #F0F8F5;     /* Soft greenish section card */
     padding: 20px;
     border-radius: 10px;
     margin: 20px auto 0;
@@ -57,8 +59,8 @@ body {
 
 /* ---------- CONTACT BUTTON ---------- */
 #contactBtn {
-    background-color: #F2A65A;     /* Primary Button */
-    color: #2E2B5F;
+    background: linear-gradient(135deg, #28A745, #3DDC84);    /* Bootstrap-like green */
+    color: #FFFFFF;                /* White text */
     border: none;
     padding: 12px 25px;
     border-radius: 8px;
@@ -66,10 +68,11 @@ body {
     font-size: 16px;
     display: block;
     margin: 0 auto;
+    transition: background-color 0.3s ease;
 }
 
 #contactBtn:hover {
-    background-color: #E8B46B;     /* Button Hover */
+    background-color: #218838;     /* Slightly darker green on hover */
 }
 
 .location {
@@ -85,19 +88,22 @@ body {
 .hero {
     position: relative;
     height: 80vh;
-    background: url("images/mainimage.jpeg") center/cover no-repeat;
     display: flex;
-    text-align: center;
-    padding: 0 8%;
+    align-items: center;        /* vertically center content */
+    justify-content: center;    /* horizontally center content */
+    text-align: center;         /* center text */
+    padding: 0 20px;
     color: white;
+    background: url("images/mainimage.jpeg") center/cover no-repeat;
 }
 
-/* Clean dark overlay */
+/* Dark overlay behind text */
 .hero::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0.55); /* dark overlay */
+    z-index: 1;
 }
 
 /* Content wrapper */
@@ -105,49 +111,50 @@ body {
     position: relative;
     z-index: 2;
     max-width: 900px;
+    background: rgba(0, 0, 0, 0.35); /* optional semi-transparent box */
+    padding: 30px 20px;
+    border-radius: 12px;
     margin: auto;
 }
 
-.hero-subtitle {
-    font-size: 16px;
+/* Subtitle */
+.hero h4.hero-subtitle {
+    color: #ffffff;  /* main green */
+    font-size: 48px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 15px;
-    white-space: nowrap;   /* forces single line */
+    margin-bottom: 10px;
 }
 
-.hero h4 {
-    font-size: 54px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 15px;
-    opacity: 0.85;
-}
-
+/* Main heading */
 .hero h1 {
-    font-size: 34px;
+    color: #2F7D6A;  /* main green */
+    font-size: 32px;
     font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 /* Paragraph */
 .hero p {
+    color: #ffffff;
     font-size: 18px;
     line-height: 1.8;
     opacity: 0.9;
 }
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
+    .hero h4.hero-subtitle {
+        font-size: 18px;
+    }
+
     .hero h1 {
         font-size: 34px;
     }
 
-    .hero h4 {
-        font-size: 56px;
-    }
-
     .hero p {
         font-size: 16px;
+        line-height: 1.6;
     }
 }
 
@@ -164,10 +171,9 @@ body {
     padding: 10px 0;
 }
 
-
 /* ---------- CTA ---------- */
 .cta {
-    background: #EFF1F4;
+    background: #E6F2EF; /* light greenish background */
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.08);
     padding: 40px 20px;
@@ -177,7 +183,7 @@ body {
 }
 
 .cta h2 {
-    color: #2E2B5F;
+    color: #2F7D6A; /* main green */
     font-size: 28px;
     margin-bottom: 20px;
 }
@@ -187,22 +193,22 @@ body {
     margin: 0 auto 30px;
     font-size: 16px;
     line-height: 1.6;
+    color: #3B5F50; /* darker greenish text */
 }
 
 .cta button {
-    background: #F2A65A;
-    color: #2E2B5F;
+    background: #2F7D6A; /* main green */
+    color: #ffffff; /* white text for contrast */
     border: none;
     padding: 12px 30px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-
 }
 
 .cta button:hover {
-    background: #E8B46B;
+    background: #3FA584; /* slightly lighter green on hover */
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
@@ -284,25 +290,135 @@ hr {
     background: #ddd;
     margin: 30px 0;
 }
+/*--------ABOUT---------*/
+/* --- Header Section --- */
+.front-view-header {
+    text-align: center;
+    padding: 40px 20px 20px 20px; /* Reduced vertical space */
+}
 
-/* ---------- INFO BOX ---------- */
-.info-box {
-    background: #EFF1F4;
+.main-title {
+    font-size: 2.2rem; /* Reduced from 3.5rem for a smaller look */
+    color: var(--text-slate);
+    margin-bottom: 5px;
+}
+
+.location-tag {
+    color: #ff7675; /* Soft coral/red from screenshot */
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* --- Content Layout --- */
+.content-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
     padding: 20px;
-    border-radius: 10px;
-    margin: 20px auto;
-    max-width: 700px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
-.info-box ul {
+.info-card {
+    background: white;
+    margin-bottom: 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    overflow: hidden; /* Ensures image corners stay rounded */
+}
+
+.zigzag.reverse {
+    flex-direction: row-reverse;
+}
+
+.card-text {
+    flex: 1;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-image {
+    flex: 1;
+    min-height: 400px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.info-card:hover .card-image img {
+    transform: scale(1.03);
+}
+
+/* --- Typography & Details --- */
+.accent-title {
+    border-left: 5px solid #ADD8E6;
+    padding-left: 15px;
+    color: #1a3a5a;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.styled-list {
+    list-style: none;
+    margin-top: 15px;
+}
+
+.styled-list li {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.styled-list i {
+    color: #3498db;
+    margin-right: 10px;
+}
+
+.founder-quote {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: #444;
+    border-left: 3px solid #eee;
     padding-left: 20px;
+    margin: 20px 0;
 }
 
-.info-box li {
-    margin: 6px 0;
+.signature {
+    font-weight: bold;
+    color: #2c3e50;
 }
 
+/* --- Footer --- */
+.main-footer {
+    text-align: center;
+    padding: 40px;
+    background: #f8f9fa;
+    color: #95a5a6;
+    border-top: 1px solid #eee;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 900px) {
+    .info-card, .zigzag.reverse {
+        flex-direction: column;
+    }
+    .card-image {
+        min-height: 250px;
+    }
+    .card-text {
+        padding: 30px;
+    }
+    .page-header h1 {
+        font-size: 2rem;
+    }
+}
 /* ---------- ACTION BUTTONS ---------- */
 .action-buttons {
     text-align: center;
@@ -315,12 +431,15 @@ hr {
 }
 
 /* ---------- FOOTER ---------- */
-footer {
+.footer {
     text-align: center;
-    color: #3F3F46;
+    color: #ffffff;
     margin-top: 30px;
     font-size: 13px;
+    background-color: #2f7d6a;
+    padding: 40px 0;
 }
+
 
 .admin-btn {
     display: inline-block;
@@ -567,7 +686,6 @@ body.admin-login {
     background-color: #0056b3;
 }
 
-
 /* ================= DONATION PAGE ================= */
 .donation-container {
     background: #EFF1F4;               /* Section Card */
@@ -583,7 +701,7 @@ body.admin-login {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-     margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 .donation-steps span {
@@ -591,28 +709,28 @@ body.admin-login {
 }
 
 .donation-steps .active {
-    color: #2E2B5F;
+    color: #2f7d6a;                  /* Updated Primary */
     font-weight: 600;
-    border-bottom: 3px solid #A7DADB;  /* Highlight */
+    border-bottom: 3px solid #85c9b7;  /* Updated Highlight */
 }
 
 .donation-container h2 {
-    color: #2E2B5F; 
+    color: #2f7d6a; 
     text-align: center;
-    margin-bottom: 30px;                   /* Headings */
+    margin-bottom: 30px;              /* Headings */
 }
 
 .donation-container label {
     color: #3F3F46; 
     display: block;
     font-weight: 600;
-    margin-top: 18px;                   /* Body Text */
+    margin-top: 18px;                 /* Body Text */
 }
 
 .donation-container input,
 .donation-container select {
     border: 1px solid #cfd8dc;
-     width: 100%;
+    width: 100%;
     padding: 12px;
     margin-top: 6px;
     border-radius: 8px;
@@ -621,8 +739,8 @@ body.admin-login {
 
 .donation-container input:focus,
 .donation-container select:focus {
-    border-color: #A7DADB;
-    box-shadow: 0 0 5px rgba(167,218,219,0.6);
+    border-color: #85c9b7;            /* Updated Focus */
+    box-shadow: 0 0 5px rgba(133,201,183,0.6);
 }
 
 .donation-row {
@@ -637,8 +755,8 @@ body.admin-login {
 }
 
 .donation-next-btn {
-    background: #F2A65A;               /* Primary Button */
-    color: #2E2B5F;
+    background: #2f7d6a;              /* Primary Button */
+    color: #ffffff;                   /* Button text color */
     margin-top: 30px;
     width: 100%;
     padding: 14px;
@@ -646,15 +764,14 @@ body.admin-login {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-
 }
 
 .donation-next-btn:hover {
-    background: #E8B46B;               /* Button Hover */
+    background: #39a089;               /* Button Hover */
 }
 
 .donation-note {
-    color: #2E2B5F;
+    color: #2f7d6a;
     text-align: center;
     margin-top: 20px;
     font-weight: 600;
@@ -676,8 +793,8 @@ body.admin-login {
 }
 
 .summary-table th {
-    background-color: #A7DADB;         /* Highlight */
-    color: #2E2B5F;
+    background-color: #85c9b7;        /* Updated Highlight */
+    color: #2f7d6a;
     font-weight: bold;
 }
 
@@ -686,8 +803,8 @@ body.admin-login {
 }
 
 .donation-summary h3 {
-     margin-bottom: 10px;
-    color: #2E2B5F;
+    margin-bottom: 10px;
+    color: #2f7d6a;
 }
 
 .donation-summary p {
@@ -1287,8 +1404,18 @@ a:hover {
 
 /* ===== FAQ ITEMS ===== */
 .faq-item {
-    border-bottom: 1px solid #ddd;
-    padding: 20px 0;
+    background: transparent;  /* remove background */
+    border: none;             /* remove border */
+    border-radius: 0;         /* remove rounded corners */
+    margin-bottom: 10px;      /* optional spacing between items */
+    padding: 10px 0;          /* reduce padding */
+}
+
+
+.faq-title { text-align: center; 
+    font-size: 36px; 
+    color: #2f7d6a; 
+    margin-bottom: 15px;
 }
 
 .faq-question {
@@ -1298,11 +1425,11 @@ a:hover {
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-    color: #1f2d3d;
+    color: #2f7d6a;
 }
 
 .faq-question:hover {
-    color: #2E2B5F;
+    color: #2f7d6a;
 }
 
 .faq-answer {
@@ -1311,7 +1438,7 @@ a:hover {
     opacity: 0;
     transition: all 0.4s ease;
     line-height: 1.8;
-    color: #444;
+    color: #555;
 }
 
 .faq-item.active .faq-answer {
@@ -1331,26 +1458,33 @@ a:hover {
 
 /* ===== ASK QUESTION BOX ===== */
 .ask-box {
-    margin-top: 60px;
-    padding-top: 40px;
+    margin: 60px auto 0; 
+    padding: 40px;
     border-top: 1px solid #ddd;
     text-align: center;
+    max-width: 600px;    
+    background: #f9f9f9; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .ask-box textarea {
     width: 100%;
+    max-width: 100%;        /* Prevents manual resizing from breaking layout */
     padding: 12px;
-    margin-bottom: 20px;
+    margin: 20px 0;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
+    box-sizing: border-box; /* Crucial: keeps padding inside the 100% width */
+    display: block;
 }
 
 .ask-box button {
     padding: 12px 35px;
     border-radius: 30px;
-    border: 2px solid #2E2B5F;
-    background: #2E2B5F;
+    border: 2px solid #2f7d6a;
+    background: #2f7d6a;
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -1358,7 +1492,7 @@ a:hover {
 }
 
 .ask-box button:hover {
-    background: #1f1b4a;
+    background: #236153;
 }
 
 .login-message {
@@ -1370,14 +1504,14 @@ a:hover {
     display: inline-block;
     margin-top: 15px;
     padding: 10px 25px;
-    background: #2E2B5F;
+    background: #2f7d6a;
     color: white;
     text-decoration: none;
     border-radius: 25px;
 }
 
 .login-btn:hover {
-    background: #1f1b4a;
+    background: #236153;
 }
 
 .faq-contact-btn {
@@ -1385,8 +1519,8 @@ a:hover {
     margin: 50px auto 0;
     padding: 14px 35px;
     border-radius: 30px;
-    border: 2px solid #27ae60;
-    color: #27ae60;
+    border: 2px solid #2f7d6a;
+    color: #2f7d6a;
     font-weight: 600;
     text-decoration: none;
     text-align: center;
@@ -1395,7 +1529,7 @@ a:hover {
 }
 
 .faq-contact-btn:hover {
-    background: #27ae60;
+    background: #236153;
     color: white;
 }
 
@@ -1706,8 +1840,9 @@ button:hover {
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-/*==================  SUCCESS PAGE =================*/
- .success-icon {
+
+/*================== SUCCESS PAGE =================*/
+.success-icon {
     font-size: 60px;
     text-align: center;
     margin-bottom: 10px;
@@ -1735,7 +1870,7 @@ button:hover {
 
 .receipt-row span:last-child {
     font-weight: 600;
-    color: #2E2B5F;
+    color: #2f7d6a;          /* Updated Primary */
 }
 
 .success-actions {
@@ -1752,24 +1887,26 @@ button:hover {
     display: inline-block;
 }
 
+/* Updated buttons to match theme */
 .home-btn {
-    background: #F2A65A;
-    color: #2E2B5F;
+    background: #2f7d6a;      /* Primary */
+    color: #ffffff;            /* White text for contrast */
 }
 
 .home-btn:hover {
-    background: #E8B46B;
+    background: #39a089;       /* Slightly lighter hover */
 }
 
 .download-btn {
-    background: #2E2B5F;
-        color: #A7DADB;
+    background: #85c9b7;       /* Highlight/secondary color */
+    color: #2f7d6a;            /* Primary text color */
 }
 
 .download-btn:hover {
-    background: #A7DADB;
-    color: #2E2B5F;
+    background: #2f7d6a;       /* Primary background on hover */
+    color: #ffffff;             /* White text on hover */
 }
+
 /*==================  USER MY QUESTION PAGE =================*/
 .container {
     max-width: 900px;

@@ -18,6 +18,7 @@
         <p><strong>Active:</strong> {{ active }}</p>
         <p><strong>Hospitalized:</strong> {{ hospitalized }}</p>
         <p><strong>Discharged:</strong> {{ discharged }}</p>
+        <p><strong>Deceased:</strong> {{ deceased }}</p>
         <p><strong>Male:</strong> {{ male }}</p>
         <p><strong>Female:</strong> {{ female }}</p>
     </div>
@@ -25,15 +26,19 @@
     <!-- ================= UPDATE FORM ================= -->
     <form method="POST" action="/admin/update">
 
-        <!-- Hidden fields for JS -->
+        <!-- Hidden fields -->
         <input type="hidden" name="hospitalized_names" id="hospitalized_names">
         <input type="hidden" name="discharged_names" id="discharged_names">
+        <input type="hidden" name="deceased_names" id="deceased_names">
 
         <label>Hospitalized</label>
         <input type="number" name="hospitalized" value="{{ hospitalized }}" required>
 
         <label>Discharged</label>
         <input type="number" name="discharged" value="{{ discharged }}" required>
+
+        <label>Deceased</label>
+        <input type="number" name="deceased" value="{{ deceased }}" required>
 
         <label>New Inmates Today</label>
         <input type="number" name="new_inmates" required>
@@ -57,6 +62,7 @@
                 <th>Active</th>
                 <th>Hospitalized</th>
                 <th>Discharged</th>
+                <th>Deceased</th>
                 <th>Male</th>
                 <th>Female</th>
                 <th>New</th>
@@ -73,13 +79,12 @@
                 <td>{{ r.active_inmates }}</td>
                 <td>{{ r.hospitalized }}</td>
                 <td>{{ r.discharged }}</td>
+                <td>{{ r.deceased }}</td>
                 <td>{{ r.male_inmates }}</td>
                 <td>{{ r.female_inmates }}</td>
                 <td>{{ r.new_inmates }}</td>
                 <td>{{ r.staff_count }}</td>
                 <td>{{ r.guests_arrived }}</td>
-
-                <!-- ACTIONS -->
                 <td>
                     <a href="/admin/edit/{{ r.id }}" class="btn-edit">Edit</a>
                 </td>
@@ -87,135 +92,108 @@
         {% endfor %}
         </tbody>
     </table>
- <!-- ================= ANALYTICS BUTTON ================= -->
+
+    <!-- ================= ANALYTICS ================= -->
     <div style="margin-left:20px;">
         <a href="/admin/analytics" class="btn-analysis">
             📊 View Analytics
         </a>
     </div>
+
     <div class="admin-actions">
         <a href="/admin" class="back-btn">← Back to Dashboard</a>
     </div>
 </div>
 
+<!-- ================= JAVASCRIPT ================= -->
 <script id="stats-data" type="application/json">
 {
     "hospitalized": {{ hospitalized | default(0) }},
-    "discharged": {{ discharged | default(0) }}
+    "discharged": {{ discharged | default(0) }},
+    "deceased": {{ deceased | default(0) }}
 }
 </script>
 
 <script>
 const stats = JSON.parse(document.getElementById("stats-data").textContent);
+
 let previousHospitalized = stats.hospitalized;
 let previousDischarged = stats.discharged;
+let previousDeceased = stats.deceased;
 
-document.querySelector("form").addEventListener("submit", async function (e) {
+document.querySelector("form").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const newHospitalized = parseInt(document.querySelector('input[name="hospitalized"]').value) || 0;
     const newDischarged = parseInt(document.querySelector('input[name="discharged"]').value) || 0;
+    const newDeceased = parseInt(document.querySelector('input[name="deceased"]').value) || 0;
 
-// ---------- HOSPITALIZED INCREASE ----------
-if (newHospitalized > previousHospitalized) {
+    // -------- HOSPITALIZED INCREASE --------
+    if (newHospitalized > previousHospitalized) {
+        const diff = newHospitalized - previousHospitalized;
 
-    const diff = newHospitalized - previousHospitalized;
+        let namesInput = prompt(`${diff} inmate(s) hospitalized.\nEnter names separated by commas:`);
 
-    // Ask all names at once
-    let namesInput = prompt(
-        `${diff} inmate(s) hospitalized.\nEnter names separated by commas:`
-    );
-
-    if (!namesInput) {
-        alert("You must enter inmate names!");
-        return;
-    }
-
-    const names = namesInput.split(",")
-        .map(n => n.trim())
-        .filter(n => n !== "");
-
-    if (names.length !== diff) {
-        alert(`You must enter exactly ${diff} name(s).`);
-        return;
-    }
-
-    // Ask hospital name once (same hospital for all)
-    let hospital = prompt("Enter hospital name:");
-    while (!hospital || !hospital.trim()) {
-        hospital = prompt("Hospital name cannot be empty. Enter hospital name:");
-    }
-
-    const statuses = names.map(() => "Hospitalized");
-    const hospitals = names.map(() => hospital.trim());
-
-    document.getElementById("hospitalized_names").value =
-        names.join(",") + "||" +
-        statuses.join(",") + "||" +
-        hospitals.join(",");
-}
-
-    // ---------- HOSPITALIZED DECREASE ----------
-    if (newHospitalized < previousHospitalized) {
-        const diff = previousHospitalized - newHospitalized;
-
-        try {
-            const res = await fetch("/admin/hospitalized-list");
-            const data = await res.json();
-            const hospitalizedInmates = data.slice(0, diff);
-
-            const names = [];
-            const statuses = [];
-
-            for (let inmate of hospitalizedInmates) {
-                // Ask name first (confirm which inmate leaving)
-                const nameConfirmed = prompt(`Confirm inmate leaving hospital:`);
-                const finalName = nameConfirmed ? nameConfirmed.trim() : inmate.name;
-
-                //Optional status change
-                let status = prompt(`Enter new status for ${finalName} (Active / Discharged, leave blank to keep current):`);
-                if (status) {
-                    status = status.trim().charAt(0).toUpperCase() + status.trim().slice(1);
-                    while (!["Active","Discharged"].includes(status)) {
-                        status = prompt(`Invalid! Enter 'Active' or 'Discharged' for ${finalName} (leave blank to keep current):`);
-                        if (!status) break;
-                        status = status.trim().charAt(0).toUpperCase() + status.trim().slice(1);
-                    }
-                } else {
-                    status = "SKIP"; // indicates no change
-                }
-
-                names.push(finalName);
-                statuses.push(status);
-            }
-
-            document.getElementById("hospitalized_names").value = names.join(",") + "||" + statuses.join(",");
-        } catch(err) {
-            alert("Error fetching hospitalized list: " + err);
+        if (!namesInput) {
+            alert("You must enter inmate names!");
             return;
         }
+
+        const names = namesInput.split(",").map(n => n.trim()).filter(n => n !== "");
+
+        if (names.length !== diff) {
+            alert(`You must enter exactly ${diff} name(s).`);
+            return;
+        }
+
+        let hospital = prompt("Enter hospital name:");
+        while (!hospital || !hospital.trim()) {
+            hospital = prompt("Hospital name cannot be empty. Enter hospital name:");
+        }
+
+        document.getElementById("hospitalized_names").value =
+            names.join(",") + "||" + hospital.trim();
     }
 
-    // ---------- DISCHARGED INCREASE ----------
+    // -------- DISCHARGED INCREASE --------
     if (newDischarged > previousDischarged) {
         const diff = newDischarged - previousDischarged;
-        const names = prompt(`${diff} inmate(s) were discharged.\nEnter names separated by commas:`);
 
-        if (!names) {
-            alert("You must enter names!");
+        let namesInput = prompt(`${diff} inmate(s) discharged.\nEnter names separated by commas:`);
+
+        if (!namesInput) {
+            alert("You must enter inmate names!");
             return;
         }
 
-        document.getElementById("discharged_names").value = names;
+        document.getElementById("discharged_names").value = namesInput;
     }
 
-    // Submit the form after hidden inputs are ready
+    // -------- DECEASED INCREASE --------
+    if (newDeceased > previousDeceased) {
+        const diff = newDeceased - previousDeceased;
+
+        let namesInput = prompt(`${diff} inmate(s) marked as deceased.\nEnter names separated by commas:`);
+
+        if (!namesInput) {
+            alert("You must enter inmate names!");
+            return;
+        }
+
+        const names = namesInput.split(",").map(n => n.trim()).filter(n => n !== "");
+
+        if (names.length !== diff) {
+            alert(`You must enter exactly ${diff} name(s).`);
+            return;
+        }
+
+        document.getElementById("deceased_names").value = names.join(",");
+    }
+
     this.submit();
 });
 </script>
 
 </body>
 </html>
-
-
 

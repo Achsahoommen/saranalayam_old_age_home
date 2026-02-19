@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Edit Daily Record</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -15,25 +16,33 @@
         <input type="number" name="total_inmates"
                value="{{ record.total_inmates }}" required>
 
+        <label>Active Inmates</label>
+        <input type="number" name="active_inmates"
+               value="{{ record.active_inmates }}" required>
+
         <label>Male Inmates</label>
-        <input type="number" name="male_count"
+        <input type="number" name="male_inmates"
                value="{{ record.male_inmates }}" required>
 
         <label>Female Inmates</label>
-        <input type="number" name="female_count"
+        <input type="number" name="female_inmates"
                value="{{ record.female_inmates }}" required>
 
         <label>New Admissions</label>
         <input type="number" name="new_inmates"
-               value="{{ record.new_admissions }}" required>
+               value="{{ record.new_inmates }}" required>
+
+        <label>Hospitalized</label>
+        <input type="number" name="hospitalized"
+               value="{{ record.hospitalized }}" required>
 
         <label>Discharged</label>
         <input type="number" name="discharged"
                value="{{ record.discharged }}" required>
 
-        <label>Hospitalized</label>
-        <input type="number" name="hospitalized"
-               value="{{ record.hospitalized }}" required>
+        <label>Deceased</label>
+        <input type="number" name="deceased"
+               value="{{ record.deceased }}" required>
 
         <label>Staff Count</label>
         <input type="number" name="staff_count"
@@ -43,7 +52,7 @@
         <input type="number" name="guests_arrived"
                value="{{ record.guests_arrived }}" required>
 
-        <button type="submit">Update Record</button>
+        <button type="submit" class="btn-primary">Update Record</button>
     </form>
 
     <br>

@@ -58,6 +58,7 @@ def init_db():
         active_inmates INTEGER,  -- Ensure this is added
         hospitalized INTEGER,
         discharged INTEGER,
+        deceased INTEGER,
         male_inmates INTEGER,
         female_inmates INTEGER,
         new_inmates INTEGER,

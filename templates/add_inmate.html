@@ -1,76 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Add Inmate</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Add Inmate | Admin</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="icon" type="image/png" 
+          href="{{ url_for('static', filename='images/favicon.png') }}">
 
     <script>
         function toggleDeathDate() {
-            var status = document.getElementById("status").value;
-            var deathField = document.getElementById("death-date-field");
+            const status = document.getElementById("status").value;
+            const deathField = document.getElementById("death-date-field");
 
             if (status === "Deceased") {
-                deathField.style.display = "block";
+                deathField.classList.remove("hidden");
             } else {
-                deathField.style.display = "none";
+                deathField.classList.add("hidden");
             }
         }
     </script>
 </head>
-<body>
 
-<div class="container">
-    <h2>Add New Inmate</h2>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
 
-    <form method="POST">
+<div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-4xl">
 
-        <label>Full Name</label>
-        <input type="text" name="name" required>
+    <!-- Header -->
+    <div class="mb-6 text-center">
+        <h2 class="text-2xl font-bold text-gray-800">
+            Add New Inmate
+        </h2>
+        <p class="text-gray-500 text-sm">
+            Fill in the details carefully
+        </p>
+    </div>
 
-        <label>Age</label>
-        <input type="number" name="age" required>
+    <form method="POST" class="space-y-6">
 
-        <label>Gender</label>
-        <select name="gender" required>
-            <option value="">Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
-        </select>
+        <!-- Basic Information -->
+        <div>
+            <h3 class="text-lg font-semibold text-blue-600 mb-3">
+                Basic Information
+            </h3>
 
-        <!-- STATUS FIELD -->
-        <label>Status</label>
-        <select name="status" id="status" onchange="toggleDeathDate()" required>
-            <option value="">Select Status</option>
-            <option value="Active">Active</option>
-            <option value="Hospitalized">Hospitalized</option>
-            <option value="Discharged">Discharged</option>
-            <option value="Deceased">Deceased</option>
-        </select>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <!-- DATE OF DEATH (Hidden by default) -->
-        <div id="death-date-field" style="display:none;">
-            <label>Date of Death</label>
-            <input type="date" name="date_of_death">
+                <div>
+                    <label class="block text-sm font-medium">Full Name</label>
+                    <input type="text" name="name" required
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Age</label>
+                    <input type="number" name="age" min="1" required
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Gender</label>
+                    <select name="gender" required
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Admission Date</label>
+                    <input type="date" name="admission_date" required
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                </div>
+
+            </div>
         </div>
 
-        <label>Admission Date</label>
-        <input type="date" name="admission_date" required>
+        <!-- Status Section -->
+        <div>
+            <h3 class="text-lg font-semibold text-red-600 mb-3">
+                Status Information
+            </h3>
 
-        <label>Medical Condition</label>
-        <input type="text" name="illness">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <label>Hospital Details</label>
-        <input type="text" name="hospital_details">
+                <div>
+                    <label class="block text-sm font-medium">Status</label>
+                    <select name="status" id="status"
+                        onchange="toggleDeathDate()" required
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-red-400">
+                        <option value="">Select Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Hospitalized">Hospitalized</option>
+                        <option value="Discharged">Discharged</option>
+                        <option value="Deceased">Deceased</option>
+                    </select>
+                </div>
 
-        <label>Additional Notes</label>
-        <textarea name="notes" rows="3"></textarea>
+                <div id="death-date-field" class="hidden">
+                    <label class="block text-sm font-medium">Date of Death</label>
+                    <input type="date" name="date_of_death"
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-red-400">
+                </div>
 
-        <button type="submit">Add Inmate</button>
+            </div>
+        </div>
+
+        <!-- Medical Section -->
+        <div>
+            <h3 class="text-lg font-semibold text-green-600 mb-3">
+                Medical Details
+            </h3>
+
+            <div class="space-y-4">
+
+                <div>
+                    <label class="block text-sm font-medium">Medical Condition</label>
+                    <input type="text" name="illness"
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-green-400">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Hospital Details</label>
+                    <input type="text" name="hospital_details"
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-green-400">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Additional Notes</label>
+                    <textarea name="notes" rows="3"
+                        class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-green-400"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-between items-center pt-6">
+
+            <a href="/admin/inmates"
+                class="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition">
+                ← Back to Inmates
+            </a>
+
+            <button type="submit"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+                Add Inmate
+            </button>
+
+        </div>
+
     </form>
-
-    <br>
-    <a href="/admin/inmates" class="back-btn">← Back to Inmates</a>
 
 </div>
 
