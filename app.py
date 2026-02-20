@@ -1,24 +1,99 @@
-from flask import Flask, jsonify, render_template, request, redirect, session
+# ================= FLASK CORE =================
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    session,
+    jsonify,
+    send_file,
+    url_for
+)
+
+# ================= STANDARD LIBRARY =================
+import os
+import io
 import sqlite3
 import random
-from datetime import date
-import os
+import csv
+from io import StringIO, BytesIO
+from datetime import date, datetime
+from functools import wraps
+
+# ================= SECURITY & UPLOADS =================
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from send_otp import send_otp
-import razorpay
-from razorpay_utils import client as razorpay_client, RAZORPAY_KEY_ID
-from razorpay_utils import create_order
-from razorpay_utils import verify_payment_signature
-from receipt_utils import generate_receipt
-from flask import send_file
 
+# ================= AUTH DECORATORS =================
+from decorators import admin_required
+
+# ================= OTP =================
+from send_otp import send_otp
+
+# ================= RAZORPAY =================
+import razorpay
+from razorpay_utils import (
+    client as razorpay_client,
+    RAZORPAY_KEY_ID,
+    create_order,
+    verify_payment_signature
+)
+
+# ================= RECEIPTS =================
+from receipt_utils import generate_receipt
+
+# ================= REPORTLAB (PDF EXPORTS) =================
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.styles import getSampleStyleSheet
+
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer,
+    PageBreak
+)
+
+from reportlab.graphics.shapes import Drawing, String
+from reportlab.graphics.charts.lineplots import LinePlot
+from reportlab.graphics.charts.barcharts import VerticalBarChart
+
+
+def build_trend_chart(data, title):
+    drawing = Drawing(460, 220)
+
+    drawing.add(String(
+        230, 195, title,
+        textAnchor="middle",
+        fontSize=11,
+        fontName="Helvetica-Bold"
+    ))
+
+    chart = LinePlot()
+    chart.x = 40
+    chart.y = 40
+    chart.width = 380
+    chart.height = 130
+
+    chart.data = [[(i + 1, v) for i, v in enumerate(data)]]
+    chart.lines[0].strokeColor = colors.HexColor("#2563eb")
+    chart.lines[0].strokeWidth = 2
+
+    chart.yValueAxis.valueMin = 0
+    chart.yValueAxis.visibleGrid = True
+    chart.yValueAxis.gridStrokeColor = colors.lightgrey
+
+    chart.xValueAxis.visibleTicks = False
+    chart.xValueAxis.visibleLabels = False
+
+    drawing.add(chart)
+    return drawing
 
 app = Flask(__name__)
-secret_key = os.environ.get("SECRET_KEY")
-if not secret_key:
-    raise RuntimeError("SECRET_KEY environment variable is not set!")
-app.secret_key = secret_key
+app.secret_key = "saranalayam_secret_key_2026"
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # This part ensures the folder actually exists on your computer
@@ -577,7 +652,402 @@ def view_inmates():
 
     return render_template("inmates.html", inmates=inmates)
 
-# ================= ADMIN ADD INMATE =================#
+@app.route("/admin/export/inmates/csv")
+def export_inmates_csv():
+
+    # 🔐 Admin protection
+    if "admin" not in session:
+        return redirect("/login")
+
+    # 📅 Date filters
+    from_date = request.args.get("from_date")
+    to_date = request.args.get("to_date")
+
+    query = "SELECT * FROM inmates WHERE 1=1"
+    params = []
+
+    if from_date:
+        query += " AND admission_date >= ?"
+        params.append(from_date)
+
+    if to_date:
+        query += " AND admission_date <= ?"
+        params.append(to_date)
+
+    query += " ORDER BY admission_date DESC"
+
+    db = get_db()
+    inmates = db.execute(query, params).fetchall()
+    db.close()
+
+    # 📝 Create CSV
+    output = StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Name", "Age", "Gender", "Admission Date",
+        "Status", "Illness", "Hospital", "Notes"
+    ])
+
+    for i in inmates:
+        writer.writerow([
+            i["name"],
+            i["age"],
+            i["gender"],
+            i["admission_date"],
+            i["status"],
+            i["illness"],
+            i["hospital_details"],
+            i["notes"]
+        ])
+
+    response = app.response_class(
+        output.getvalue(),
+        mimetype="text/csv"
+    )
+    response.headers["Content-Disposition"] = "attachment; filename=inmates.csv"
+
+    return response
+
+@app.route("/admin/export/monthly-report/pdf")
+@admin_required
+def export_monthly_report_pdf():
+
+    # ===== MONTH =====
+    month = request.args.get("month") or datetime.now().strftime("%Y-%m")
+    start_date = f"{month}-01"
+    end_date = f"{month}-31"
+
+    conn = sqlite3.connect("saranalayam.db")
+    cursor = conn.cursor()
+
+    # ===== SUMMARY =====
+    cursor.execute("""
+        SELECT
+            COUNT(*),
+            SUM(status='Active'),
+            SUM(status='Hospitalized'),
+            SUM(status='Discharged'),
+            SUM(status='Deceased'),
+            SUM(gender='Male'),
+            SUM(gender='Female')
+        FROM inmates
+    """)
+    total, active, hosp, disch, dead, male, female = cursor.fetchone()
+
+    # ===== DAILY RECORDS =====
+    cursor.execute("""
+        SELECT date, total_inmates, active_inmates, hospitalized,
+               discharged, deceased, new_inmates, staff_count, guests_arrived
+        FROM daily_records
+        WHERE date BETWEEN ? AND ?
+        ORDER BY date
+    """, (start_date, end_date))
+    daily = cursor.fetchall()
+
+    # ===== FULL INMATE LIST =====
+    cursor.execute("""
+        SELECT name, age, gender, status
+        FROM inmates
+        ORDER BY name
+    """)
+    inmates = cursor.fetchall()
+
+    conn.close()
+
+    # ===== PDF SETUP =====
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=36,
+        rightMargin=36,
+        topMargin=36,
+        bottomMargin=36
+    )
+
+    styles = getSampleStyleSheet()
+    elements = []
+
+    # ===== TITLE =====
+    elements.append(Paragraph("<b>SARANALAYAM OLD AGE HOME</b>", styles["Title"]))
+    elements.append(Paragraph("<b>Monthly Inmate Analytics Report</b>", styles["Heading2"]))
+    elements.append(Paragraph(f"<b>Month:</b> {month}", styles["Normal"]))
+    elements.append(Paragraph(
+        f"<b>Generated on:</b> {datetime.now().strftime('%d %B %Y')}",
+        styles["Normal"]
+    ))
+    elements.append(Spacer(1, 16))
+
+    # ===== SUMMARY TABLE =====
+    summary = Table([
+        ["Metric", "Count"],
+        ["Total Inmates", total],
+        ["Active", active],
+        ["Hospitalized", hosp],
+        ["Discharged", disch],
+        ["Deceased", dead],
+        ["Male", male],
+        ["Female", female],
+    ], colWidths=[260, 100])
+
+    summary.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#2563eb")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(summary)
+    elements.append(Spacer(1, 20))
+
+    # ===== STATUS CHART =====
+    elements.append(Paragraph("<b>Status Distribution</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    chart = VerticalBarChart()
+    chart.data = [[active, hosp, disch, dead]]
+    chart.categoryAxis.categoryNames = ["Active", "Hospitalized", "Discharged", "Deceased"]
+    chart.width = 400
+    chart.height = 220
+    chart.barWidth = 30
+    chart.valueAxis.valueMin = 0
+
+    drawing = Drawing(450, 250)
+    drawing.add(chart)
+    elements.append(drawing)
+
+    # ===== DAILY RECORDS =====
+    elements.append(PageBreak())
+    elements.append(Paragraph("<b>Daily Records</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    daily_table = [
+        ["Date","Total","Active","Hosp","Disch","Dead","New","Staff","Guests"]
+    ]
+
+    for d in daily:
+        daily_table.append([d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8]])
+
+    daily_tbl = Table(daily_table, repeatRows=1)
+    daily_tbl.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#16a34a")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTSIZE', (0,0), (-1,-1), 8),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(daily_tbl)
+
+    # ===== FULL INMATE LIST =====
+    elements.append(PageBreak())
+    elements.append(Paragraph("<b>Inmate List</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    inmate_table = [["Name", "Age", "Gender", "Status"]]
+    for i in inmates:
+        inmate_table.append(list(i))
+
+    inmates_tbl = Table(
+        inmate_table,
+        colWidths=[220, 50, 80, 90],
+        repeatRows=1
+    )
+
+    inmates_tbl.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#0f766e")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(inmates_tbl)
+
+    # ===== FOOTER =====
+    def footer(canvas, doc):
+        canvas.setFont("Helvetica", 9)
+        canvas.drawRightString(
+            A4[0] - 36,
+            20,
+            f"Page {doc.page} | Saranalayam Admin System"
+        )
+
+    doc.build(elements, onFirstPage=footer, onLaterPages=footer)
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"monthly_report_{month}.pdf",
+        mimetype="application/pdf"
+    )
+
+@app.route("/admin/export/yearly-report/pdf")
+@admin_required
+def export_yearly_report_pdf():
+
+    year = request.args.get("year") or datetime.now().strftime("%Y")
+    start = f"{year}-01-01"
+    end = f"{year}-12-31"
+
+    conn = sqlite3.connect("saranalayam.db")
+    cursor = conn.cursor()
+
+    # ===== SUMMARY (ALL YEARS SAFE) =====
+    cursor.execute("""
+        SELECT
+            COUNT(*),
+            SUM(CASE WHEN status='Active' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN status='Hospitalized' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN status='Discharged' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN status='Deceased' THEN 1 ELSE 0 END)
+        FROM inmates
+        WHERE admission_date BETWEEN ? AND ?
+    """, (start, end))
+
+    total, active, hosp, disch, dead = cursor.fetchone()
+
+    # ===== MONTHLY TOTALS (FROM INMATES – WORKS FOR 2020) =====
+    cursor.execute("""
+        SELECT substr(admission_date,1,7) AS month,
+               COUNT(*)
+        FROM inmates
+        WHERE admission_date BETWEEN ? AND ?
+        GROUP BY month
+        ORDER BY month
+    """, (start, end))
+
+    monthly = cursor.fetchall()
+
+    # ===== DAILY RECORD TRENDS (ONLY IF AVAILABLE) =====
+    def trend(days, column):
+        cursor.execute(f"""
+            SELECT {column}
+            FROM daily_records
+            WHERE date BETWEEN ? AND ?
+            ORDER BY date DESC
+            LIMIT ?
+        """, (start, end, days))
+
+        rows = cursor.fetchall()
+        return [r[0] for r in rows][::-1] if rows else []
+
+    active_30 = trend(30, "active_inmates")
+    active_90 = trend(90, "active_inmates")
+    hosp_30 = trend(30, "hospitalized")
+    dead_30 = trend(30, "deceased")
+
+    conn.close()
+
+    # ===== PDF SETUP =====
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=36,
+        leftMargin=36,
+        topMargin=36,
+        bottomMargin=36
+    )
+
+    styles = getSampleStyleSheet()
+    elements = []
+
+    # ===== TITLE =====
+    elements.append(Paragraph("<b>SARANALAYAM OLD AGE HOME</b>", styles["Title"]))
+    elements.append(Paragraph(
+        f"<b>Yearly Consolidated Report – {year}</b>",
+        styles["Heading2"]
+    ))
+    elements.append(Spacer(1, 16))
+
+    # ===== SUMMARY TABLE =====
+    summary = Table([
+        ["Metric", "Count"],
+        ["Total Inmates", total],
+        ["Active", active],
+        ["Hospitalized", hosp],
+        ["Discharged", disch],
+        ["Deceased", dead]
+    ], colWidths=[260, 100])
+
+    summary.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#2563eb")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(summary)
+    elements.append(PageBreak())
+
+    # ===== MONTHLY TABLE =====
+    elements.append(Paragraph("<b>Monthly Admissions</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    month_table = [["Month", "Admissions"]] + (monthly if monthly else [["—", 0]])
+
+    mt = Table(month_table, repeatRows=1)
+    mt.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#16a34a")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(mt)
+    elements.append(PageBreak())
+
+    # ===== TREND CHARTS (ONLY IF DATA EXISTS) =====
+    elements.append(Paragraph("<b>Trend Analysis</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 12))
+
+    if active_30:
+        elements.append(build_trend_chart(active_30, "Active – Last 30 Days"))
+        elements.append(Spacer(1, 14))
+
+    if active_90:
+        elements.append(build_trend_chart(active_90, "Active – Last 90 Days"))
+        elements.append(Spacer(1, 14))
+
+    if hosp_30:
+        elements.append(build_trend_chart(hosp_30, "Hospitalized – Last 30 Days"))
+        elements.append(Spacer(1, 14))
+
+    if dead_30:
+        elements.append(build_trend_chart(dead_30, "Deceased – Last 30 Days"))
+
+    if not any([active_30, active_90, hosp_30, dead_30]):
+        elements.append(
+            Paragraph(
+                "<i>No daily tracking data available for this year.</i>",
+                styles["Normal"]
+            )
+        )
+
+    # ===== FOOTER =====
+    def footer(canvas, doc):
+        canvas.setFont("Helvetica", 9)
+        canvas.drawRightString(
+            A4[0] - 36,
+            20,
+            f"Page {doc.page} | Saranalayam Admin System"
+        )
+
+    doc.build(elements, onFirstPage=footer, onLaterPages=footer)
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"yearly_report_{year}.pdf",
+        mimetype="application/pdf"
+    )
+#===============ADMIN ADD INMATE =================#
 @app.route("/admin/inmates/add", methods=["GET", "POST"])
 def add_inmate():
     if "admin" not in session:

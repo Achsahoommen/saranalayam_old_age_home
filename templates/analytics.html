@@ -41,6 +41,23 @@
     <h3>Gender Distribution</h3>
     <canvas id="genderChart"></canvas>
 
+    <hr style="margin:40px 0;">
+
+<h3>Export Reports</h3>
+
+<form method="GET" action="/admin/export/yearly-report/pdf" style="display:flex; gap:12px; flex-wrap:wrap;">
+    <input type="number"
+           name="year"
+           placeholder="Enter Year (e.g. 2026)"
+           min="2016"
+           max="3500"
+           style="padding:10px; border-radius:8px; border:1px solid #d1d5db;"
+           required>
+
+    <button type="submit" class="back-btn">
+        📄 Download Yearly PDF
+    </button>
+</form>
     <br>
     <a href="/admin" class="back-btn">← Back to Dashboard</a>
 </div>
@@ -156,7 +173,6 @@ new Chart(document.getElementById("genderChart"), {
     }
 });
 </script>
-
 </body>
 </html>
 
