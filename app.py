@@ -9,27 +9,23 @@ from flask import (
     send_file,
     url_for
 )
-
 # ================= STANDARD LIBRARY =================
 import os
 import io
 import sqlite3
 import random
 import csv
+from datetime import date, datetime
 from io import StringIO, BytesIO
 from datetime import date, datetime
 from functools import wraps
-
 # ================= SECURITY & UPLOADS =================
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-
 # ================= AUTH DECORATORS =================
 from decorators import admin_required
-
 # ================= OTP =================
 from send_otp import send_otp
-
 # ================= RAZORPAY =================
 import razorpay
 from razorpay_utils import (
@@ -38,16 +34,14 @@ from razorpay_utils import (
     create_order,
     verify_payment_signature
 )
-
 # ================= RECEIPTS =================
 from receipt_utils import generate_receipt
-
 # ================= REPORTLAB (PDF EXPORTS) =================
+from calendar import calendar
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.lib.styles import getSampleStyleSheet
-
 from reportlab.platypus import (
     SimpleDocTemplate,
     Table,
@@ -56,11 +50,9 @@ from reportlab.platypus import (
     Spacer,
     PageBreak
 )
-
 from reportlab.graphics.shapes import Drawing, String
 from reportlab.graphics.charts.lineplots import LinePlot
 from reportlab.graphics.charts.barcharts import VerticalBarChart
-
 
 def build_trend_chart(data, title):
     drawing = Drawing(460, 220)
@@ -96,7 +88,6 @@ app = Flask(__name__)
 app.secret_key = "saranalayam_secret_key_2026"
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-# This part ensures the folder actually exists on your computer
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 DB = 'saranalayam.db'
@@ -111,7 +102,6 @@ def get_db():
 def home():
     return render_template('home.html')
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -123,7 +113,6 @@ def faq():
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
-
 
 # ================= LOGIN (ADMIN + USER) =================#
 @app.route('/login', methods=['GET', 'POST'])
@@ -159,7 +148,6 @@ def login():
 
     return render_template('login.html')
 
-
 # ================= REGISTER =================#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -167,7 +155,6 @@ def register():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-
         hashed_password = generate_password_hash(password)
 
         db = get_db()
@@ -268,7 +255,6 @@ def donate_step_2():
         )
 
     return render_template("donate_2.html", donor=donor)
-
 
 # ================= PAYMENT SUCCESS =================#
 @app.route('/payment-success', methods=['POST'])
@@ -385,8 +371,6 @@ def payment_failure():
     print("Razorpay Failure:", error)
     return "Payment failed. Please try again.", 400
 
-
-
 # ================= USER DASHBOARD =================#
 @app.route('/user-dashboard')
 def user_dashboard():
@@ -410,7 +394,6 @@ def my_donations():
     db.close()
 
     return render_template('my_donation.html', donations=donations)
-
 
 # ================= ADMIN DASHBOARD =================#
 @app.route('/admin')
@@ -468,7 +451,7 @@ def admin_donations():
     db.close()
     return render_template('admin_donations.html', donations=donations)
 
-# ================= ADMIN UPDATE =================
+# ==================== ADMIN UPDATE =======================#
 @app.route('/admin/update', methods=['GET', 'POST'])
 def admin_update():
     if 'admin' not in session:
@@ -553,7 +536,6 @@ def admin_update():
 
         # ================= AUTO CALCULATE COUNTS =================
 
-        # Total excluding deceased (recommended)
         cur.execute("SELECT COUNT(*) FROM inmates WHERE status != 'Deceased'")
         total = cur.fetchone()[0]
 
@@ -639,7 +621,7 @@ def admin_update():
         deceased=deceased
     )
 
-#=============INMATES =================#
+#===================== INMATES ========================#
 @app.route("/admin/inmates")
 def view_inmates():
     if "admin" not in session:
@@ -708,32 +690,59 @@ def export_inmates_csv():
     response.headers["Content-Disposition"] = "attachment; filename=inmates.csv"
 
     return response
-
+#===================== REPORTS(MONTHLY & YEARLY) ========================#
+#==============MONTHY REPORT PDF EXPORT==============#
 @app.route("/admin/export/monthly-report/pdf")
 @admin_required
 def export_monthly_report_pdf():
 
     # ===== MONTH =====
     month = request.args.get("month") or datetime.now().strftime("%Y-%m")
+
+    year, mon = map(int, month.split("-"))
+    last_day = calendar.monthrange(year, mon)[1]
+
     start_date = f"{month}-01"
-    end_date = f"{month}-31"
+    end_date = f"{month}-{last_day}"
 
     conn = sqlite3.connect("saranalayam.db")
     cursor = conn.cursor()
 
-    # ===== SUMMARY =====
+    # ===== SUMMARY + AVERAGE AGE =====
     cursor.execute("""
         SELECT
             COUNT(*),
-            SUM(status='Active'),
-            SUM(status='Hospitalized'),
-            SUM(status='Discharged'),
-            SUM(status='Deceased'),
-            SUM(gender='Male'),
-            SUM(gender='Female')
+            SUM(CASE WHEN status='Active' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN status='Hospitalized' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN status='Discharged' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN status='Deceased' THEN 1 ELSE 0 END),
+            AVG(age)
         FROM inmates
     """)
-    total, active, hosp, disch, dead, male, female = cursor.fetchone()
+    total, active, hosp, disch, dead, avg_age = cursor.fetchone()
+
+    active = active or 0
+    hosp = hosp or 0
+    disch = disch or 0
+    dead = dead or 0
+    avg_age = round(avg_age, 1) if avg_age else 0
+
+    # ===== GENDER STATS =====
+    cursor.execute("""
+        SELECT gender, COUNT(*)
+        FROM inmates
+        GROUP BY gender
+    """)
+    gender_rows = cursor.fetchall()
+
+    male = female = others = 0
+    for g, count in gender_rows:
+        if g.lower() == "male":
+            male = count
+        elif g.lower() == "female":
+            female = count
+        else:
+            others = count
 
     # ===== DAILY RECORDS =====
     cursor.execute("""
@@ -787,8 +796,10 @@ def export_monthly_report_pdf():
         ["Hospitalized", hosp],
         ["Discharged", disch],
         ["Deceased", dead],
+        ["Average Age", avg_age],
         ["Male", male],
         ["Female", female],
+        ["Others", others],
     ], colWidths=[260, 100])
 
     summary.setStyle(TableStyle([
@@ -841,7 +852,7 @@ def export_monthly_report_pdf():
 
     elements.append(daily_tbl)
 
-    # ===== FULL INMATE LIST =====
+    # ===== INMATE LIST =====
     elements.append(PageBreak())
     elements.append(Paragraph("<b>Inmate List</b>", styles["Heading2"]))
     elements.append(Spacer(1, 10))
@@ -883,8 +894,9 @@ def export_monthly_report_pdf():
         as_attachment=True,
         download_name=f"monthly_report_{month}.pdf",
         mimetype="application/pdf"
+        
     )
-
+#==============YEARLY REPORT PDF EXPORT==============#
 @app.route("/admin/export/yearly-report/pdf")
 @admin_required
 def export_yearly_report_pdf():
@@ -896,21 +908,43 @@ def export_yearly_report_pdf():
     conn = sqlite3.connect("saranalayam.db")
     cursor = conn.cursor()
 
-    # ===== SUMMARY (ALL YEARS SAFE) =====
+    # ===== SUMMARY =====
     cursor.execute("""
         SELECT
             COUNT(*),
             SUM(CASE WHEN status='Active' THEN 1 ELSE 0 END),
             SUM(CASE WHEN status='Hospitalized' THEN 1 ELSE 0 END),
             SUM(CASE WHEN status='Discharged' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN status='Deceased' THEN 1 ELSE 0 END)
+            SUM(CASE WHEN status='Deceased' THEN 1 ELSE 0 END),
+            AVG(age)
         FROM inmates
-        WHERE admission_date BETWEEN ? AND ?
-    """, (start, end))
+    """)
+    total, active, hosp, disch, dead, avg_age = cursor.fetchone()
 
-    total, active, hosp, disch, dead = cursor.fetchone()
+    active = active or 0
+    hosp = hosp or 0
+    disch = disch or 0
+    dead = dead or 0
+    avg_age = round(avg_age, 1) if avg_age else 0
 
-    # ===== MONTHLY TOTALS (FROM INMATES – WORKS FOR 2020) =====
+    # ===== GENDER STATS =====
+    cursor.execute("""
+        SELECT gender, COUNT(*)
+        FROM inmates
+        GROUP BY gender
+    """)
+    gender_rows = cursor.fetchall()
+
+    male = female = others = 0
+    for g, count in gender_rows:
+        if g.lower() == "male":
+            male = count
+        elif g.lower() == "female":
+            female = count
+        else:
+            others = count
+
+    # ===== MONTHLY TOTALS =====
     cursor.execute("""
         SELECT substr(admission_date,1,7) AS month,
                COUNT(*)
@@ -919,10 +953,9 @@ def export_yearly_report_pdf():
         GROUP BY month
         ORDER BY month
     """, (start, end))
-
     monthly = cursor.fetchall()
 
-    # ===== DAILY RECORD TRENDS (ONLY IF AVAILABLE) =====
+    # ===== DAILY TRENDS =====
     def trend(days, column):
         cursor.execute(f"""
             SELECT {column}
@@ -931,7 +964,6 @@ def export_yearly_report_pdf():
             ORDER BY date DESC
             LIMIT ?
         """, (start, end, days))
-
         rows = cursor.fetchall()
         return [r[0] for r in rows][::-1] if rows else []
 
@@ -940,28 +972,29 @@ def export_yearly_report_pdf():
     hosp_30 = trend(30, "hospitalized")
     dead_30 = trend(30, "deceased")
 
+    # ===== INMATES LIST =====
+    cursor.execute("""
+        SELECT id, name, age, admission_date, status
+        FROM inmates
+        WHERE admission_date BETWEEN ? AND ?
+        ORDER BY admission_date
+    """, (start, end))
+    inmates_list = cursor.fetchall()
+
     conn.close()
 
     # ===== PDF SETUP =====
     buffer = BytesIO()
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=A4,
-        rightMargin=36,
-        leftMargin=36,
-        topMargin=36,
-        bottomMargin=36
-    )
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            rightMargin=36, leftMargin=36,
+                            topMargin=36, bottomMargin=36)
 
     styles = getSampleStyleSheet()
     elements = []
 
     # ===== TITLE =====
     elements.append(Paragraph("<b>SARANALAYAM OLD AGE HOME</b>", styles["Title"]))
-    elements.append(Paragraph(
-        f"<b>Yearly Consolidated Report – {year}</b>",
-        styles["Heading2"]
-    ))
+    elements.append(Paragraph(f"<b>Yearly Consolidated Report – {year}</b>", styles["Heading2"]))
     elements.append(Spacer(1, 16))
 
     # ===== SUMMARY TABLE =====
@@ -971,7 +1004,8 @@ def export_yearly_report_pdf():
         ["Active", active],
         ["Hospitalized", hosp],
         ["Discharged", disch],
-        ["Deceased", dead]
+        ["Deceased", dead],
+        ["Average Age", avg_age]
     ], colWidths=[260, 100])
 
     summary.setStyle(TableStyle([
@@ -981,16 +1015,35 @@ def export_yearly_report_pdf():
         ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
         ('ALIGN', (1,1), (-1,-1), 'CENTER')
     ]))
-
     elements.append(summary)
+
+    # ===== GENDER TABLE =====
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("<b>Gender Statistics</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    gender_table = Table([
+        ["Gender", "Count"],
+        ["Male", male],
+        ["Female", female],
+        ["Others", others]
+    ], colWidths=[260, 100])
+
+    gender_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#9333ea")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    ]))
+
+    elements.append(gender_table)
     elements.append(PageBreak())
 
     # ===== MONTHLY TABLE =====
     elements.append(Paragraph("<b>Monthly Admissions</b>", styles["Heading2"]))
     elements.append(Spacer(1, 10))
-
     month_table = [["Month", "Admissions"]] + (monthly if monthly else [["—", 0]])
-
     mt = Table(month_table, repeatRows=1)
     mt.setStyle(TableStyle([
         ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
@@ -998,55 +1051,60 @@ def export_yearly_report_pdf():
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('ALIGN', (1,1), (-1,-1), 'CENTER')
     ]))
-
     elements.append(mt)
     elements.append(PageBreak())
 
-    # ===== TREND CHARTS (ONLY IF DATA EXISTS) =====
+    # ===== INMATES LIST TABLE =====
+    elements.append(Paragraph("<b>List of Inmates Admitted</b>", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    if inmates_list:
+        inmate_table_data = [["ID", "Name", "Age", "Admission Date", "Status"]] + inmates_list
+        it = Table(inmate_table_data, repeatRows=1, colWidths=[40, 150, 40, 100, 100])
+        it.setStyle(TableStyle([
+            ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
+            ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#f59e0b")),
+            ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+            ('ALIGN', (2,1), (2,-1), 'CENTER'),
+            ('ALIGN', (3,1), (3,-1), 'CENTER'),
+            ('ALIGN', (4,1), (4,-1), 'CENTER'),
+        ]))
+        elements.append(it)
+    else:
+        elements.append(Paragraph("<i>No inmates admitted during this year.</i>", styles["Normal"]))
+
+    elements.append(PageBreak())
+
+    # ===== TREND CHARTS =====
     elements.append(Paragraph("<b>Trend Analysis</b>", styles["Heading2"]))
     elements.append(Spacer(1, 12))
-
     if active_30:
         elements.append(build_trend_chart(active_30, "Active – Last 30 Days"))
         elements.append(Spacer(1, 14))
-
     if active_90:
         elements.append(build_trend_chart(active_90, "Active – Last 90 Days"))
         elements.append(Spacer(1, 14))
-
     if hosp_30:
         elements.append(build_trend_chart(hosp_30, "Hospitalized – Last 30 Days"))
         elements.append(Spacer(1, 14))
-
     if dead_30:
         elements.append(build_trend_chart(dead_30, "Deceased – Last 30 Days"))
-
     if not any([active_30, active_90, hosp_30, dead_30]):
-        elements.append(
-            Paragraph(
-                "<i>No daily tracking data available for this year.</i>",
-                styles["Normal"]
-            )
-        )
+        elements.append(Paragraph("<i>No daily tracking data available for this year.</i>", styles["Normal"]))
 
     # ===== FOOTER =====
     def footer(canvas, doc):
         canvas.setFont("Helvetica", 9)
-        canvas.drawRightString(
-            A4[0] - 36,
-            20,
-            f"Page {doc.page} | Saranalayam Admin System"
-        )
+        canvas.drawRightString(A4[0] - 36, 20, f"Page {doc.page} | Saranalayam Admin System")
 
     doc.build(elements, onFirstPage=footer, onLaterPages=footer)
 
     buffer.seek(0)
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name=f"yearly_report_{year}.pdf",
-        mimetype="application/pdf"
-    )
+    return send_file(buffer,
+                     as_attachment=True,
+                     download_name=f"yearly_report_{year}.pdf",
+                     mimetype="application/pdf")
+
 #===============ADMIN ADD INMATE =================#
 @app.route("/admin/inmates/add", methods=["GET", "POST"])
 def add_inmate():
@@ -1482,7 +1540,7 @@ def verify_otp():
 
     return render_template('verify_otp.html')
 
-# ---------------- RESET PASSWORD ----------------#
+#===================== RESET PASSWORD ========================#
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
     if request.method == 'POST':
@@ -1511,13 +1569,12 @@ def reset_password():
 
     return render_template('reset_password.html')
 
-# ================= LOGOUT =================#
+# ===================== LOGOUT ========================#
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
-
-# ================= RUN =================#
+# ======================= RUN ========================#
 if __name__ == '__main__':
     app.run(debug=True)
