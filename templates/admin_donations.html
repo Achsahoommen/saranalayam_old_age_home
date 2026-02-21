@@ -6,19 +6,95 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Export Section Styling */
+        .export-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            padding: 20px;
+        }
+
+        .export-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #eee;
+        }
+
+        .export-card h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .export-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .monthly-btn { background: #2b7a78; }
+        .yearly-btn { background: #4caf50; }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Existing Styles */
+        .admin-actions { text-align: center; margin-bottom: 40px; }
+        .back-btn { text-decoration: none; color: #666; font-weight: bold; }
+    </style>
 </head>
 <body class="admin-page">
 
 <div class="admin-donation-container">
 
-    <!-- Header -->
     <div class="admin-header">
         <h2>📊 Donation Records</h2>
         <p>View all donations made to Saranalayam</p>
     </div>
 
     {% if donations %}
-    <!-- Donations Table (Moved Above Analytics) -->
+
     <div class="table-wrapper">
         <table class="admin-table">
             <thead>
@@ -46,7 +122,6 @@
         </table>
     </div>
 
-    <!-- Summary Cards -->
     <div class="summary-cards">
         <div class="card">
             <h3>Total Donations</h3>
@@ -58,110 +133,168 @@
         </div>
         <div class="card">
             <h3>Average Donation</h3>
-            <p>₹{{ (donations | sum(attribute='amount') / donations | length) | round(2) }}</p>
+            <p>₹{{ (donations | sum(attribute='amount') / donations | length) | round(2) if donations|length > 0 else 0 }}</p>
         </div>
     </div>
 
-    <!-- Charts -->
     <div class="charts">
-        <!-- Donation Over Time -->
         <div class="chart-container">
             <h3>Donations Over Time</h3>
             <canvas id="donationChart" height="300"></canvas>
         </div>
-
-        <!-- Donations by Purpose -->
         <div class="chart-container">
             <h3>Donations by Purpose</h3>
             <canvas id="purposeChart" height="100"></canvas>
         </div>
+        <div class="chart-container">
+            <h3>Top Donors</h3>
+            <canvas id="topDonorChart" height="120"></canvas>
+        </div>
     </div>
 
     {% else %}
-        <div class="no-data">
-            <p>No donations recorded yet.</p>
-        </div>
+    <div class="no-data">
+        <p>No donations recorded yet.</p>
+    </div>
     {% endif %}
 
-</div>
+    <div class="export-container">
+        <div class="export-card">
+            <h3>Export Reports</h3>
+            
+            <div class="input-group">
+                <label for="reportYear">Enter Year</label>
+                <input type="number" id="reportYear" class="form-control" placeholder="e.g. 2026" value="2026">
+            </div>
 
+            <div class="input-group">
+                <label for="reportMonth">Select Month (for Monthly Report)</label>
+                <select id="reportMonth" class="form-control">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
 
-<div id="donation-data" style="display:none;" data-json='{{ donations | tojson | safe }}'></div>
+            <div class="button-row">
+                <button onclick="downloadReport('monthly')" class="export-btn monthly-btn">
+                    📄 Download Monthly PDF
+                </button>
+                <button onclick="downloadReport('yearly')" class="export-btn yearly-btn">
+                    📄 Download Yearly PDF
+                </button>
+            </div>
+        </div>
+    </div>
 
-<!-- Chart.js Script -->
-<script>
-    const donationData = JSON.parse(document.getElementById('donation-data').dataset.json);
-
-    if(donationData.length > 0) {
-
-        // Donations Over Time
-        const donationByDate = {};
-        donationData.forEach(d => {
-            const date = d.date;
-            donationByDate[date] = (donationByDate[date] || 0) + d.amount;
-        });
-
-        const labels = Object.keys(donationByDate).sort();
-        const data = Object.values(donationByDate);
-
-        const ctx = document.getElementById('donationChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Donations Over Time (₹)',
-                    data: data,
-                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
-                    borderColor: 'rgba(76, 175, 80, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: true } },
-                scales: {
-                    x: { title: { display: true, text: 'Date' } },
-                    y: { title: { display: true, text: 'Amount (₹)' }, beginAtZero: true }
-                }
-            }
-        });
-
-        // Donations by Purpose
-        const donationByPurpose = {};
-        donationData.forEach(d => {
-            const purpose = d.purpose;
-            donationByPurpose[purpose] = (donationByPurpose[purpose] || 0) + d.amount;
-        });
-
-        const purposeLabels = Object.keys(donationByPurpose);
-        const purposeData = Object.values(donationByPurpose);
-
-        const ctx2 = document.getElementById('purposeChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'pie',
-            data: {
-                labels: purposeLabels,
-                datasets: [{
-                    label: 'Donations by Purpose',
-                    data: purposeData,
-                    backgroundColor: purposeLabels.map((_, i) => `hsl(${i * 60 % 360}, 70%, 60%)`),
-                    borderColor: '#fff',
-                    borderWidth: 1
-                }]
-            },
-            options: { 
-                responsive: true, 
-                plugins: { legend: { position: 'bottom' } } 
-            }
-        });
-
-    }
-</script>
     <div class="admin-actions">
         <a href="/admin" class="back-btn">← Back to Dashboard</a>
     </div>
+
+</div>
+
+<div id="donation-data" style="display:none;" data-json='{{ donations | tojson | safe }}'></div>
+
+<script>
+// Logic for downloading reports with selected Month/Year
+function downloadReport(type) {
+    const year = document.getElementById('reportYear').value;
+    const month = document.getElementById('reportMonth').value;
+
+    if (!year) {
+        alert("Please enter a year.");
+        return;
+    }
+
+    if (type === 'monthly') {
+        // Asks for both month and year
+        window.location.href = `/admin/export/monthly-donation/pdf?year=${year}&month=${month}`;
+    } else {
+        // Asks for year for yearly report
+        window.location.href = `/admin/export/yearly-donation/pdf?year=${year}`;
+    }
+}
+
+// Chart.js Logic (Kept from your original code)
+const donationData = JSON.parse(document.getElementById('donation-data').dataset.json || '[]');
+
+if(donationData.length > 0) {
+    const donationByDate = {};
+    donationData.forEach(d => {
+        const date = d.date;
+        donationByDate[date] = (donationByDate[date] || 0) + d.amount;
+    });
+
+    const labels = Object.keys(donationByDate).sort();
+    const data = Object.values(donationByDate);
+
+    new Chart(document.getElementById('donationChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Donations Over Time (₹)',
+                data: data,
+                backgroundColor: 'rgba(76,175,80,0.2)',
+                borderColor: 'rgba(76,175,80,1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3
+            }]
+        }
+    });
+
+    const donationByPurpose = {};
+    donationData.forEach(d => {
+        const purpose = d.purpose;
+        donationByPurpose[purpose] = (donationByPurpose[purpose] || 0) + d.amount;
+    });
+
+    new Chart(document.getElementById('purposeChart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(donationByPurpose),
+            datasets: [{
+                data: Object.values(donationByPurpose),
+                backgroundColor: Object.keys(donationByPurpose).map((_, i) =>
+                    `hsl(${i * 60 % 360}, 70%, 60%)`
+                )
+            }]
+        }
+    });
+
+    const donorTotals = {};
+    donationData.forEach(d => {
+        const donor = d.donor_name;
+        donorTotals[donor] = (donorTotals[donor] || 0) + d.amount;
+    });
+
+    const sortedDonors = Object.entries(donorTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+    new Chart(document.getElementById('topDonorChart'), {
+        type: 'bar',
+        data: {
+            labels: sortedDonors.map(d => d[0]),
+            datasets: [{
+                label: 'Top Donors (₹)',
+                data: sortedDonors.map(d => d[1]),
+                backgroundColor: '#2b7a78'
+            }]
+        }
+    });
+}
+</script>
+
 </body>
 </html>

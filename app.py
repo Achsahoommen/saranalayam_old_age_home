@@ -16,8 +16,8 @@ import sqlite3
 import random
 import csv
 from datetime import date, datetime
+import calendar as cal 
 from io import StringIO, BytesIO
-from datetime import date, datetime
 from functools import wraps
 # ================= SECURITY & UPLOADS =================
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -37,7 +37,6 @@ from razorpay_utils import (
 # ================= RECEIPTS =================
 from receipt_utils import generate_receipt
 # ================= REPORTLAB (PDF EXPORTS) =================
-from calendar import calendar
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
@@ -53,6 +52,10 @@ from reportlab.platypus import (
 from reportlab.graphics.shapes import Drawing, String
 from reportlab.graphics.charts.lineplots import LinePlot
 from reportlab.graphics.charts.barcharts import VerticalBarChart
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 def build_trend_chart(data, title):
     drawing = Drawing(460, 220)
@@ -451,6 +454,213 @@ def admin_donations():
     db.close()
     return render_template('admin_donations.html', donations=donations)
 
+#===================== MONTHLY DONATION REPORT PDF EXPORT =====================#
+@app.route("/admin/export/monthly-donation/pdf")
+# @admin_required  # Uncomment if you want to protect this route
+def export_monthly_donation_report_pdf():
+
+    year = request.args.get("year")
+    month = request.args.get("month")
+
+    # Handle Date Logic
+    if not year:
+        year = datetime.now().year
+    else:
+        year = int(year)
+
+    if not month:
+        month = datetime.now().month
+    else:
+        month = int(month)
+
+    # Use 'cal' alias consistently
+    first_day = f"{year}-{month:02d}-01"
+    last_day = f"{year}-{month:02d}-{cal.monthrange(year, month)[1]}"
+
+    # Database connection
+    conn = sqlite3.connect("saranalayam.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT donor_name, amount, purpose, payment_method, date
+        FROM donation_summary
+        WHERE date BETWEEN ? AND ?
+        ORDER BY date DESC
+    """, (first_day, last_day))
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    # PDF Generation
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Title
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawCentredString(300, 750, "Monthly Donation Report")
+
+    # Fixed Line: Using 'cal.month_name' instead of 'calendar.month_name'
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(50, 720, f"Month: {cal.month_name[month]} {year}")
+
+    y = 680
+    total = 0
+
+    # Table Headers
+    pdf.setFont("Helvetica-Bold", 10)
+    pdf.drawString(50, y, "Donor")
+    pdf.drawString(200, y, "Amount")
+    pdf.drawString(280, y, "Purpose")
+    pdf.drawString(380, y, "Payment")
+    pdf.drawString(480, y, "Date")
+
+    y -= 20
+    pdf.setFont("Helvetica", 10)
+
+    # Data Rows
+    for row in rows:
+        donor, amount, purpose, payment, date_str = row
+        total += amount
+
+        pdf.drawString(50, y, str(donor)[:25]) # Truncate long names
+        pdf.drawString(200, y, f"Rs.{amount}")
+        pdf.drawString(280, y, str(purpose)[:15])
+        pdf.drawString(380, y, str(payment))
+        pdf.drawString(480, y, str(date_str))
+
+        y -= 20
+
+        # Page Break Logic
+        if y < 80:
+            pdf.showPage()
+            y = 750
+            pdf.setFont("Helvetica", 10)
+
+    # Footer Total
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(50, y-30, f"Total Donations for the Month: Rs.{total}")
+
+    pdf.save()
+    buffer.seek(0)
+
+    return send_file(
+        buffer, 
+        as_attachment=True,
+        download_name=f"Donation_Report_{cal.month_name[month]}_{year}.pdf",
+        mimetype="application/pdf"
+    )
+
+#============YEARLY DONATION REPORT PDF EXPORT==============#
+@app.route("/admin/export/yearly-donation/pdf")
+def export_yearly_donation_report_pdf():
+    year = request.args.get("year", datetime.now().year, type=int)
+
+    # 1. Fetch Data
+    conn = sqlite3.connect("saranalayam.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # Detailed rows
+    cursor.execute("""
+        SELECT donor_name, amount, purpose, payment_method, date
+        FROM donation_summary
+        WHERE date BETWEEN ? AND ?
+        ORDER BY date ASC
+    """, (f"{year}-01-01", f"{year}-12-31"))
+    rows = cursor.fetchall()
+
+    # Monthly totals for Chart
+    cursor.execute("""
+        SELECT strftime('%m', date) as m_num, SUM(amount) as m_total
+        FROM donation_summary
+        WHERE date BETWEEN ? AND ?
+        GROUP BY m_num
+    """, (f"{year}-01-01", f"{year}-12-31"))
+    chart_data_raw = {row['m_num']: row['m_total'] for row in cursor.fetchall()}
+    conn.close()
+
+    # 2. Setup Document
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, 
+                            rightMargin=50, leftMargin=50, 
+                            topMargin=50, bottomMargin=50)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # 3. Page 1 Content: Title and Chart
+    elements.append(Paragraph(f"Yearly Donation Analysis: {year}", styles['Title']))
+    elements.append(Spacer(1, 20))
+
+    # Prepare Chart Data
+    chart_values = [tuple(chart_data_raw.get(f"{m:02d}", 0) for m in range(1, 13))]
+    month_labels = [cal.month_name[m][:3] for m in range(1, 13)]
+
+    drawing = Drawing(400, 200)
+    bc = VerticalBarChart()
+    bc.x = 30
+    bc.y = 50
+    bc.height = 150
+    bc.width = 450
+    bc.data = chart_values
+    bc.strokeColor = colors.black
+    bc.valueAxis.valueMin = 0
+    bc.valueAxis.valueMax = (max(chart_values[0]) * 1.2) if chart_values[0] and max(chart_values[0]) > 0 else 1000
+    bc.categoryAxis.categoryNames = month_labels
+    bc.bars[0].fillColor = colors.HexColor("#2b7a78") # Match Dashboard theme
+    drawing.add(bc)
+    
+    elements.append(drawing)
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("Monthly Breakdown Summary", styles['Heading2']))
+    elements.append(Spacer(1, 10))
+
+    # 4. Table Data
+    # Header
+    table_data = [["Donor", "Amount (₹)", "Purpose", "Method", "Date"]]
+    
+    total_annual = 0
+    for row in rows:
+        total_annual += row['amount']
+        table_data.append([
+            str(row['donor_name']),
+            f"{row['amount']:,.2f}",
+            str(row['purpose']),
+            str(row['payment_method']),
+            str(row['date'])
+        ])
+
+    # 5. Table Styling
+    # Automatically handles column widths and text wrapping
+    col_widths = [130, 80, 110, 90, 80]
+    report_table = Table(table_data, colWidths=col_widths, repeatRows=1)
+    
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#2b7a78")), # Header bg
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.whitesmoke]), # Zebra stripes
+        ('ALIGN', (1, 1), (1, -1), 'RIGHT'), # Align amounts to right
+    ])
+    report_table.setStyle(style)
+    elements.append(report_table)
+
+    # 6. Final Total
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph(f"Total Annual Donations: ₹{total_annual:,.2f}", styles['Heading2']))
+
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    
+    return send_file(buffer, as_attachment=True, 
+                     download_name=f"Yearly_Donation_Report_{year}.pdf", 
+                     mimetype="application/pdf")
 # ==================== ADMIN UPDATE =======================#
 @app.route('/admin/update', methods=['GET', 'POST'])
 def admin_update():
@@ -691,24 +901,27 @@ def export_inmates_csv():
 
     return response
 #===================== REPORTS(MONTHLY & YEARLY) ========================#
-#==============MONTHY REPORT PDF EXPORT==============#
+#==============MONTHY INMATES REPORT PDF EXPORT==============#
 @app.route("/admin/export/monthly-report/pdf")
 @admin_required
 def export_monthly_report_pdf():
+    # 1. HANDLE MONTH SELECTION
+    month_param = request.args.get("month") or datetime.now().strftime("%Y-%m")
+    try:
+        year, mon = map(int, month_param.split("-"))
+    except ValueError:
+        year, mon = datetime.now().year, datetime.now().month
+        month_param = f"{year}-{mon:02d}"
 
-    # ===== MONTH =====
-    month = request.args.get("month") or datetime.now().strftime("%Y-%m")
+    _, last_day = cal.monthrange(year, mon)
+    start_date = f"{month_param}-01"
+    end_date = f"{month_param}-{last_day}"
 
-    year, mon = map(int, month.split("-"))
-    last_day = calendar.monthrange(year, mon)[1]
-
-    start_date = f"{month}-01"
-    end_date = f"{month}-{last_day}"
-
+    # 2. DATABASE FETCHING
     conn = sqlite3.connect("saranalayam.db")
     cursor = conn.cursor()
 
-    # ===== SUMMARY + AVERAGE AGE =====
+    # Summary Stats
     cursor.execute("""
         SELECT
             COUNT(*),
@@ -720,183 +933,136 @@ def export_monthly_report_pdf():
         FROM inmates
     """)
     total, active, hosp, disch, dead, avg_age = cursor.fetchone()
-
-    active = active or 0
-    hosp = hosp or 0
-    disch = disch or 0
-    dead = dead or 0
+    
+    # Fix None values for safety
+    active, hosp, disch, dead = (active or 0), (hosp or 0), (disch or 0), (dead or 0)
     avg_age = round(avg_age, 1) if avg_age else 0
 
-    # ===== GENDER STATS =====
-    cursor.execute("""
-        SELECT gender, COUNT(*)
-        FROM inmates
-        GROUP BY gender
-    """)
+    # Gender Stats
+    cursor.execute("SELECT gender, COUNT(*) FROM inmates GROUP BY gender")
     gender_rows = cursor.fetchall()
-
     male = female = others = 0
     for g, count in gender_rows:
-        if g.lower() == "male":
-            male = count
-        elif g.lower() == "female":
-            female = count
-        else:
-            others = count
+        if g.lower() == "male": male = count
+        elif g.lower() == "female": female = count
+        else: others = count
 
-    # ===== DAILY RECORDS =====
+    # Daily Records
     cursor.execute("""
         SELECT date, total_inmates, active_inmates, hospitalized,
                discharged, deceased, new_inmates, staff_count, guests_arrived
         FROM daily_records
         WHERE date BETWEEN ? AND ?
-        ORDER BY date
+        ORDER BY date ASC
     """, (start_date, end_date))
-    daily = cursor.fetchall()
+    daily_data_raw = cursor.fetchall()
 
-    # ===== FULL INMATE LIST =====
-    cursor.execute("""
-        SELECT name, age, gender, status
-        FROM inmates
-        ORDER BY name
-    """)
-    inmates = cursor.fetchall()
-
+    # Inmate List
+    cursor.execute("SELECT name, age, gender, status FROM inmates ORDER BY name")
+    inmate_list_raw = cursor.fetchall()
     conn.close()
 
-    # ===== PDF SETUP =====
+    # 3. PDF SETUP
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=A4,
-        leftMargin=36,
-        rightMargin=36,
-        topMargin=36,
-        bottomMargin=36
-    )
-
+    doc = SimpleDocTemplate(buffer, pagesize=A4, 
+                            leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=30)
     styles = getSampleStyleSheet()
     elements = []
 
-    # ===== TITLE =====
+    # --- PAGE 1: TITLE & SUMMARY ---
     elements.append(Paragraph("<b>SARANALAYAM OLD AGE HOME</b>", styles["Title"]))
-    elements.append(Paragraph("<b>Monthly Inmate Analytics Report</b>", styles["Heading2"]))
-    elements.append(Paragraph(f"<b>Month:</b> {month}", styles["Normal"]))
-    elements.append(Paragraph(
-        f"<b>Generated on:</b> {datetime.now().strftime('%d %B %Y')}",
-        styles["Normal"]
-    ))
-    elements.append(Spacer(1, 16))
+    elements.append(Paragraph(f"Monthly Analytics Report: {cal.month_name[mon]} {year}", styles["Heading2"]))
+    elements.append(Paragraph(f"Generated on: {datetime.now().strftime('%d %B %Y')}", styles["Normal"]))
+    elements.append(Spacer(1, 15))
 
-    # ===== SUMMARY TABLE =====
-    summary = Table([
+    # Summary Table
+    summary_data = [
         ["Metric", "Count"],
         ["Total Inmates", total],
-        ["Active", active],
-        ["Hospitalized", hosp],
-        ["Discharged", disch],
-        ["Deceased", dead],
+        ["Active", f"{active}"],
+        ["Hospitalized", f"{hosp}"],
+        ["Discharged ",f"{disch}"], 
+        ["Deceased", f"{dead}"],
         ["Average Age", avg_age],
-        ["Male", male],
-        ["Female", female],
-        ["Others", others],
-    ], colWidths=[260, 100])
-
-    summary.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 0.4, colors.grey),
+        ["Gender (M/F/O)", f"{male} / {female} / {others}"]
+    ]
+    summary_tbl = Table(summary_data, colWidths=[200, 150])
+    summary_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#2563eb")),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER'),
         ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('ALIGN', (1,1), (-1,-1), 'CENTER')
     ]))
-
-    elements.append(summary)
+    elements.append(summary_tbl)
     elements.append(Spacer(1, 20))
 
-    # ===== STATUS CHART =====
-    elements.append(Paragraph("<b>Status Distribution</b>", styles["Heading2"]))
+    # --- PAGE 1: STATUS DISTRIBUTION CHART ---
+    elements.append(Paragraph("<b>Status Distribution</b>", styles["Heading3"]))
     elements.append(Spacer(1, 10))
-
+    
+    drawing = Drawing(400, 200)
     chart = VerticalBarChart()
+    chart.x, chart.y = 50, 50
+    chart.height, chart.width = 125, 300
     chart.data = [[active, hosp, disch, dead]]
-    chart.categoryAxis.categoryNames = ["Active", "Hospitalized", "Discharged", "Deceased"]
-    chart.width = 400
-    chart.height = 220
-    chart.barWidth = 30
+    chart.categoryAxis.categoryNames = ['Active', 'Hosp', 'Disch', 'Dead']
+    chart.bars[0].fillColor = colors.HexColor("#2563eb")
     chart.valueAxis.valueMin = 0
-
-    drawing = Drawing(450, 250)
     drawing.add(chart)
     elements.append(drawing)
 
-    # ===== DAILY RECORDS =====
+    # --- PAGE 2: DAILY RECORDS ---
     elements.append(PageBreak())
-    elements.append(Paragraph("<b>Daily Records</b>", styles["Heading2"]))
+    elements.append(Paragraph("<b>Daily Activity Log</b>", styles["Heading3"]))
     elements.append(Spacer(1, 10))
 
-    daily_table = [
-        ["Date","Total","Active","Hosp","Disch","Dead","New","Staff","Guests"]
-    ]
+    daily_table = [["Date", "Tot", "Act", "Hsp", "Dsc", "Ded", "New", "Stf", "Gst"]]
+    for row in daily_data_raw:
+        daily_table.append([str(item) for item in row])
 
-    for d in daily:
-        daily_table.append([d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8]])
+    if len(daily_table) == 1:
+        daily_table.append(["No records found", "-", "-", "-", "-", "-", "-", "-", "-"])
 
-    daily_tbl = Table(daily_table, repeatRows=1)
+    daily_tbl = Table(daily_table, colWidths=[65, 38, 38, 38, 38, 38, 38, 38, 38], repeatRows=1)
     daily_tbl.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#16a34a")),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('FONTSIZE', (0,0), (-1,-1), 8),
-        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#16a34a")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.whitesmoke]),
     ]))
-
     elements.append(daily_tbl)
 
-    # ===== INMATE LIST =====
+    # --- PAGE 3: INMATE LIST ---
     elements.append(PageBreak())
-    elements.append(Paragraph("<b>Inmate List</b>", styles["Heading2"]))
+    elements.append(Paragraph("<b>Full Inmate Directory</b>", styles["Heading3"]))
     elements.append(Spacer(1, 10))
 
-    inmate_table = [["Name", "Age", "Gender", "Status"]]
-    for i in inmates:
-        inmate_table.append(list(i))
+    inmate_data = [["Name", "Age", "Gender", "Status"]]
+    for inmate in inmate_list_raw:
+        inmate_data.append([str(item) for item in inmate])
 
-    inmates_tbl = Table(
-        inmate_table,
-        colWidths=[220, 50, 80, 90],
-        repeatRows=1
-    )
-
-    inmates_tbl.setStyle(TableStyle([
-        ('GRID', (0,0), (-1,-1), 0.25, colors.grey),
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#0f766e")),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('FONTSIZE', (0,0), (-1,-1), 9),
-        ('ALIGN', (1,1), (-1,-1), 'CENTER')
+    inmate_tbl = Table(inmate_data, colWidths=[200, 50, 80, 100], repeatRows=1)
+    inmate_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0f766e")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.whitesmoke]),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
     ]))
+    elements.append(inmate_tbl)
 
-    elements.append(inmates_tbl)
-
-    # ===== FOOTER =====
+    # 4. FOOTER & BUILD
     def footer(canvas, doc):
-        canvas.setFont("Helvetica", 9)
-        canvas.drawRightString(
-            A4[0] - 36,
-            20,
-            f"Page {doc.page} | Saranalayam Admin System"
-        )
+        canvas.setFont("Helvetica", 8)
+        canvas.drawRightString(A4[0]-36, 20, f"Page {doc.page} | Saranalayam Admin")
 
     doc.build(elements, onFirstPage=footer, onLaterPages=footer)
-
     buffer.seek(0)
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name=f"monthly_report_{month}.pdf",
-        mimetype="application/pdf"
-        
-    )
-#==============YEARLY REPORT PDF EXPORT==============#
+    return send_file(buffer, as_attachment=True, download_name=f"Monthly_Report_{month_param}.pdf", mimetype="application/pdf")
+#==============YEARLY INMATES REPORT PDF EXPORT==============#
 @app.route("/admin/export/yearly-report/pdf")
 @admin_required
 def export_yearly_report_pdf():
