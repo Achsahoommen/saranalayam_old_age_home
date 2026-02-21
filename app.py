@@ -1,14 +1,5 @@
 # ================= FLASK CORE =================
-from flask import (
-    Flask,
-    render_template,
-    request,
-    redirect,
-    session,
-    jsonify,
-    send_file,
-    url_for
-)
+from flask import (Flask,render_template,request,redirect,session,jsonify,send_file,url_for)
 # ================= STANDARD LIBRARY =================
 import os
 import io
@@ -98,7 +89,7 @@ DB = 'saranalayam.db'
 # ================= DATABASE CONNECTION ================= #
 def get_db():
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row  
     return conn
 # ================= PUBLIC ROUTES =================#
 @app.route('/')
@@ -121,24 +112,28 @@ def contact():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        identifier = request.form['identifier'].strip()
+        # .lower().strip() ensures 'Admin@gmail.com' and 'admin@gmail.com ' both work
+        identifier = request.form['identifier'].lower().strip()
         password = request.form['password'].strip()
 
         db = get_db()
+        db.row_factory = sqlite3.Row  # Crucial for accessing columns by name
         cur = db.cursor()
 
-        # ---- ADMIN CHECK ----
-        cur.execute("SELECT * FROM admins WHERE username=? OR email=?", (identifier, identifier))
+        # 1. Check ADMINS table first
+        cur.execute("SELECT * FROM admins WHERE LOWER(username)=? OR LOWER(email)=?", (identifier, identifier))
         admin = cur.fetchone()
+        
         if admin and check_password_hash(admin['password'], password):
             session.clear()
             session['admin'] = admin['username']
             db.close()
             return redirect('/admin')
 
-        # ---- USER CHECK ----
-        cur.execute("SELECT * FROM users WHERE email=?", (identifier,))
+        # 2. Check USERS table second
+        cur.execute("SELECT * FROM users WHERE LOWER(email)=?", (identifier,))
         user = cur.fetchone()
+        
         if user and check_password_hash(user['password'], password):
             session.clear()
             session['user'] = user['email']
@@ -147,10 +142,9 @@ def login():
             return redirect('/user-dashboard')
 
         db.close()
-        return render_template('login.html', error="Invalid credentials")
+        return render_template('login.html', error="Invalid email or password")
 
     return render_template('login.html')
-
 # ================= REGISTER =================#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -158,6 +152,12 @@ def register():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        # Check if passwords match
+        if password != confirm_password:
+            return render_template('register.html', error="Passwords do not match")
+
         hashed_password = generate_password_hash(password)
 
         db = get_db()
@@ -170,13 +170,14 @@ def register():
             )
             db.commit()
             return redirect('/login')
+
         except sqlite3.IntegrityError:
             return render_template('register.html', error="Email already exists")
+
         finally:
             db.close()
 
     return render_template('register.html')
-
 # ================= DONATION STEP 1 =================#
 @app.route('/donate', methods=['GET', 'POST'])
 def donate():
@@ -1659,82 +1660,88 @@ def delete_blog(id):
     db.close()
     return redirect('/admin/add-blog')
 
-# ================= FORGOT PASSWORD =================#
+# ---------------- FORGOT PASSWORD ----------------
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
+    error = None
     if request.method == 'POST':
         email = request.form['email'].strip()
-        otp = str(random.randint(100000, 999999))
-
         db = get_db()
         cur = db.cursor()
-
-        cur.execute("SELECT * FROM admins WHERE email=?", (email,))
-        admin = cur.fetchone()
-
-        if admin:
-            session['reset_role'] = 'admin'
+        cur.execute("SELECT * FROM users WHERE email=?", (email,))
+        user = cur.fetchone()
+        if user:
+            otp = str(random.randint(100000, 999999))
             session['reset_email'] = email
+            session['otp'] = otp
+            if send_otp(email, otp):
+                return redirect('/verify-otp')
+            else:
+                error = "Failed to send OTP. Try again later."
         else:
-            cur.execute("SELECT * FROM users WHERE email=?", (email,))
-            user = cur.fetchone()
-            if not user:
-                db.close()
-                return render_template('forgot_password.html', error="Email not found")
-            session['reset_role'] = 'user'
-            session['reset_email'] = email
+            error = "Email not found."
+    return render_template('forgot_password.html', error=error)
 
-        db.close()
-
-        session['otp'] = otp
-
-        if not send_otp(email, otp):
-            return render_template('forgot_password.html', error="Failed to send OTP")
-
-        return redirect('/verify-otp')
-
-    return render_template('forgot_password.html')
-
-# ---------------- VERIFY OTP ----------------#
+# ---------------- VERIFY OTP ----------------
 @app.route('/verify-otp', methods=['GET', 'POST'])
 def verify_otp():
+    error = None
+    if 'otp' not in session:
+        return redirect('/forgot-password')
+    
     if request.method == 'POST':
-        if request.form['otp'].strip() == session.get('otp'):
-            session.pop('otp')
+        entered_otp = request.form['otp'].strip()
+        if entered_otp == session.get('otp'):
+            session['otp_verified'] = True
             return redirect('/reset-password')
-        return render_template('verify_otp.html', error="Invalid OTP")
+        else:
+            error = "Invalid OTP. Please try again."
+    return render_template('verify_otp.html', error=error)
 
-    return render_template('verify_otp.html')
-
-#===================== RESET PASSWORD ========================#
+# ---------------- RESET PASSWORD -----------------#
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
+    error = None
+    # Security check: Ensure they actually passed the OTP stage
+    if not session.get('otp_verified') or not session.get('reset_email'):
+        return redirect('/forgot-password')
+
     if request.method == 'POST':
-        new_password = request.form['password'].strip()
-        role = session.get('reset_role')
-        email = session.get('reset_email')
+        password = request.form.get('password').strip()
+        confirm = request.form.get('confirm_password').strip()
+        email = session.get('reset_email').lower().strip() # Normalize
 
-        if not role or not email:
-            return redirect('/forgot-password')
-
-        hashed = generate_password_hash(new_password)
-
-        db = get_db()
-        cur = db.cursor()
-
-        if role == 'admin':
-            cur.execute("UPDATE admins SET password=? WHERE email=?", (hashed, email))
+        if password != confirm:
+            error = "Passwords do not match."
+        elif len(password) < 6:
+            error = "Password must be at least 6 characters."
         else:
-            cur.execute("UPDATE users SET password=? WHERE email=?", (hashed, email))
+            try:
+                db = get_db()
+                cur = db.cursor()
+                hashed_pw = generate_password_hash(password)
 
-        db.commit()
-        db.close()
+                # UPDATE BOTH TABLES: This prevents "shadow accounts" from causing login loops
+                cur.execute("UPDATE users SET password=? WHERE LOWER(email)=?", (hashed_pw, email))
+                u_count = cur.rowcount
+                
+                cur.execute("UPDATE admins SET password=? WHERE LOWER(email)=?", (hashed_pw, email))
+                a_count = cur.rowcount
 
-        session.clear()
-        return redirect('/login')
+                db.commit()
 
-    return render_template('reset_password.html')
+                # Only redirect if at least one row was actually changed in the database
+                if u_count > 0 or a_count > 0:
+                    session.clear() # Wipe OTP/Reset session data
+                    return redirect(url_for('login', message="Password updated successfully! Please login."))
+                else:
+                    error = f"Update failed. No account found for {email}."
+            except Exception as e:
+                error = f"Database error: {str(e)}"
+            finally:
+                db.close()
 
+    return render_template('reset_password.html', error=error)
 # ===================== LOGOUT ========================#
 @app.route('/logout')
 def logout():

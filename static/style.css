@@ -1987,3 +1987,61 @@ h2 {
 .neutral-btn:hover {
     background: #1a5ec8;
 }
+
+/* ================= USER LOGIN / REGISTER ================= */
+body.login-page {
+    background: #F9FAF7;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ================= REGISTER PAGE FIX ================= */
+
+.login-page .login-container {
+    width: 420px;
+    margin: 80px auto;
+    text-align: center;
+}
+
+.login-page .login-box {
+    background: #EFF1F4;
+    padding: 35px 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Input fields */
+.login-page .input-group {
+    margin-bottom: 18px;
+}
+
+.login-page .input-group input {
+    width: 100%;
+    padding: 12px 40px 12px 12px; /* space for eye icon */
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #cfd8dc;
+    box-sizing: border-box; /* IMPORTANT fix */
+}
+
+/* Password wrapper */
+.login-page .password-wrapper {
+    position: relative;
+}
+
+/* Eye icon */
+.login-page .password-wrapper i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #555;
+}
+
+/* Register button */
+.login-page .login-actions button {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 6px;
+}

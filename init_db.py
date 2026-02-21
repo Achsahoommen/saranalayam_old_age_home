@@ -25,7 +25,8 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         email TEXT UNIQUE,
-        password TEXT
+        password TEXT,
+        verified INTEGER DEFAULT 0
     )
     """)
 
@@ -53,9 +54,9 @@ def init_db():
     cur.execute("""
     CREATE TABLE IF NOT EXISTS daily_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT UNIQUE,  -- Added UNIQUE here to support REPLACE logic
+        date TEXT UNIQUE,  
         total_inmates INTEGER,
-        active_inmates INTEGER,  -- Ensure this is added
+        active_inmates INTEGER,  
         hospitalized INTEGER,
         discharged INTEGER,
         deceased INTEGER,

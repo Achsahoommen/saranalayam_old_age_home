@@ -30,9 +30,16 @@
             <input type="email" name="email" placeholder="Email" required>
         </div>
 
+        <!-- Password -->
         <div class="input-group password-wrapper">
             <input type="password" name="password" id="password" placeholder="Password" required>
-            <i class="fas fa-eye" onclick="togglePassword()"></i>
+            <i class="fas fa-eye" onclick="togglePassword('password')"></i>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="input-group password-wrapper">
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+            <i class="fas fa-eye" onclick="togglePassword('confirm_password')"></i>
         </div>
 
         <div class="login-actions">
@@ -47,9 +54,9 @@
 </div>
 
 <script>
-function togglePassword() {
-    const pwd = document.getElementById("password");
-    pwd.type = pwd.type === "password" ? "text" : "password";
+function togglePassword(id) {
+    const field = document.getElementById(id);
+    field.type = field.type === "password" ? "text" : "password";
 }
 </script>
 

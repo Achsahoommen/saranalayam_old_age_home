@@ -7,19 +7,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="login-page">
-
 <div class="login-container">
-    <div class="login-logo">
-        <i class="fas fa-key"></i>
-    </div>
+    <div class="login-logo"><i class="fas fa-key"></i></div>
 
     <form class="login-box" method="POST">
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
-
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
         <label>Enter OTP</label>
-        <input type="text" name="otp" placeholder="6-digit OTP" required>
+        <input type="text" name="otp" placeholder="6-digit OTP" maxlength="6" pattern="\d{6}" required>
 
         <div class="login-actions">
             <button type="submit">Verify OTP</button>
