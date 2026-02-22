@@ -26,7 +26,7 @@ def init_db():
         name TEXT,
         email TEXT UNIQUE,
         password TEXT,
-        verified INTEGER DEFAULT 0
+        verified INTEGER default 0
     )
     """)
 
