@@ -19,12 +19,7 @@ from decorators import admin_required
 from send_otp import send_otp
 # ================= RAZORPAY =================
 import razorpay
-from razorpay_utils import (
-    client as razorpay_client,
-    RAZORPAY_KEY_ID,
-    create_order,
-    verify_payment_signature
-)
+from razorpay_utils import (client as razorpay_client,RAZORPAY_KEY_ID,create_order,verify_payment_signature)
 # ================= RECEIPTS =================
 from receipt_utils import generate_receipt
 # ================= REPORTLAB (PDF EXPORTS) =================
@@ -32,14 +27,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Table,
-    TableStyle,
-    Paragraph,
-    Spacer,
-    PageBreak
-)
+from reportlab.platypus import (SimpleDocTemplate,Table,TableStyle,Paragraph,Spacer,PageBreak)
 from reportlab.graphics.shapes import Drawing, String
 from reportlab.graphics.charts.lineplots import LinePlot
 from reportlab.graphics.charts.barcharts import VerticalBarChart

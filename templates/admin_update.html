@@ -28,6 +28,7 @@
 
         <!-- Hidden fields -->
         <input type="hidden" name="hospitalized_names" id="hospitalized_names">
+        <input type="hidden" name="hospitalized_reason" id="hospitalized_reason">
         <input type="hidden" name="discharged_names" id="discharged_names">
         <input type="hidden" name="deceased_names" id="deceased_names">
 
@@ -68,7 +69,6 @@
                 <th>New</th>
                 <th>Staff</th>
                 <th>Guests</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -85,9 +85,6 @@
                 <td>{{ r.new_inmates }}</td>
                 <td>{{ r.staff_count }}</td>
                 <td>{{ r.guests_arrived }}</td>
-                <td>
-                    <a href="/admin/edit/{{ r.id }}" class="btn-edit">Edit</a>
-                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -127,33 +124,42 @@ document.querySelector("form").addEventListener("submit", function (e) {
     const newHospitalized = parseInt(document.querySelector('input[name="hospitalized"]').value) || 0;
     const newDischarged = parseInt(document.querySelector('input[name="discharged"]').value) || 0;
     const newDeceased = parseInt(document.querySelector('input[name="deceased"]').value) || 0;
-
+    
     // -------- HOSPITALIZED INCREASE --------
-    if (newHospitalized > previousHospitalized) {
-        const diff = newHospitalized - previousHospitalized;
+if (newHospitalized > previousHospitalized) {
+    const diff = newHospitalized - previousHospitalized;
 
-        let namesInput = prompt(`${diff} inmate(s) hospitalized.\nEnter names separated by commas:`);
+    let namesInput = prompt(`${diff} inmate(s) hospitalized.\nEnter names separated by commas:`);
 
-        if (!namesInput) {
-            alert("You must enter inmate names!");
-            return;
-        }
-
-        const names = namesInput.split(",").map(n => n.trim()).filter(n => n !== "");
-
-        if (names.length !== diff) {
-            alert(`You must enter exactly ${diff} name(s).`);
-            return;
-        }
-
-        let hospital = prompt("Enter hospital name:");
-        while (!hospital || !hospital.trim()) {
-            hospital = prompt("Hospital name cannot be empty. Enter hospital name:");
-        }
-
-        document.getElementById("hospitalized_names").value =
-            names.join(",") + "||" + hospital.trim();
+    if (!namesInput) {
+        alert("You must enter inmate names!");
+        return;
     }
+
+    const names = namesInput.split(",").map(n => n.trim()).filter(n => n !== "");
+
+    if (names.length !== diff) {
+        alert(`You must enter exactly ${diff} name(s).`);
+        return;
+    }
+
+    let hospital = prompt("Enter hospital name:");
+    while (!hospital || !hospital.trim()) {
+        hospital = prompt("Hospital name cannot be empty. Enter hospital name:");
+    }
+
+    let reason = prompt("Enter reason for hospitalization:");
+    while (!reason || !reason.trim()) {
+        reason = prompt("Reason cannot be empty. Enter reason:");
+    }
+
+    // Store values
+    document.getElementById("hospitalized_names").value =
+        names.join(",") + "||" + hospital.trim();
+
+    document.getElementById("hospitalized_reason").value =
+        reason.trim();
+}
 
     // -------- DISCHARGED INCREASE --------
     if (newDischarged > previousDischarged) {

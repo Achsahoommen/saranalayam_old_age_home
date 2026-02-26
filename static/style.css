@@ -251,7 +251,7 @@ input:focus {
 }
 
 button {
-     width: 100%;
+    width: 100%;
     padding: 10px;
     margin-top: 10px;
     color: #2E2B5F;
@@ -486,7 +486,7 @@ body.admin-login {
 
 .admin-login .login-box label {
     color: #3F3F46;   
-     display: block;
+    display: block;
     font-size: 14px;
     margin-bottom: 5px;                /* Body Text */
 }
@@ -496,7 +496,7 @@ body.admin-login {
     border: 1px solid #cfd8dc;
     width: 100%;
     padding: 10px;
-     border-radius: 4px;
+    border-radius: 4px;
     margin-bottom: 15px;
     font-size: 14px;
 
@@ -1173,7 +1173,6 @@ a:hover {
     transition: 0.3s ease;
 }
 
-
 .update-container form label {
     font-weight: 600;
     color: #2E2B5F;
@@ -1194,7 +1193,6 @@ a:hover {
 }
 
 /* ---------- SUBMIT BUTTON ---------- */
-
 .update-container form button {
     grid-column: span 2;
     margin-top: 10px;
@@ -1238,7 +1236,6 @@ a:hover {
 }
 
 /* ---------- SEARCH BAR ---------- */
-
 #searchInput {
     width: 300px;
     padding: 8px;
@@ -1254,7 +1251,6 @@ a:hover {
 }
 
 /* ---------- ACTION BUTTONS ---------- */
-
 .action-btn {
     padding: 6px 12px;
     border-radius: 6px;
@@ -1272,7 +1268,6 @@ a:hover {
 }
 
 /* ---------- BACK BUTTON ---------- */
-
 .secondary-btn {
     display: inline-block;
     margin-top: 25px;
@@ -1289,7 +1284,6 @@ a:hover {
 }
 
 /* ---------- VALIDATION STATES ---------- */
-
 .success {
     border: 2px solid #28a745 !important;
 }
@@ -1303,7 +1297,6 @@ a:hover {
 }
 
 /* ---------- RESPONSIVE ---------- */
-
 @media (max-width: 768px) {
 
     .update-container form {
@@ -1995,7 +1988,6 @@ body.login-page {
 }
 
 /* ================= REGISTER PAGE FIX ================= */
-
 .login-page .login-container {
     width: 420px;
     margin: 80px auto;
