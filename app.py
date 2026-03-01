@@ -67,7 +67,7 @@ def build_trend_chart(data, title):
     return drawing
 
 app = Flask(__name__)
-app.secret_key = "saranalayam_secret_key_2026"
+app.secret_key = "sharanstan_secret_key_2026"
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -959,7 +959,7 @@ def export_monthly_report_pdf():
     elements = []
 
     # --- PAGE 1: TITLE & SUMMARY ---
-    elements.append(Paragraph("<b>SARANALAYAM OLD AGE HOME</b>", styles["Title"]))
+    elements.append(Paragraph("<b>SHARANSTAN OLD AGE HOME</b>", styles["Title"]))
     elements.append(Paragraph(f"Monthly Analytics Report: {cal.month_name[mon]} {year}", styles["Heading2"]))
     elements.append(Paragraph(f"Generated on: {datetime.now().strftime('%d %B %Y')}", styles["Normal"]))
     elements.append(Spacer(1, 15))
@@ -1148,7 +1148,7 @@ def export_yearly_report_pdf():
     elements = []
 
     # ===== TITLE =====
-    elements.append(Paragraph("<b>SARANALAYAM OLD AGE HOME</b>", styles["Title"]))
+    elements.append(Paragraph("<b>SHARANSTAN OLD AGE HOME</b>", styles["Title"]))
     elements.append(Paragraph(f"<b>Yearly Consolidated Report – {year}</b>", styles["Heading2"]))
     elements.append(Spacer(1, 16))
 

@@ -27,14 +27,14 @@ def generate_receipt(donor):
     styles = getSampleStyleSheet()
 
     # Title
-    elements.append(Paragraph("<b>Saranalayam Old Age Home</b>", styles["Heading1"]))
+    elements.append(Paragraph("<b>Sharanstan Old Age Home</b>", styles["Heading1"]))
     elements.append(Spacer(1, 10))
     elements.append(Paragraph("<b>Donation Receipt (GST Format)</b>", styles["Heading2"]))
     elements.append(Spacer(1, 20))
 
     # Organization Info
     org_data = [
-        ["Registered Trust:", "Saranalayam Old Age Home"],
+        ["Registered Trust:", "Sharanstan Old Age Home"],
         ["Address:", "Chengannur, Kerala, India"],
         ["GSTIN:", "32ABCDE1234F1Z5"],
         ["PAN:", "ABCDE1234F"],

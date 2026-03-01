@@ -6,8 +6,8 @@ def send_otp(recipient, otp):
     app_password = "vqtzaahsqeswfbup"   # 16-digit Google App Password
 
     msg = EmailMessage()
-    msg.set_content(f"Your OTP for Saranalayam password reset is: {otp}")
-    msg['Subject'] = "Saranalayam Password Reset OTP"
+    msg.set_content(f"Your OTP for Sharanstan password reset is: {otp}")
+    msg['Subject'] = "Sharanstan Password Reset OTP"
     msg['From'] = sender_email
     msg['To'] = recipient
 
