@@ -67,7 +67,7 @@ def build_trend_chart(data, title):
     return drawing
 
 app = Flask(__name__)
-app.secret_key = "sharanstan_secret_key_2026"
+app.secret_key = os.environ.get("SECRET_KEY", "fallback_dev_key")
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -1738,4 +1738,4 @@ def logout():
 
 # ======================= RUN ========================#
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

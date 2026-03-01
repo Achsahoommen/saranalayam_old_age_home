@@ -1,2 +1,5 @@
 Flask
 gunicorn
+razorpay
+reportlab
+Werkzeug
