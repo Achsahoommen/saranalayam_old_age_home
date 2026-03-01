@@ -1529,7 +1529,7 @@ def ask_question():
     db.commit()
     db.close()
 
-    return redirect("/faq")
+    return render_template("faq.html", success=True)
 
 # ================= USER - VIEW MY QUESTIONS =================#
 @app.route("/view-replies")

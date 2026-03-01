@@ -131,16 +131,28 @@ Your presence alone brings comfort and happiness to our elders.
 
 {% if session.get('user') %}
 
-<form action="/ask_question" method="post" style="max-width:600px; margin:auto;">
+    {% if success %}
+    <div style="text-align:center; margin-bottom:20px;">
+        <p style="color:green; font-weight:bold;">
+            Your question has been submitted successfully ✅
+        </p>
 
-    <textarea name="question"
-    placeholder="Type your question here..."
-    rows="5"
-    required></textarea>
+        <a href="/dashboard" class="login-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+    {% endif %}
 
-    <button type="submit">Submit Your Question</button>
+    <form action="/ask_question" method="post" style="max-width:600px; margin:auto;">
 
-</form>
+        <textarea name="question"
+        placeholder="Type your question here..."
+        rows="5"
+        required></textarea>
+
+        <button type="submit">Submit Your Question</button>
+
+    </form>
 
 {% else %}
 
@@ -173,5 +185,6 @@ faqItems.forEach(item => {
     });
 });
 </script>
+
 </body>
 </html>
