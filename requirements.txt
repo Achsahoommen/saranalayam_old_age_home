@@ -3,3 +3,4 @@ gunicorn
 razorpay
 reportlab
 Werkzeug
+python-dotenv
