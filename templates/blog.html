@@ -13,6 +13,46 @@
         .text-custom-green { color: #2f7d6a; }
         .bg-custom-green { background-color: #2f7d6a; }
         .border-custom-green { border-color: #2f7d6a; }
+        /* MOBILE NAVBAR */
+    .menu-toggle {
+        display: none;
+        font-size: 26px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+
+        .navbar {
+            position: relative;
+            padding: 15px;
+    }
+
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            background: white;
+            position: absolute;
+            top: 70px;
+            right: 0;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+    }
+
+        .nav-links a {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+    }
+
+        .nav-links.show {
+            display: flex;
+    }
+
+        .menu-toggle {
+            display: block;
+    }
+}
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-gray-900">
@@ -28,6 +68,9 @@
         <a href="/blog">Blogs</a>
         <a href="/donate">Donate</a>
         <a href="/login">Login</a>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
     </div>
 </nav>
     <header class="bg-white py-16 text-center border-b border-slate-100">
@@ -76,5 +119,13 @@
     <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
     </footer>
 
+<script>
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+
+menuToggle.addEventListener("click", function() {
+    navLinks.classList.toggle("show");
+});
+</script>
 </body>
 </html>
