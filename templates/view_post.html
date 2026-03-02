@@ -4,98 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ post.title }} | Sharanstan Old Age Home</title>
-
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
-
 <body class="bg-white font-sans text-gray-900">
 
-    <!-- NAVBAR -->
-    <nav class="p-4 md:p-6 border-b bg-slate-50">
+    <nav class="p-6 border-b bg-slate-50">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <a href="/blog" class="text-[#2f7d6a] hover:opacity-80 font-bold flex items-center transition text-sm md:text-base">
+            <a href="/blog" class="text-[#2f7d6a] hover:opacity-80 font-bold flex items-center transition">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Back to All Stories
             </a>
         </div>
     </nav>
 
-    <!-- ARTICLE -->
-    <article class="max-w-4xl mx-auto px-4 md:px-6 py-10 md:py-16">
-
-        <!-- TITLE -->
-        <div class="mb-8 md:mb-12">
-            <h1 class="text-2xl sm:text-3xl md:text-5xl font-black text-slate-900 leading-tight border-l-4 md:border-l-8 border-[#2f7d6a] pl-4 md:pl-6">
+    <article class="max-w-4xl mx-auto px-6 py-16">
+        <div class="mb-12">
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 leading-tight border-l-8 border-[#2f7d6a] pl-6">
                 {{ post.title }}
             </h1>
         </div>
 
-        <!-- IMAGE -->
         {% if post.image_filename %}
-        <div class="rounded-2xl md:rounded-3xl overflow-hidden shadow-lg md:shadow-xl mb-8 md:mb-12">
+        <div class="rounded-3xl overflow-hidden shadow-xl mb-12">
             <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" 
-                 class="w-full h-auto object-cover max-h-[400px] md:max-h-[600px]" 
-                 alt="{{ post.title }}">
+                 class="w-full h-auto object-cover max-h-[600px]" alt="{{ post.title }}">
         </div>
         {% endif %}
 
-        <!-- CONTENT -->
-        <div class="prose prose-base md:prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-base md:text-xl">
+        <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-xl">
             {{ post.content }}
         </div>
 
-        <!-- SHARE SECTION -->
-        <div class="mt-14 md:mt-20 pt-8 md:pt-10 border-t border-gray-100 flex flex-col items-center">
-            <h4 class="font-bold text-gray-400 uppercase text-xs tracking-widest mb-6">
-                Share this story
-            </h4>
-
-            <div class="flex space-x-6 md:space-x-8">
-                <button class="text-slate-400 hover:text-[#2f7d6a] text-xl md:text-2xl transition">
-                    <i class="fa-brands fa-facebook"></i>
-                </button>
-
-                <button class="text-slate-400 hover:text-[#2f7d6a] text-xl md:text-2xl transition">
-                    <i class="fa-brands fa-twitter"></i>
-                </button>
-
-                <button class="text-slate-400 hover:text-green-500 text-xl md:text-2xl transition">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </button>
+        <div class="mt-20 pt-10 border-t border-gray-100 flex flex-col items-center">
+            <h4 class="font-bold text-gray-400 uppercase text-xs tracking-widest mb-6">Share this story</h4>
+            <div class="flex space-x-8">
+                <button class="text-slate-400 hover:text-[#2f7d6a] text-2xl transition"><i class="fa-brands fa-facebook"></i></button>
+                <button class="text-slate-400 hover:text-[#2f7d6a] text-2xl transition"><i class="fa-brands fa-twitter"></i></button>
+                <button class="text-slate-400 hover:text-green-500 text-2xl transition"><i class="fa-brands fa-whatsapp"></i></button>
             </div>
         </div>
     </article>
 
-    <!-- DONATION CTA -->
-    <section class="bg-slate-50 py-10 md:py-16 border-t border-b">
-        <div class="max-w-4xl mx-auto px-4 md:px-6 text-center">
-            <h3 class="text-xl md:text-2xl font-bold text-slate-800">
-                Support Our Mission
-            </h3>
-
-            <p class="text-slate-500 mt-2 mb-6 md:mb-8 text-base md:text-lg">
-                Help us create more stories like this one through your kind donation.
-            </p>
-
-            <a href="/donate" 
-               class="bg-[#2f7d6a] text-white px-6 md:px-10 py-3 md:py-4 rounded-full font-bold hover:bg-[#256354] transition shadow-lg inline-block transform hover:-translate-y-1 text-sm md:text-base">
+    <section class="bg-slate-50 py-16 border-t border-b">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h3 class="text-2xl font-bold text-slate-800">Support Our Mission</h3>
+            <p class="text-slate-500 mt-2 mb-8 text-lg">Help us create more stories like this one through your kind donation.</p>
+            <a href="/donate" class="bg-[#2f7d6a] text-white px-10 py-4 rounded-full font-bold hover:bg-[#256354] transition shadow-lg inline-block transform hover:-translate-y-1">
                 Donate Now
             </a>
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-[#2f7d6a] text-white py-8 md:py-10 text-center">
-        <p class="text-xs md:text-sm opacity-90">
-            © 2026 Sharanstan Old Age Home
-        </p>
+    <footer class="bg-[#2f7d6a] text-white py-10 text-center">
+        <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
     </footer>
 
 </body>
