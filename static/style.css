@@ -7,6 +7,10 @@ body {
     color: #3F3F46;                /* Body Text */
 }
 
+
+
+
+
 /* ---------- NAVBAR ---------- */
 .navbar {
     display: flex;
@@ -1146,7 +1150,7 @@ a {
 a:hover { 
     text-decoration:underline;
  }
- 
+
 /* ================= ADMIN UPDATE PAGE ================= */
 .update-container {
     max-width: 1100px;
@@ -1385,6 +1389,7 @@ a:hover {
     text-align: center;
     font-size: 32px;
     font-weight: 600;
+
     margin-bottom: 10px;
 }
 

@@ -7,10 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
+
 <body class="bg-white font-sans text-gray-900">
 
     <nav class="p-6 border-b bg-slate-50">
+
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <a href="/blog" class="text-[#2f7d6a] hover:opacity-80 font-bold flex items-center transition">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Back to All Stories
@@ -24,18 +27,15 @@
                 {{ post.title }}
             </h1>
         </div>
-
         {% if post.image_filename %}
         <div class="rounded-3xl overflow-hidden shadow-xl mb-12">
             <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" 
                  class="w-full h-auto object-cover max-h-[600px]" alt="{{ post.title }}">
         </div>
         {% endif %}
-
         <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-xl">
             {{ post.content }}
         </div>
-
         <div class="mt-20 pt-10 border-t border-gray-100 flex flex-col items-center">
             <h4 class="font-bold text-gray-400 uppercase text-xs tracking-widest mb-6">Share this story</h4>
             <div class="flex space-x-8">
