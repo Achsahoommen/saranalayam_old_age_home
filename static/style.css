@@ -1,14 +1,10 @@
 /* ================= GLOBAL STYLES ================= */
 body {
     font-family: "Segoe UI", Arial, sans-serif;
-    background: #F9FAF7;
-    padding: 20px;           /* Page Background */
+    background: #F9FAF7;           /* Page Background */
+    padding: 20px;
     margin: 0;
     color: #3F3F46;                /* Body Text */
-}
-img {
-    max-width: 100%;
-    height: auto;
 }
 
 /* ---------- NAVBAR ---------- */
@@ -107,13 +103,14 @@ img {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.55); /* dark overlay */
+    z-index: 1;
 }
 
 /* Content wrapper */
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 800px;
+    max-width: 900px;
     background: rgba(0, 0, 0, 0.35); /* optional semi-transparent box */
     padding: 30px 20px;
     border-radius: 12px;
@@ -1388,7 +1385,6 @@ a:hover {
     text-align: center;
     font-size: 32px;
     font-weight: 600;
-    color: #2f7d6a;
     margin-bottom: 10px;
 }
 
@@ -1409,6 +1405,12 @@ a:hover {
 }
 
 
+.faq-title { text-align: center; 
+    font-size: 36px; 
+    color: #2f7d6a; 
+    margin-bottom: 15px;
+}
+
 .faq-question {
     display: flex;
     justify-content: space-between;
@@ -1427,7 +1429,7 @@ a:hover {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.4s ease, opacity 0.4s ease;
+    transition: all 0.4s ease;
     line-height: 1.8;
     color: #555;
 }
@@ -2035,125 +2037,3 @@ body.login-page {
     font-size: 15px;
     border-radius: 6px;
 }
-
-
-/* ================= RESPONSIVE ================= */
-
-/* Tablet */
-@media (max-width: 992px) {
-    .services {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .nav-links {
-        flex-direction: column;
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .services {
-        grid-template-columns: 1fr;
-        padding: 40px 20px;
-    }
-
-    .hero {
-        height: auto;
-        padding: 60px 20px;
-    }
-
-    .hero h1 {
-        font-size: 28px;
-    }
-
-    .hero p {
-        font-size: 16px;
-    }
-}
-
-/* ================= FAQ MOBILE FIX ================= */
-@media (max-width: 768px) {
-
-    .faq-section {
-        margin: 40px auto;
-        padding: 0 15px;
-    }
-
-    .faq-title {
-        font-size: 24px;
-    }
-
-    .faq-description {
-        font-size: 14px;
-        margin-bottom: 30px;
-    }
-
-    .faq-question {
-        font-size: 15px;
-    }
-
-    .faq-answer {
-        font-size: 14px;
-        line-height: 1.6;
-    }
-
-    .ask-box {
-        padding: 25px 15px;
-        margin-top: 40px;
-    }
-
-    .ask-box textarea {
-        font-size: 14px;
-    }
-
-    .ask-box button {
-        width: 100%;
-    }
-
-    .faq-contact-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-}
-
- /* ================= MOBILE RESPONSIVE ================= */
-        @media (max-width: 768px) {
-
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 70px;
-                right: 0;
-                background: white;
-                width: 100%;
-                padding: 20px;
-                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-            }
-
-            .nav-links.show {
-                display: flex;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .info-card,
-            .info-card.reverse {
-                flex-direction: column;
-            }
-
-            .main-title {
-                font-size: 28px;
-            }
-        }
