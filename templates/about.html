@@ -122,6 +122,11 @@ flex-direction:row-reverse;
 flex:1;
 }
 
+.card-text p{
+font-size:18px;
+line-height:1.7;
+}
+
 .card-image{
 flex:1;
 }
@@ -134,7 +139,17 @@ border-radius:12px;
 .accent-title{
 color:#2F7D6A;
 margin-bottom:15px;
+font-size:28px;
 }
+
+blockquote{
+font-size:20px;
+font-style:italic;
+margin:15px 0;
+color:#444;
+}
+
+/* LIST */
 
 .styled-list{
 list-style:none;
@@ -142,7 +157,8 @@ padding:0;
 }
 
 .styled-list li{
-margin-bottom:10px;
+margin-bottom:12px;
+font-size:18px;
 }
 
 .styled-list i{
@@ -164,6 +180,12 @@ margin:40px auto;
 .cta h2{
 color:#2F7D6A;
 margin-bottom:15px;
+font-size:28px;
+}
+
+.cta p{
+font-size:18px;
+line-height:1.6;
 }
 
 .donate-btn{
@@ -173,6 +195,7 @@ color:white;
 padding:12px 30px;
 border-radius:8px;
 text-decoration:none;
+font-size:17px;
 }
 
 .donate-btn:hover{
@@ -187,6 +210,7 @@ background:#2f7d6a;
 color:white;
 padding:35px;
 margin-top:40px;
+font-size:16px;
 }
 
 /* MOBILE */
@@ -211,6 +235,10 @@ flex-direction:column;
 
 .main-title{
 font-size:28px;
+}
+
+.card-text p{
+font-size:17px;
 }
 
 }
@@ -313,7 +341,7 @@ This is not just a facility; it is a family where every resident is cherished.
 
 </section>
 
-<section class="info-card">
+<section class="info-card reverse">
 
 <div class="card-image">
 <img src="{{ url_for('static', filename='images/about3.jpeg') }}">
@@ -335,29 +363,40 @@ Growing old should never mean growing alone.”
 </section>
 
 </main>
-
 <!-- CTA -->
-
 <section class="cta">
-
 <h2><i class="fa-solid fa-hand-holding-heart"></i> Be the Reason Someone Smiles Today</h2>
 
 <p>
-Your contribution provides food, medicine,
-and a safe home for elders who need love and care.
+Your contribution is more than a donation —
+it is food on a plate, medicine for healing,
+a safe place to sleep, and a reminder that someone cares.
 </p>
 
 <a href="/donate" class="donate-btn">
-Make a Donation
+<i class="fa-solid fa-arrow-right"></i> Make a Donation
 </a>
+</section>
+
+
+<!-- CONTACT -->
+<section class="cta">
+
+<h2>Contact Us</h2>
+
+<p>
+📍 Chengannur, Alappuzha, Kerala <br>
+📞 0471-3567890, 9000012345 <br>
+📧 info@sharanstancare.in
+</p>
 
 </section>
 
-<!-- FOOTER -->
 
-<div class="footer">
-© 2026 Sharanstan Old Age Home
-</div>
+<!-- FOOTER -->
+<footer class="footer">
+<p>© 2026 Sharanstan Old Age Home</p>
+</footer>
 
 <script>
 
