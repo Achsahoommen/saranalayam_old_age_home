@@ -8,18 +8,34 @@
 <link rel="stylesheet" href="/static/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
+    /* ================= NAVBAR ================= */
+.navbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#256354;
+padding:12px 20px;
+}
 
-/* MOBILE NAV */
+/* LOGO */
+
+.logo img{
+height:55px;
+}
+
+/* ================= HAMBURGER ================= */
 
 .hamburger-btn{
 display:none;
 background:none;
 border:none;
 color:white;
-font-size:26px;
+font-size:28px;
 cursor:pointer;
-margin-left:auto;
+margin-left:auto;   /* pushes icon to right */
 }
+
+/* ================= MOBILE MENU ================= */
 
 .mobile-nav{
 display:none;
@@ -40,12 +56,13 @@ font-weight:600;
 border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-/* ABOUT CARDS */
+/* ================= ABOUT CARDS ================= */
 
 .info-card{
 display:flex;
 gap:30px;
 align-items:center;
+margin-bottom:40px;
 }
 
 .card-image img{
@@ -53,7 +70,7 @@ width:100%;
 border-radius:12px;
 }
 
-/* CTA BUTTON */
+/* ================= CTA BUTTON ================= */
 
 .donate-btn{
 display:inline-block;
@@ -69,17 +86,23 @@ margin-top:15px;
 background:#3FA584;
 }
 
-/* MOBILE RESPONSIVE */
+/* ================= MOBILE RESPONSIVE ================= */
 
 @media(max-width:768px){
+
+/* hide desktop menu */
 
 .nav-links{
 display:none;
 }
 
+/* show hamburger */
+
 .hamburger-btn{
 display:block;
 }
+
+/* stack cards */
 
 .info-card{
 flex-direction:column;
@@ -88,6 +111,8 @@ flex-direction:column;
 .zigzag.reverse{
 flex-direction:column;
 }
+
+/* spacing */
 
 .card-text{
 padding:20px;
@@ -103,19 +128,21 @@ padding:20px;
 
 .main-title{
 font-size:24px;
+text-align:center;
 }
 
 .location-tag{
 font-size:14px;
+text-align:center;
 }
+
+/* CTA spacing */
 
 .cta{
 margin:30px 20px;
 padding:25px;
 }
-
 }
-
 </style>
 
 </head>
