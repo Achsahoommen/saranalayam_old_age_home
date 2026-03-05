@@ -10,35 +10,57 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* ================= NAVBAR ================= */
+
+/* GLOBAL */
+body{
+font-family: "Segoe UI", Arial, sans-serif;
+margin:0;
+background:#F9FAF7;
+color:#3F3F46;
+}
+
+/* NAVBAR */
 
 .navbar{
 display:flex;
-align-items:center;
 justify-content:space-between;
-background:#256354;
-padding:12px 20px;
+align-items:center;
+background:#2f7d6a;
+padding:15px 25px;
 }
-
-/* LOGO */
 
 .logo img{
 height:55px;
 }
 
-/* ================= HAMBURGER ================= */
+.nav-links{
+display:flex;
+gap:20px;
+}
+
+.nav-links a{
+color:white;
+text-decoration:none;
+font-weight:600;
+}
+
+.nav-links a:hover{
+text-decoration:underline;
+}
+
+/* HAMBURGER */
 
 .hamburger-btn{
 display:none;
 background:none;
 border:none;
 color:white;
-font-size:28px;
+font-size:26px;
 cursor:pointer;
-margin-left:auto;   /* pushes icon to right */
+margin-left:auto;   
 }
 
-/* ================= MOBILE MENU ================= */
+/* MOBILE NAV */
 
 .mobile-nav{
 display:none;
@@ -59,94 +81,168 @@ font-weight:600;
 border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-/* ================= ABOUT CARDS ================= */
+/* HERO */
 
-.info-card{
+.hero{
+height:80vh;
 display:flex;
-gap:30px;
 align-items:center;
-margin-bottom:40px;
+justify-content:center;
+text-align:center;
+color:white;
+background:url("{{ url_for('static', filename='images/mainimage.jpeg') }}") center/cover no-repeat;
+position:relative;
 }
 
-.card-image img{
-width:100%;
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.55);
+}
+
+.hero-content{
+position:relative;
+z-index:2;
+max-width:900px;
+background:rgba(0,0,0,0.35);
+padding:30px;
 border-radius:12px;
 }
 
-/* ================= CTA BUTTON ================= */
-
-.donate-btn{
-display:inline-block;
-background:#2F7D6A;
-color:white;
-padding:12px 25px;
-border-radius:8px;
-text-decoration:none;
-margin-top:15px;
+.hero h4{
+font-size:40px;
+margin-bottom:10px;
 }
 
-.donate-btn:hover{
+.hero h1{
+color:#2F7D6A;
+font-size:32px;
+margin-bottom:15px;
+}
+
+.hero p{
+font-size:18px;
+line-height:1.7;
+}
+
+/* SERVICES */
+
+.services{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:40px;
+padding:60px 80px;
+}
+
+.service-card{
+text-align:center;
+}
+
+.service-card i{
+font-size:50px;
+color:#2f7d6a;
+margin-bottom:15px;
+}
+
+.service-card h3{
+font-size:24px;
+margin-bottom:10px;
+color:#2f7d6a;
+}
+
+.service-card p{
+font-size:16px;
+line-height:1.6;
+}
+
+/* CTA */
+
+.cta{
+background:#E6F2EF;
+border-radius:12px;
+padding:40px;
+text-align:center;
+max-width:900px;
+margin:40px auto;
+}
+
+.cta h2{
+color:#2F7D6A;
+margin-bottom:15px;
+}
+
+.cta p{
+max-width:700px;
+margin:auto;
+margin-bottom:20px;
+}
+
+.cta button{
+background:#2F7D6A;
+color:white;
+border:none;
+padding:12px 30px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.cta button:hover{
 background:#3FA584;
 }
 
-/* ================= MOBILE RESPONSIVE ================= */
+/* FOOTER */
+
+.footer{
+text-align:center;
+background:#2f7d6a;
+color:white;
+padding:35px;
+margin-top:40px;
+}
+
+/* MOBILE RESPONSIVE */
 
 @media(max-width:768px){
-
-/* hide desktop menu */
 
 .nav-links{
 display:none;
 }
 
-/* show hamburger */
-
 .hamburger-btn{
 display:block;
 }
 
-/* stack cards */
-
-.info-card{
-flex-direction:column;
+.hero{
+height:auto;
+padding:90px 20px;
 }
 
-.zigzag.reverse{
-flex-direction:column;
+.hero h4{
+font-size:26px;
 }
 
-/* spacing */
-
-.card-text{
-padding:20px;
+.hero h1{
+font-size:20px;
 }
 
-.card-image{
-width:100%;
-}
-
-.front-view-header{
-padding:20px;
-}
-
-.main-title{
-font-size:24px;
-text-align:center;
-}
-
-.location-tag{
+.hero p{
 font-size:14px;
-text-align:center;
 }
 
-/* CTA spacing */
+.services{
+grid-template-columns:1fr;
+padding:40px 25px;
+gap:30px;
+}
 
 .cta{
 margin:30px 20px;
-padding:25px;
+padding:30px 20px;
 }
 
 }
+
 </style>
 </head>
 
