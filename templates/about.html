@@ -14,46 +14,35 @@
 <style>
 
 /* ===== NAVBAR ===== */
-/* ---------- NAVBAR ---------- */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #2f7d6a;
-    padding: 15px 30px;
-    width: 100%;
-    box-sizing: border-box;
+
+.navbar{
+background:#2f7d6a;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:12px 20px;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
+.logo img{
+height:42px;
 }
 
-.logo img {
-    height: 55px;
-    width: auto;
-    object-fit: contain;
-    background: transparent;
-}
-
+/* desktop links */
 .nav-links {
     display: flex;
     align-items: center;
 }
 
-.nav-links a {
-    color: #ffffff;
-    margin-left: 20px;
-    text-decoration: none;
-    font-weight: 600;
+.nav-links a{
+color:white;
+font-weight:600;
+text-decoration:none;
 }
 
-.nav-links a:hover {
-    text-decoration: underline;
+.nav-links a:hover{
+opacity:0.8;
 }
 
-/* ---------- HAMBURGER BUTTON ---------- */
 .hamburger-btn {
     display: none;
     background: none;
@@ -65,38 +54,29 @@
     line-height: 1;
 }
 
-/* ---------- MOBILE NAV DRAWER ---------- */
-.mobile-nav {
-    display: none;
-    flex-direction: column;
-    background: #256354;
-    padding: 10px 20px 20px;
-    width: 100%;
-    box-sizing: border-box;
+/* ===== MOBILE MENU ===== */
+
+#mobile-menu{
+display:none;
+flex-direction:column;
+background:#256354;
+padding:15px 25px;
 }
 
-.mobile-nav.open {
-    display: flex;
+#mobile-menu a{
+color:white;
+text-decoration:none;
+padding:12px 0;
+border-bottom:1px solid rgba(255,255,255,0.2);
+font-weight:600;
 }
 
-.mobile-nav a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+#mobile-menu a i{
+margin-right:8px;
 }
 
-.mobile-nav a:last-child {
-    border-bottom: none;
-}
-
-.mobile-nav a:hover {
-    opacity: 0.8;
+#mobile-menu.open{
+display:flex;
 }
 
 /* ===== MOBILE ===== */
