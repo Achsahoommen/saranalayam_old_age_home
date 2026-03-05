@@ -1,52 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>About | Sharanstan Old Age Home</title>
-
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
 <link rel="stylesheet" href="/static/style.css">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-
-/* NAVBAR */
-
-.navbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px 40px;
-background:#256354;
-}
-
-.logo img{
-height:55px;
-}
-
-.nav-links{
-display:flex;
-gap:25px;
-}
-
-.nav-links a{
-color:white;
-text-decoration:none;
-font-weight:600;
-}
-
-.nav-links a:hover{
-opacity:0.8;
-}
-
-.nav-links .active{
-border-bottom:2px solid white;
-}
 
 /* MOBILE NAV */
 
@@ -57,6 +18,7 @@ border:none;
 color:white;
 font-size:26px;
 cursor:pointer;
+margin-left:auto;
 }
 
 .mobile-nav{
@@ -78,46 +40,12 @@ font-weight:600;
 border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-/* HEADER */
-
-.front-view-header{
-text-align:center;
-padding:40px;
-background:#f5f5f5;
-}
-
-.main-title{
-font-size:32px;
-margin-bottom:10px;
-}
-
-.location-tag{
-color:#555;
-}
-
-/* CONTENT */
-
-.content-wrapper{
-max-width:1100px;
-margin:auto;
-padding:40px 20px;
-}
-
-/* CARDS */
+/* ABOUT CARDS */
 
 .info-card{
 display:flex;
 gap:30px;
 align-items:center;
-margin-bottom:50px;
-}
-
-.card-text{
-flex:1;
-}
-
-.card-image{
-flex:1;
 }
 
 .card-image img{
@@ -125,41 +53,7 @@ width:100%;
 border-radius:12px;
 }
 
-.accent-title{
-color:#256354;
-margin-bottom:10px;
-}
-
-.styled-list{
-list-style:none;
-padding:0;
-}
-
-.styled-list li{
-margin-bottom:10px;
-}
-
-.styled-list i{
-color:#2F7D6A;
-margin-right:8px;
-}
-
-.founder-quote{
-font-style:italic;
-background:#f7f7f7;
-padding:15px;
-border-left:4px solid #256354;
-}
-
-/* CTA */
-
-.cta{
-background:#f3f3f3;
-padding:30px;
-margin:40px 0;
-text-align:center;
-border-radius:10px;
-}
+/* CTA BUTTON */
 
 .donate-btn{
 display:inline-block;
@@ -173,15 +67,6 @@ margin-top:15px;
 
 .donate-btn:hover{
 background:#3FA584;
-}
-
-/* FOOTER */
-
-.footer{
-text-align:center;
-padding:20px;
-background:#222;
-color:white;
 }
 
 /* MOBILE RESPONSIVE */
@@ -198,6 +83,35 @@ display:block;
 
 .info-card{
 flex-direction:column;
+}
+
+.zigzag.reverse{
+flex-direction:column;
+}
+
+.card-text{
+padding:20px;
+}
+
+.card-image{
+width:100%;
+}
+
+.front-view-header{
+padding:20px;
+}
+
+.main-title{
+font-size:24px;
+}
+
+.location-tag{
+font-size:14px;
+}
+
+.cta{
+margin:30px 20px;
+padding:25px;
 }
 
 }
@@ -258,20 +172,18 @@ flex-direction:column;
 
 <!-- JOURNEY -->
 
-<section class="info-card">
+<section class="info-card zigzag">
 
 <div class="card-text">
 
 <h2 class="accent-title">Our Inspiring Journey</h2>
 
 <p>
-Sharanstan Old Age Home was born from a powerful vision — to restore dignity,
-love, and belonging to elderly individuals who find themselves alone in their twilight years.
+Sharanstan Old Age Home was born from a powerful vision — to restore dignity, love, and belonging to elderly individuals who find themselves alone in their twilight years.
 </p>
 
 <p>
-Today, Sharanstan provides 24×7 care, nutritious meals, medical support,
-and a peaceful environment.
+Today, Sharanstan provides 24×7 care, nutritious meals, medical support, and a peaceful environment. This is not just a facility; it is a family where every resident is cherished.
 </p>
 
 </div>
@@ -284,17 +196,23 @@ and a peaceful environment.
 
 <!-- VISION -->
 
-<section class="info-card">
+<section class="info-card zigzag reverse">
 
 <div class="card-text">
 
 <h2 class="accent-title">Our Vision & Future Plans</h2>
 
+<p>
+Our vision is to create a future where no elderly person feels abandoned.
+</p>
+
 <ul class="styled-list">
 
 <li><i class="fa-solid fa-check"></i> Construct additional living spaces</li>
+
 <li><i class="fa-solid fa-check"></i> Dedicated in-house medical care unit</li>
-<li><i class="fa-solid fa-check"></i> Physiotherapy & wellness programs</li>
+
+<li><i class="fa-solid fa-check"></i> Specialized physiotherapy & wellness programs</li>
 
 </ul>
 
@@ -308,7 +226,7 @@ and a peaceful environment.
 
 <!-- FOUNDER -->
 
-<section class="info-card">
+<section class="info-card zigzag">
 
 <div class="card-image">
 <img src="{{ url_for('static', filename='images/about3.jpeg') }}">
@@ -320,8 +238,7 @@ and a peaceful environment.
 
 <blockquote class="founder-quote">
 
-“Sharanstan was built on compassion, not wealth.
-Growing old should never mean growing alone.”
+“Sharanstan was built on compassion, not wealth. When I first encountered elders who had no one to care for them, I realized that growing old should never mean growing alone.”
 
 </blockquote>
 
@@ -333,7 +250,7 @@ Growing old should never mean growing alone.”
 
 </section>
 
-<!-- DONATE -->
+<!-- DONATION CTA -->
 
 <section class="cta">
 
@@ -343,7 +260,7 @@ Be the Reason Someone Smiles Today
 </h2>
 
 <p>
-Your contribution gives food, medicine, shelter, and hope.
+Your contribution is more than a donation — it is food, medicine, shelter, and hope.
 </p>
 
 <a href="/donate" class="donate-btn">
@@ -353,21 +270,15 @@ Your contribution gives food, medicine, shelter, and hope.
 </section>
 
 <!-- CONTACT -->
-
 <div class="cta">
-
 <h2>Contact Us</h2>
-
 <p>
 📍 Chengannur, Alappuzha, Kerala<br>
 📞 0471-3567890, 9000012345<br>
 📧 info@sharanstancare.in
 </p>
-
 </div>
-
 </main>
-
 <footer class="footer">
 
 <p>© 2026 Sharanstan Old Age Home</p>
