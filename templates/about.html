@@ -12,37 +12,46 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-
-/* ===== NAVBAR ===== */
-
-.navbar{
-background:#2f7d6a;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:12px 20px;
+/* ---------- NAVBAR ---------- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2f7d6a;
+    padding: 15px 30px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.logo img{
-height:42px;
+.logo {
+    display: flex;
+    align-items: center;
 }
 
-/* desktop links */
+.logo img {
+    height: 55px;
+    width: auto;
+    object-fit: contain;
+    background: transparent;
+}
+
 .nav-links {
     display: flex;
     align-items: center;
 }
 
-.nav-links a{
-color:white;
-font-weight:600;
-text-decoration:none;
+.nav-links a {
+    color: #ffffff;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 600;
 }
 
-.nav-links a:hover{
-opacity:0.8;
+.nav-links a:hover {
+    text-decoration: underline;
 }
 
+/* ---------- HAMBURGER BUTTON ---------- */
 .hamburger-btn {
     display: none;
     background: none;
@@ -54,44 +63,39 @@ opacity:0.8;
     line-height: 1;
 }
 
-/* ===== MOBILE MENU ===== */
-
-#mobile-menu{
-display:none;
-flex-direction:column;
-background:#256354;
-padding:15px 25px;
+/* ---------- MOBILE NAV DRAWER ---------- */
+.mobile-nav {
+    display: none;
+    flex-direction: column;
+    background: #256354;
+    padding: 10px 20px 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-#mobile-menu a{
-color:white;
-text-decoration:none;
-padding:12px 0;
-border-bottom:1px solid rgba(255,255,255,0.2);
-font-weight:600;
+.mobile-nav.open {
+    display: flex;
 }
 
-#mobile-menu a i{
-margin-right:8px;
+.mobile-nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-#mobile-menu.open{
-display:flex;
+.mobile-nav a:last-child {
+    border-bottom: none;
 }
 
-/* ===== MOBILE ===== */
-
-@media(max-width:768px){
-
-.nav-links{
-display:none;
+.mobile-nav a:hover {
+    opacity: 0.8;
 }
-
-#hamburger-btn{
-display:block;
-}
-}
-
 </style>
 </head>
 
@@ -102,7 +106,7 @@ display:block;
 <nav class="navbar">
 
 <div class="logo">
-<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Sharanstan Logo">
+<img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sharanstan Logo">
 </div>
 
 <div class="nav-links">
@@ -114,27 +118,20 @@ display:block;
 <a href="/login">Login</a>
 </div>
 
-<button id="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle Menu">
-<i id="hamburger-icon" class="fa-solid fa-bars"></i>
+<button class="hamburger-btn" onclick="toggleMenu()">
+<i class="fa-solid fa-bars"></i>
 </button>
 
 </nav>
 
-<!-- MOBILE MENU -->
-
-<div id="mobile-menu">
+<div class="mobile-nav" id="mobileNav">
 
 <a href="/"><i class="fa-solid fa-house"></i> Home</a>
-
-<a href="/about"><i class="fa-solid fa-circle-info"></i> About Us</a>
-
-<a href="/faq"><i class="fa-solid fa-question-circle"></i> FAQ</a>
-
+<a href="/about"><i class="fa-solid fa-circle-info"></i> About</a>
+<a href="/faq"><i class="fa-solid fa-question"></i> FAQ</a>
 <a href="/blog"><i class="fa-solid fa-newspaper"></i> Blogs</a>
-
 <a href="/donate"><i class="fa-solid fa-heart"></i> Donate</a>
-
-<a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+<a href="/login"><i class="fa-solid fa-user"></i> Login</a>
 
 </div>
 
@@ -208,38 +205,16 @@ display:block;
 </main>
 
 <footer class="footer">
-<p>© 2026 Sharanstan Old Age Home</p>
+    <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
 </footer>
-
-
 <script>
 
 function toggleMenu(){
 
-const menu=document.getElementById("mobile-menu");
-const icon=document.getElementById("hamburger-icon");
-
-menu.classList.toggle("open");
-
-if(menu.classList.contains("open")){
-icon.classList.replace("fa-bars","fa-xmark");
-}
-else{
-icon.classList.replace("fa-xmark","fa-bars");
-}
+document.getElementById("mobileNav").classList.toggle("open")
 
 }
-
-/* close menu when clicking link */
-
-document.querySelectorAll("#mobile-menu a").forEach(link=>{
-link.addEventListener("click",()=>{
-document.getElementById("mobile-menu").classList.remove("open");
-document.getElementById("hamburger-icon").classList.replace("fa-xmark","fa-bars");
-});
-});
 
 </script>
-
 </body>
 </html>
