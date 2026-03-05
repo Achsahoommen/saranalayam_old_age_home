@@ -12,45 +12,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* ---------- NAVBAR ---------- */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #2f7d6a;
-    padding: 15px 30px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-}
-
-.logo img {
-    height: 55px;
-    width: auto;
-    object-fit: contain;
-    background: transparent;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-}
-
-.nav-links a {
-    color: #ffffff;
-    margin-left: 20px;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.nav-links a:hover {
-    text-decoration: underline;
-}
-
 /* ---------- HAMBURGER BUTTON ---------- */
 .hamburger-btn {
     display: none;
@@ -64,37 +25,23 @@
 }
 
 /* ---------- MOBILE NAV DRAWER ---------- */
-.mobile-nav {
-    display: none;
-    flex-direction: column;
-    background: #256354;
-    padding: 10px 20px 20px;
-    width: 100%;
-    box-sizing: border-box;
+.mobile-nav{
+display:none;
+flex-direction:column;
+background:#256354;
+padding:10px 20px 20px;
 }
 
-.mobile-nav.open {
-    display: flex;
+.mobile-nav.open{
+display:flex;
 }
 
-.mobile-nav a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.mobile-nav a:last-child {
-    border-bottom: none;
-}
-
-.mobile-nav a:hover {
-    opacity: 0.8;
+.mobile-nav a{
+color:white;
+padding:12px 0;
+text-decoration:none;
+font-weight:600;
+border-bottom:1px solid rgba(255,255,255,0.2);
 }
 @media(max-width:768px){
 
