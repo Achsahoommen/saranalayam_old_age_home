@@ -1,321 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About | Sharanstan Old Age Home</title>
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-<link rel="stylesheet" href="/static/style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>About | Sharanstan Old Age Home</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-    /* ================= NAVBAR ================= */
+
+.text-custom-green { color:#2f7d6a; }
+.bg-custom-green { background-color:#2f7d6a; }
+
+/* ===== NAVBAR ===== */
+
 .navbar{
+background:#2f7d6a;
 display:flex;
 align-items:center;
 justify-content:space-between;
-background:#256354;
 padding:12px 20px;
 }
 
 .logo img{
-height:55px;
+height:42px;
 }
 
-/* ================= HAMBURGER ================= */
-.hamburger-btn{
-display:none;
-background:none;
-border:none;
-color:white;
-font-size:28px;
-cursor:pointer;
-}
+/* desktop links */
 
-/* ================= MOBILE MENU ================= */
-
-.mobile-nav{
-display:none;
-flex-direction:column;
-background:#256354;
-padding:10px 20px 20px;
-}
-
-.mobile-nav.open{
+.nav-links{
 display:flex;
-}
-
-.mobile-nav a{
-color:white;
-padding:12px 0;
-text-decoration:none;
-font-weight:600;
-border-bottom:1px solid rgba(255,255,255,0.2);
-}
-
-/* ================= ABOUT CARDS ================= */
-
-.info-card{
-display:flex;
-gap:30px;
+gap:22px;
 align-items:center;
-margin-bottom:40px;
 }
 
-.card-image img{
-width:100%;
-border-radius:12px;
-}
-
-/* ================= CTA BUTTON ================= */
-
-.donate-btn{
-display:inline-block;
-background:#2F7D6A;
+.nav-links a{
 color:white;
-padding:12px 25px;
-border-radius:8px;
-text-decoration:none;
-margin-top:15px;
+font-weight:600;
+transition:0.2s;
 }
 
-.donate-btn:hover{
-background:#3FA584;
+.nav-links a:hover{
+opacity:0.8;
 }
 
-/* ================= MOBILE RESPONSIVE ================= */
+/* hamburger */
+
+#hamburger-btn{
+color:white;
+font-size:26px;
+display:none;
+}
+
+/* mobile menu */
+
+#mobile-menu{
+display:none;
+}
+
+#mobile-menu.open{
+display:flex;
+}
+
+/* ===== MOBILE ===== */
 
 @media(max-width:768px){
-
-/* hide desktop menu */
-
 .nav-links{
 display:none;
 }
-
-/* show hamburger */
-
-.hamburger-btn{
+#hamburger-btn{
 display:block;
-margin-left:auto;
-}
-
-/* stack cards */
-
-.info-card{
-flex-direction:column;
-}
-
-.zigzag.reverse{
-flex-direction:column;
-}
-
-/* spacing */
-
-.card-text{
-padding:20px;
-}
-
-.card-image{
-width:100%;
-}
-
-.front-view-header{
-padding:20px;
-}
-
-.main-title{
-font-size:24px;
-text-align:center;
-}
-
-.location-tag{
-font-size:14px;
-text-align:center;
-}
-
-/* CTA spacing */
-
-.cta{
-margin:30px 20px;
-padding:25px;
 }
 }
 </style>
-
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-
 <nav class="navbar">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sharanstan Logo">
+    </div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about" class="active">About Us</a>
+        <a href="/faq">FAQ</a>
+        <a href="/blog">Blogs</a>
+        <a href="/donate">Donate</a>
+        <a href="/login">Login</a>
+    </div>
 
-<div class="logo">
-<img src="{{ url_for('static', filename='images/logo1.png') }}">
-</div>
-
-<div class="nav-links">
-<a href="/">Home</a>
-<a href="/about" class="active">About Us</a>
-<a href="/faq">FAQ</a>
-<a href="/blog">Blogs</a>
-<a href="/donate">Donate</a>
-<a href="/login">Login</a>
-</div>
-
-<button class="hamburger-btn" onclick="toggleMenu()">
-<i class="fa-solid fa-bars"></i>
+    <button id="hamburger-btn"
+onclick="toggleMenu()"
+aria-label="Toggle Menu">
+<i id="hamburger-icon" class="fa-solid fa-bars"></i>
 </button>
 
 </nav>
 
-<!-- MOBILE MENU -->
+<!-- ===== MOBILE MENU ===== -->
 
-<div class="mobile-nav" id="mobileNav">
+<div id="mobile-menu"
+class="flex-col bg-[#256354] text-white px-6 py-4 space-y-3 shadow-lg md:hidden">
 
-<a href="/">Home</a>
-<a href="/about">About</a>
-<a href="/faq">FAQ</a>
-<a href="/blog">Blogs</a>
-<a href="/donate">Donate</a>
-<a href="/login">Login</a>
+<a href="/" class="block py-2 border-b border-white/20 font-semibold">
+<i class="fa-solid fa-house mr-2"></i> Home
+</a>
+
+<a href="/about" class="block py-2 border-b border-white/20 font-semibold">
+<i class="fa-solid fa-circle-info mr-2"></i> About Us
+</a>
+
+<a href="/faq" class="block py-2 border-b border-white/20 font-semibold">
+<i class="fa-solid fa-question-circle mr-2"></i> FAQ
+</a>
+
+<a href="/blog" class="block py-2 border-b border-white/20 font-semibold">
+<i class="fa-solid fa-newspaper mr-2"></i> Blogs
+</a>
+
+<a href="/donate" class="block py-2 border-b border-white/20 font-semibold">
+<i class="fa-solid fa-heart mr-2"></i> Donate
+</a>
+
+<a href="/login" class="block py-2 font-semibold">
+<i class="fa-solid fa-right-to-bracket mr-2"></i> Login
+</a>
 
 </div>
 
 <header class="front-view-header">
-
-<h1 class="main-title">Sharanstan Old Age Home</h1>
-
-<p class="location-tag">
-<i class="fa-solid fa-location-dot"></i> Chengannur, Kerala
-</p>
-
+    <h1 class="main-title">Sharanstan Old Age Home</h1>
+    <p class="location-tag">
+        <i class="fa-solid fa-location-dot"></i> Chengannur, Kerala
+    </p>
 </header>
 
 <main class="content-wrapper">
+    <section class="info-card zigzag">
+        <div class="card-text">
+            <h2 class="accent-title">Our Inspiring Journey</h2>
+            <p>Sharanstan Old Age Home was born from a powerful vision — to restore dignity, love, and belonging to elderly individuals who find themselves alone in their twilight years.</p>
+            <p>Today, Sharanstan provides 24×7 care, nutritious meals, medical support, and a peaceful environment. This is not just a facility; it is a family where every resident is cherished.</p>
+        </div>
+        <div class="card-image">
+            <img src="{{ url_for('static', filename='images/about1.jpeg') }}" alt="Residents sharing a moment">
+        </div>
+    </section>
 
-<!-- JOURNEY -->
+    <section class="info-card zigzag reverse">
+        <div class="card-text">
+            <h2 class="accent-title">Our Vision & Future Plans</h2>
+            <p>Our vision is to create a future where no elderly person feels abandoned. We are constantly working to improve our reach and facilities.</p>
+            <ul class="styled-list">
+                <li><i class="fa-solid fa-check"></i> Construct additional living spaces</li>
+                <li><i class="fa-solid fa-check"></i> Dedicated in-house medical care unit</li>
+                <li><i class="fa-solid fa-check"></i> Specialized physiotherapy & wellness programs</li>
+            </ul>
+        </div>
+        <div class="card-image">
+            <img src="{{ url_for('static', filename='images/about2.jpeg') }}" alt="Expansion plans">
+        </div>
+    </section>
 
-<section class="info-card zigzag">
+    <section class="info-card zigzag reverse">
+        <div class="card-image">
+            <img src="{{ url_for('static', filename='images/about3.jpeg') }}" alt="Care and Compassion">
+        </div>
+        <div class="card-text">
+            <h2 class="accent-title">Founder’s Message</h2>
+            <blockquote class="founder-quote">
+                “Sharanstan was built on compassion, not wealth. When I first encountered elders who had no one to care for them, I realized that growing old should never mean growing alone.”
+            </blockquote>
+            <p class="signature">– Founder, Sharanstan Old Age Home</p>
+            </div>
+    </section>
 
-<div class="card-text">
-
-<h2 class="accent-title">Our Inspiring Journey</h2>
-
-<p>
-Sharanstan Old Age Home was born from a powerful vision — to restore dignity, love, and belonging to elderly individuals who find themselves alone in their twilight years.
-</p>
-
-<p>
-Today, Sharanstan provides 24×7 care, nutritious meals, medical support, and a peaceful environment. This is not just a facility; it is a family where every resident is cherished.
-</p>
-
-</div>
-
-<div class="card-image">
-<img src="{{ url_for('static', filename='images/about1.jpeg') }}">
-</div>
-
-</section>
-
-<!-- VISION -->
-
-<section class="info-card zigzag reverse">
-
-<div class="card-text">
-
-<h2 class="accent-title">Our Vision & Future Plans</h2>
-
-<p>
-Our vision is to create a future where no elderly person feels abandoned.
-</p>
-
-<ul class="styled-list">
-
-<li><i class="fa-solid fa-check"></i> Construct additional living spaces</li>
-
-<li><i class="fa-solid fa-check"></i> Dedicated in-house medical care unit</li>
-
-<li><i class="fa-solid fa-check"></i> Specialized physiotherapy & wellness programs</li>
-
-</ul>
-
-</div>
-
-<div class="card-image">
-<img src="{{ url_for('static', filename='images/about2.jpeg') }}">
-</div>
-
-</section>
-
-<!-- FOUNDER -->
-
-<section class="info-card zigzag">
-
-<div class="card-image">
-<img src="{{ url_for('static', filename='images/about3.jpeg') }}">
-</div>
-
-<div class="card-text">
-
-<h2 class="accent-title">Founder’s Message</h2>
-
-<blockquote class="founder-quote">
-
-“Sharanstan was built on compassion, not wealth. When I first encountered elders who had no one to care for them, I realized that growing old should never mean growing alone.”
-
-</blockquote>
-
-<p class="signature">
-– Founder, Sharanstan Old Age Home
-</p>
-
-</div>
-
-</section>
-
-<!-- DONATION CTA -->
-
+    <!-- CTA -->
 <section class="cta">
-
-<h2>
-<i class="fa-solid fa-hand-holding-heart"></i>
-Be the Reason Someone Smiles Today
-</h2>
-
-<p>
-Your contribution is more than a donation — it is food, medicine, shelter, and hope.
-</p>
-
-<a href="/donate" class="donate-btn">
-<i class="fa-solid fa-arrow-right"></i> Make a Donation
-</a>
-
+    <h2><i class="fa-solid fa-hand-holding-heart"></i> Be the Reason Someone Smiles Today</h2>
+    <p>
+        Your contribution is more than a donation —
+        it is food on a plate, medicine for healing,
+        a safe place to sleep, and a reminder that someone cares.
+    </p>
+    <a href="/donate" class="donate-btn">
+        <i class="fa-solid fa-arrow-right"></i> Make a Donation
+    </a>
 </section>
-
-<!-- CONTACT -->
-<div class="cta">
-<h2>Contact Us</h2>
-<p>
-📍 Chengannur, Alappuzha, Kerala<br>
-📞 0471-3567890, 9000012345<br>
-📧 info@sharanstancare.in
-</p>
-</div>
+        <div class="cta">
+            <h2>Contact Us</h2>
+            <p>
+                📍 Chengannur, Alappuzha, Kerala<br>
+                📞 0471-3567890,9000012345<br>
+                📧 info@sharanstancare.in
+            </p>
+        </div>
 </main>
+
 <footer class="footer">
-
-<p>© 2026 Sharanstan Old Age Home</p>
-
+    <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
 </footer>
 
 <script>
 
 function toggleMenu(){
-document.getElementById("mobileNav").classList.toggle("open")
+
+const menu=document.getElementById("mobile-menu");
+const icon=document.getElementById("hamburger-icon");
+
+menu.classList.toggle("open");
+
+if(menu.classList.contains("open")){
+icon.classList.remove("fa-bars");
+icon.classList.add("fa-xmark");
+}
+else{
+icon.classList.remove("fa-xmark");
+icon.classList.add("fa-bars");
 }
 
-</script>
+}
 
+document.querySelectorAll("#mobile-menu a").forEach(link=>{
+link.addEventListener("click",()=>{
+document.getElementById("mobile-menu").classList.remove("open");
+document.getElementById("hamburger-icon").classList.remove("fa-xmark");
+document.getElementById("hamburger-icon").classList.add("fa-bars");
+});
+});
+
+</script>
 </body>
 </html>
