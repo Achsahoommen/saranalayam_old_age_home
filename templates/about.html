@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>About | Sharanstan Old Age Home</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.text-custom-green { color:#2f7d6a; }
-.bg-custom-green { background-color:#2f7d6a; }
+<title>About | Sharanstan Old Age Home</title>
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="/static/style.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
 
 /* ===== NAVBAR ===== */
 
@@ -36,7 +38,7 @@ align-items:center;
 .nav-links a{
 color:white;
 font-weight:600;
-transition:0.2s;
+text-decoration:none;
 }
 
 .nav-links a:hover{
@@ -48,13 +50,31 @@ opacity:0.8;
 #hamburger-btn{
 color:white;
 font-size:26px;
+background:none;
+border:none;
 display:none;
+cursor:pointer;
 }
 
-/* mobile menu */
+/* ===== MOBILE MENU ===== */
 
 #mobile-menu{
 display:none;
+flex-direction:column;
+background:#256354;
+padding:15px 25px;
+}
+
+#mobile-menu a{
+color:white;
+text-decoration:none;
+padding:12px 0;
+border-bottom:1px solid rgba(255,255,255,0.2);
+font-weight:600;
+}
+
+#mobile-menu a i{
+margin-right:8px;
 }
 
 #mobile-menu.open{
@@ -64,76 +84,70 @@ display:flex;
 /* ===== MOBILE ===== */
 
 @media(max-width:768px){
+
 .nav-links{
 display:none;
 }
+
 #hamburger-btn{
 display:block;
 }
+
 }
+
 </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sharanstan Logo">
-    </div>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/about" class="active">About Us</a>
-        <a href="/faq">FAQ</a>
-        <a href="/blog">Blogs</a>
-        <a href="/donate">Donate</a>
-        <a href="/login">Login</a>
-    </div>
+<!-- NAVBAR -->
 
-    <button id="hamburger-btn"
-onclick="toggleMenu()"
-aria-label="Toggle Menu">
+<nav class="navbar">
+
+<div class="logo">
+<img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sharanstan Logo">
+</div>
+
+<div class="nav-links">
+<a href="/">Home</a>
+<a href="/about">About Us</a>
+<a href="/faq">FAQ</a>
+<a href="/blog">Blogs</a>
+<a href="/donate">Donate</a>
+<a href="/login">Login</a>
+</div>
+
+<button id="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle Menu">
 <i id="hamburger-icon" class="fa-solid fa-bars"></i>
 </button>
 
 </nav>
 
-<!-- ===== MOBILE MENU ===== -->
+<!-- MOBILE MENU -->
 
-<div id="mobile-menu"
-class="flex-col bg-[#256354] text-white px-6 py-4 space-y-3 shadow-lg md:hidden">
+<div id="mobile-menu">
 
-<a href="/" class="block py-2 border-b border-white/20 font-semibold">
-<i class="fa-solid fa-house mr-2"></i> Home
-</a>
+<a href="/"><i class="fa-solid fa-house"></i> Home</a>
 
-<a href="/about" class="block py-2 border-b border-white/20 font-semibold">
-<i class="fa-solid fa-circle-info mr-2"></i> About Us
-</a>
+<a href="/about"><i class="fa-solid fa-circle-info"></i> About Us</a>
 
-<a href="/faq" class="block py-2 border-b border-white/20 font-semibold">
-<i class="fa-solid fa-question-circle mr-2"></i> FAQ
-</a>
+<a href="/faq"><i class="fa-solid fa-question-circle"></i> FAQ</a>
 
-<a href="/blog" class="block py-2 border-b border-white/20 font-semibold">
-<i class="fa-solid fa-newspaper mr-2"></i> Blogs
-</a>
+<a href="/blog"><i class="fa-solid fa-newspaper"></i> Blogs</a>
 
-<a href="/donate" class="block py-2 border-b border-white/20 font-semibold">
-<i class="fa-solid fa-heart mr-2"></i> Donate
-</a>
+<a href="/donate"><i class="fa-solid fa-heart"></i> Donate</a>
 
-<a href="/login" class="block py-2 font-semibold">
-<i class="fa-solid fa-right-to-bracket mr-2"></i> Login
-</a>
+<a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
 
 </div>
 
-<header class="front-view-header">
-    <h1 class="main-title">Sharanstan Old Age Home</h1>
-    <p class="location-tag">
-        <i class="fa-solid fa-location-dot"></i> Chengannur, Kerala
-    </p>
-</header>
 
+<header class="front-view-header">
+<h1 class="main-title">Sharanstan Old Age Home</h1>
+<p class="location-tag">
+<i class="fa-solid fa-location-dot"></i> Chengannur, Kerala
+</p>
+</header>
 <main class="content-wrapper">
     <section class="info-card zigzag">
         <div class="card-text">
@@ -197,8 +211,9 @@ class="flex-col bg-[#256354] text-white px-6 py-4 space-y-3 shadow-lg md:hidden"
 </main>
 
 <footer class="footer">
-    <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
+<p>© 2026 Sharanstan Old Age Home</p>
 </footer>
+
 
 <script>
 
@@ -210,24 +225,24 @@ const icon=document.getElementById("hamburger-icon");
 menu.classList.toggle("open");
 
 if(menu.classList.contains("open")){
-icon.classList.remove("fa-bars");
-icon.classList.add("fa-xmark");
+icon.classList.replace("fa-bars","fa-xmark");
 }
 else{
-icon.classList.remove("fa-xmark");
-icon.classList.add("fa-bars");
+icon.classList.replace("fa-xmark","fa-bars");
 }
 
 }
+
+/* close menu when clicking link */
 
 document.querySelectorAll("#mobile-menu a").forEach(link=>{
 link.addEventListener("click",()=>{
 document.getElementById("mobile-menu").classList.remove("open");
-document.getElementById("hamburger-icon").classList.remove("fa-xmark");
-document.getElementById("hamburger-icon").classList.add("fa-bars");
+document.getElementById("hamburger-icon").classList.replace("fa-xmark","fa-bars");
 });
 });
 
 </script>
+
 </body>
 </html>
