@@ -2,61 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Stories | Sharanstan Old Age Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Ensuring custom green applies to elements that might use CSS classes */
         .text-custom-green { color: #2f7d6a; }
         .bg-custom-green { background-color: #2f7d6a; }
         .border-custom-green { border-color: #2f7d6a; }
+
+        /* Mobile nav drawer */
+        #mobile-menu {
+            display: none;
+        }
+        #mobile-menu.open {
+            display: flex;
+        }
+
+        /* Override navbar for mobile */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 20px;
+                position: relative;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-gray-900">
 
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sharanstan Logo">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Sharanstan Logo">
+        </div>
+
+        <!-- Desktop nav links (hidden on mobile via CSS) -->
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            <a href="/faq">FAQ</a>
+            <a href="/blog">Blogs</a>
+            <a href="/donate">Donate</a>
+            <a href="/login">Login</a>
+        </div>
+
+        <!-- Hamburger button (visible only on mobile) -->
+        <button id="hamburger-btn" 
+                class="md:hidden text-white text-2xl focus:outline-none"
+                onclick="toggleMenu()"
+                aria-label="Toggle menu">
+            <i id="hamburger-icon" class="fa-solid fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu"
+         class="flex-col bg-[#256354] text-white px-6 py-4 space-y-3 md:hidden shadow-lg">
+        <a href="/" class="block py-2 border-b border-white/20 font-semibold hover:opacity-80">
+            <i class="fa-solid fa-house mr-2 w-5"></i> Home
+        </a>
+        <a href="/about" class="block py-2 border-b border-white/20 font-semibold hover:opacity-80">
+            <i class="fa-solid fa-circle-info mr-2 w-5"></i> About Us
+        </a>
+        <a href="/faq" class="block py-2 border-b border-white/20 font-semibold hover:opacity-80">
+            <i class="fa-solid fa-question-circle mr-2 w-5"></i> FAQ
+        </a>
+        <a href="/blog" class="block py-2 border-b border-white/20 font-semibold hover:opacity-80">
+            <i class="fa-solid fa-newspaper mr-2 w-5"></i> Blogs
+        </a>
+        <a href="/donate" class="block py-2 border-b border-white/20 font-semibold hover:opacity-80">
+            <i class="fa-solid fa-heart mr-2 w-5"></i> Donate
+        </a>
+        <a href="/login" class="block py-2 font-semibold hover:opacity-80">
+            <i class="fa-solid fa-right-to-bracket mr-2 w-5"></i> Login
+        </a>
     </div>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/about">About Us</a>
-        <a href="/faq">FAQ</a>
-        <a href="/blog">Blogs</a>
-        <a href="/donate">Donate</a>
-        <a href="/login">Login</a>
-    </div>
-</nav>
-    <header class="bg-white py-16 text-center border-b border-slate-100">
-        <h1 class="text-5xl font-black text-slate-800 mb-4">Our Stories</h1>
-        <p class="text-slate-500 text-lg">Updates from the Sharanstan community.</p>
+
+    <!-- ===== HEADER ===== -->
+    <header class="bg-white py-10 sm:py-16 text-center border-b border-slate-100 px-4">
+        <h1 class="text-3xl sm:text-5xl font-black text-slate-800 mb-3 sm:mb-4">Our Stories</h1>
+        <p class="text-slate-500 text-base sm:text-lg">Updates from the Sharanstan community.</p>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-16">
+    <!-- ===== BLOG GRID ===== -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
         {% if posts %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
             {% for post in posts %}
-            <article class="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col border border-slate-50">
-                <div class="h-64 bg-slate-200">
+            <article class="bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col border border-slate-50">
+                <div class="h-48 sm:h-64 bg-slate-200">
                     {% if post.image_filename %}
-                    <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" class="w-full h-full object-cover" alt="{{ post.title }}">
+                    <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" 
+                         class="w-full h-full object-cover" 
+                         alt="{{ post.title }}">
                     {% else %}
                     <div class="flex items-center justify-center h-full text-slate-300 bg-slate-100">
-                        <i class="fa-solid fa-image text-5xl"></i>
+                        <i class="fa-solid fa-image text-4xl sm:text-5xl"></i>
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="p-8 flex-grow">
-                    <h2 class="text-2xl font-bold text-slate-900 mb-4 leading-tight border-l-4 border-[#2f7d6a] pl-4">
+                <div class="p-5 sm:p-8 flex-grow flex flex-col">
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-3 sm:mb-4 leading-tight border-l-4 border-[#2f7d6a] pl-3 sm:pl-4">
                         {{ post.title }}
                     </h2>
-                    <p class="text-slate-600 leading-relaxed line-clamp-3 mb-6">
+                    <p class="text-slate-600 leading-relaxed line-clamp-3 mb-4 sm:mb-6 text-sm sm:text-base flex-grow">
                         {{ post.content }}
                     </p>
-                    <a href="/blog/{{ post.id }}" class="inline-flex items-center font-bold text-[#2f7d6a] hover:opacity-80 group">
+                    <a href="/blog/{{ post.id }}" class="inline-flex items-center font-bold text-[#2f7d6a] hover:opacity-80 group text-sm sm:text-base mt-auto">
                         Read Full Story 
                         <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
                     </a>
@@ -65,15 +123,41 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-20">
-            <p class="text-slate-400 text-xl">No stories published yet.</p>
+        <div class="text-center py-16 sm:py-20">
+            <p class="text-slate-400 text-lg sm:text-xl">No stories published yet.</p>
         </div>
         {% endif %}
     </main>
 
-    <footer class="bg-[#2f7d6a] text-white py-10 text-center">
-    <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-[#2f7d6a] text-white py-8 sm:py-10 text-center">
+        <p class="text-xs sm:text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
     </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('hamburger-icon');
+            menu.classList.toggle('open');
+            // Swap icon between bars and X
+            if (menu.classList.contains('open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // Close menu when a link is clicked
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-icon').classList.remove('fa-xmark');
+                document.getElementById('hamburger-icon').classList.add('fa-bars');
+            });
+        });
+    </script>
 
 </body>
 </html>
