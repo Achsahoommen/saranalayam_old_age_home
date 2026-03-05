@@ -1,98 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sharanstan Old Age Home</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>Sharanstan Old Age Home</title>
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* HAMBURGER */
+
+.hamburger-btn{
+display:none;
+background:none;
+border:none;
+color:white;
+font-size:26px;
+cursor:pointer;
+}
+
+/* MOBILE NAV */
+
+.mobile-nav{
+display:none;
+flex-direction:column;
+background:#256354;
+padding:10px 20px 20px;
+}
+
+.mobile-nav.open{
+display:flex;
+}
+
+.mobile-nav a{
+color:white;
+padding:12px 0;
+text-decoration:none;
+font-weight:600;
+border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+/* MOBILE RESPONSIVE */
+
+@media(max-width:768px){
+
+.nav-links{
+display:none;
+}
+
+.hamburger-btn{
+display:block;
+}
+
+.hero{
+height:auto;
+padding:90px 20px;
+}
+
+.hero h4{
+font-size:26px;
+}
+
+.hero h1{
+font-size:20px;
+}
+
+.hero p{
+font-size:14px;
+}
+
+.services{
+grid-template-columns:1fr;
+padding:40px 25px;
+gap:30px;
+}
+
+.cta{
+margin:30px 20px;
+padding:30px 20px;
+}
+}
+</style>
 </head>
 
 <body>
 
 <!-- NAVBAR -->
+
 <div class="navbar">
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Sharanstan Old Age Home">
-    </div>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/about">About Us</a>
-        <a href="/faq">FAQ</a>
-        <a href="/blog">Blogs</a>
-        <a href="/donate">Donate</a>
-        <a href="/login">Login</a>
-    </div>
+
+<div class="logo">
+<img src="{{ url_for('static', filename='images/logo.png') }}">
+</div>
+
+<div class="nav-links">
+<a href="/">Home</a>
+<a href="/about">About Us</a>
+<a href="/faq">FAQ</a>
+<a href="/blog">Blogs</a>
+<a href="/donate">Donate</a>
+<a href="/login">Login</a>
+</div>
+
+<button class="hamburger-btn" onclick="toggleMenu()">
+<i class="fa-solid fa-bars"></i>
+</button>
+
+</div>
+
+<!-- MOBILE MENU -->
+
+<div class="mobile-nav" id="mobileNav">
+
+<a href="/"><i class="fa-solid fa-house"></i> Home</a>
+<a href="/about"><i class="fa-solid fa-circle-info"></i> About</a>
+<a href="/faq"><i class="fa-solid fa-question"></i> FAQ</a>
+<a href="/blog"><i class="fa-solid fa-newspaper"></i> Blogs</a>
+<a href="/donate"><i class="fa-solid fa-heart"></i> Donate</a>
+<a href="/login"><i class="fa-solid fa-user"></i> Login</a>
+
 </div>
 
 <!-- HERO -->
+
 <section class="hero">
-    <div class="hero-content">
-        <h4 class="hero-subtitle">Welcome to Sharanstan</h4>
-        <h1>We make a Difference in your lives</h1>
-        <p>
-            <i class="fa-solid fa-user-shield"></i>
-            It is difficult to specify the exact age when an elderly patient becomes dependent.
-            It is a gradual process that activates the need for support from family or medical staff,
-            without which the patient may be worse off.
-        </p>
-    </div>
+
+<div class="hero-content">
+
+<h4>Welcome to Sharanstan</h4>
+
+<h1>We make a Difference in your lives</h1>
+
+<p>
+<i class="fa-solid fa-user-shield"></i>
+It is difficult to specify the exact age when an elderly patient becomes dependent.
+It is a gradual process that activates the need for support from family or medical staff.
+</p>
+
+</div>
+
 </section>
 
 
+<!-- SERVICES -->
+
 <section class="services">
-    <div class="service-card">
-        <h3 style="font-size: 28px; color: #2f7d6a; margin-bottom: 15px;"><i class="fa-solid fa-leaf" style="font-size: 50px;"></i> Amazing Atmosphere</h3>
-        <p style="font-size: 18px; line-height: 1.5;">In this extraordinary ambiance, one can lose themselves in deep contemplation and reflection, finding solace and peace amidst everyday life.</p>
-    </div>
 
-    <div class="service-card">
-        <h3 style="font-size: 28px; color:#2f7d6a; margin-bottom: 15px;"><i class="fa-solid fa-stethoscope" style="font-size: 50px;"></i> Latest Medical Care</h3>
-        <p style="font-size: 18px; line-height: 1.5;">Staying up-to-date with the latest advancements in medical care greatly improves patient outcomes and healthcare practices.</p>
-    </div>
+<div class="service-card">
+<i class="fa-solid fa-leaf"></i>
+<h3>Amazing Atmosphere</h3>
+<p>Peaceful environment for elderly residents.</p>
+</div>
 
-    <div class="service-card">
-        <h3 style="font-size: 28px; color:#2f7d6a; margin-bottom: 15px;"><i class="fa-solid fa-people-carry-box" style="font-size: 50px;"></i>Courteous & Caring Staff</h3>
-        <p style="font-size: 18px; line-height: 1.5;">Our team is composed of courteous and caring individuals who are passionate about delivering the best possible service.</p>
-    </div>
+<div class="service-card">
+<i class="fa-solid fa-stethoscope"></i>
+<h3>Latest Medical Care</h3>
+<p>Regular health monitoring and medical support.</p>
+</div>
 
-    <div class="service-card">
-        <h3 style="font-size: 28px; color:#2f7d6a; margin-bottom: 15px;"><i class="fa-solid fa-person-praying" style="font-size: 50px;"></i> Yoga for Relaxation</h3>
-        <p style="font-size: 18px; line-height: 1.5;">Yoga promotes relaxation, reduces stress, calms anxiety, and improves overall mental and physical well-being.</p>
-    </div>
+<div class="service-card">
+<i class="fa-solid fa-people-carry-box"></i>
+<h3>Caring Staff</h3>
+<p>Our staff provides compassionate daily support.</p>
+</div>
 
-    <div class="service-card">
-        <h3 style="font-size: 28px; color:#2f7d6a; margin-bottom: 15px;"><i class="fa-solid fa-house-medical" style="font-size: 50px;"></i> Assisted Living Support</h3>
-        <p style="font-size: 18px; line-height: 1.5;">Support services designed to help individuals who require assistance with daily activities while maintaining dignity.</p>
-    </div>
+<div class="service-card">
+<i class="fa-solid fa-person-praying"></i>
+<h3>Yoga</h3>
+<p>Relaxation and wellness activities.</p>
+</div>
 
-    <div class="service-card">
-        <h3 style="font-size: 28px; color:#2f7d6a; margin-bottom: 15px;"><i class="fa-solid fa-hand-holding-heart" style="font-size: 50px;"></i> Hospice Care</h3>
-        <p style="font-size: 18px; line-height: 1.5;">An interdisciplinary approach focusing on comfort, dignity, emotional support, and quality of life.</p>
-    </div>
+<div class="service-card">
+<i class="fa-solid fa-house-medical"></i>
+<h3>Assisted Living</h3>
+<p>Help with daily activities and personal care.</p>
+</div>
+
+<div class="service-card">
+<i class="fa-solid fa-hand-holding-heart"></i>
+<h3>Hospice Care</h3>
+<p>Comfort care with dignity and compassion.</p>
+</div>
+
 </section>
 
 <!-- CTA -->
-<section class="cta">
-    <h2><i class="fa-solid fa-house-heart"></i> Find The Best, Loving Care Home</h2>
-    <p>
-        <i class="fa-solid fa-heart-circle-check"></i>
-        We strive to meet the physical & emotional needs of each senior,
-        ensuring they receive the care and support they deserve.
-    </p>
 
-    <a href="/contact">
-        <button id="contactBtn">
-            <i class="fa-solid fa-phone"></i> Contact Us
-        </button>
-    </a>
+<section class="cta">
+
+<h2><i class="fa-solid fa-house-heart"></i> Find The Best Loving Care Home</h2>
+
+<p>We strive to meet the physical and emotional needs of every resident.</p>
+
+<a href="/contact">
+<button><i class="fa-solid fa-phone"></i> Contact Us</button>
+</a>
+
 </section>
 
 <!-- FOOTER -->
-<footer class="footer">
-    © Sharanstan Old Age Home, Chengannur
-</footer>
+
+<div class="footer">
+© Sharanstan Old Age Home, Chengannur
+</div>
+
+<script>
+
+function toggleMenu(){
+
+document.getElementById("mobileNav").classList.toggle("open")
+
+}
+
+</script>
 
 </body>
 </html>
