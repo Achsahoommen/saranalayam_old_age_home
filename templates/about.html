@@ -14,71 +14,89 @@
 <style>
 
 /* ===== NAVBAR ===== */
-
-.navbar{
-background:#2f7d6a;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:12px 20px;
+/* ---------- NAVBAR ---------- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2f7d6a;
+    padding: 15px 30px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.logo img{
-height:42px;
+.logo {
+    display: flex;
+    align-items: center;
 }
 
-/* desktop links */
-
-.nav-links{
-display:flex;
-gap:22px;
-align-items:center;
+.logo img {
+    height: 55px;
+    width: auto;
+    object-fit: contain;
+    background: transparent;
 }
 
-.nav-links a{
-color:white;
-font-weight:600;
-text-decoration:none;
+.nav-links {
+    display: flex;
+    align-items: center;
 }
 
-.nav-links a:hover{
-opacity:0.8;
+.nav-links a {
+    color: #ffffff;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 600;
 }
 
-/* hamburger */
-#hamburger-btn{
-color:white;
-font-size:26px;
-background:none;
-border:none;
-display:none;
-cursor:pointer;
-margin-left:auto;
+.nav-links a:hover {
+    text-decoration: underline;
 }
 
-/* ===== MOBILE MENU ===== */
-
-#mobile-menu{
-display:none;
-flex-direction:column;
-background:#256354;
-padding:15px 25px;
+/* ---------- HAMBURGER BUTTON ---------- */
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
 }
 
-#mobile-menu a{
-color:white;
-text-decoration:none;
-padding:12px 0;
-border-bottom:1px solid rgba(255,255,255,0.2);
-font-weight:600;
+/* ---------- MOBILE NAV DRAWER ---------- */
+.mobile-nav {
+    display: none;
+    flex-direction: column;
+    background: #256354;
+    padding: 10px 20px 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-#mobile-menu a i{
-margin-right:8px;
+.mobile-nav.open {
+    display: flex;
 }
 
-#mobile-menu.open{
-display:flex;
+.mobile-nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-nav a:last-child {
+    border-bottom: none;
+}
+
+.mobile-nav a:hover {
+    opacity: 0.8;
 }
 
 /* ===== MOBILE ===== */
