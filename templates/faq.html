@@ -2,186 +2,406 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FAQ – Saranalayam Old Age Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ – Sharanstan Old Age Home</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+body{
+font-family:"Segoe UI",Arial,sans-serif;
+margin:0;
+background:#F9FAF7;
+color:#3F3F46;
+}
+/* NAVBAR */
+.navbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#2f7d6a;
+padding:15px 25px;
+}
+.logo img{
+height:68px;
+}
+.nav-links{
+display:flex;
+gap:20px;
+}
+.nav-links a{
+color:white;
+text-decoration:none;
+font-weight:600;
+}
+.nav-links a:hover{
+text-decoration:underline;
+}
+/* HAMBURGER */
+.hamburger-btn{
+display:none;
+background:none;
+border:none;
+color:white;
+font-size:26px;
+cursor:pointer;
+}
+/* MOBILE NAV */
+.mobile-nav{
+display:none;
+flex-direction:column;
+background:#256354;
+padding:10px 20px 20px;
+}
+.mobile-nav.open{
+display:flex;
+}
+.mobile-nav a{
+color:white;
+padding:12px 0;
+text-decoration:none;
+font-weight:600;
+border-bottom:1px solid rgba(255,255,255,0.2);
+}
+.faq-section {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.faq-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.faq-description {
+    text-align: center;
+    color: #555;
+    margin-bottom: 50px;
+    line-height: 1.6;
+}
+
+.faq-item {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+.faq-title {
+    text-align: center;
+    font-size: 36px;
+    color: #2f7d6a;
+    margin-bottom: 15px;
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #2f7d6a;
+}
+
+.faq-question:hover {
+    color: #2f7d6a;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+    line-height: 1.8;
+    color: #555;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 15px;
+}
+
+.icon {
+    font-size: 20px;
+    transition: 0.3s ease;
+}
+
+.faq-item.active .icon {
+    transform: rotate(45deg);
+}
+
+.ask-box {
+    margin: 60px auto 0;
+    padding: 40px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    max-width: 600px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.ask-box textarea {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    display: block;
+}
+
+.ask-box button {
+    padding: 12px 35px;
+    border-radius: 30px;
+    border: 2px solid #2f7d6a;
+    background: #2f7d6a;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.ask-box button:hover {
+    background: #236153;
+}
+
+.login-message {
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+.login-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 25px;
+    background: #2f7d6a;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+}
+
+.login-btn:hover {
+    background: #236153;
+}
+
+.faq-contact-btn {
+    display: block;
+    margin: 50px auto 0;
+    padding: 14px 35px;
+    border-radius: 30px;
+    border: 2px solid #2f7d6a;
+    color: #2f7d6a;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    width: fit-content;
+    transition: 0.3s ease;
+}
+
+.faq-contact-btn:hover {
+    background: #236153;
+    color: white;
+}
+/* FOOTER */
+.footer{
+text-align:center;
+background:#2f7d6a;
+color:white;
+padding:35px;
+margin-top:40px;
+}
+/* MOBILE */
+@media(max-width:768px){
+.nav-links{
+display:none;
+}
+.hamburger-btn{
+display:block;
+}
+.faq-title{
+font-size:26px;
+}
+}
+</style>
 </head>
-
 <body>
-
 <!-- NAVBAR -->
 <div class="navbar">
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Logo">
-    </div>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/about">About Us</a>
-        <a href="/faq">FAQ</a>
-        <a href="/blog">Blogs</a>    
-        <a href="/donate">Donate</a>
-        <a href="/login">Login</a>
-    </div>
+<div class="logo">
+<img src="{{ url_for('static', filename='images/logo1.png') }}">
+</div>
+<div class="nav-links">
+<a href="/">Home</a>
+<a href="/about">About Us</a>
+<a href="/faq">FAQ</a>
+<a href="/blog">Blogs</a>
+<a href="/donate">Donate</a>
+<a href="/login">Login</a>
+</div>
+<button class="hamburger-btn" onclick="toggleMenu()">
+<i class="fa-solid fa-bars"></i>
+</button>
+</div>
+<!-- MOBILE MENU -->
+<div class="mobile-nav" id="mobileNav">
+<a href="/"><i class="fa-solid fa-house"></i> Home</a>
+<a href="/about"><i class="fa-solid fa-circle-info"></i> About</a>
+<a href="/faq"><i class="fa-solid fa-question"></i> FAQ</a>
+<a href="/blog"><i class="fa-solid fa-newspaper"></i> Blogs</a>
+<a href="/donate"><i class="fa-solid fa-heart"></i> Donate</a>
+<a href="/login"><i class="fa-solid fa-user"></i> Login</a>
 </div>
 
 <!-- FAQ SECTION -->
 <div class="faq-section">
-
 <h2 class="faq-title">Frequently Asked Questions</h2>
-
 <p class="faq-description">
 An old age home provides housing, care, medical assistance, emotional support,
 and a dignified living environment for senior citizens who require attention,
 companionship, and security.
 </p>
-
-<!-- FAQ ITEMS -->
-
-<div class="faq-item">
-<div class="faq-question">
-What types of accommodation options are available?
-<span class="icon">+</span>
+<!-- FAQ ITEM -->
+<div class="faq-item"> 
+<div class="faq-question"> 
+What types of accommodation options are available? 
+<span class="icon">+</span> 
+</div> 
+<div class="faq-answer"> 
+We provide clean and comfortable shared and private rooms depending on availability. 
+Rooms are well-ventilated, safe, and designed to ensure easy mobility for elderly residents. 
+Basic furniture, bedding, and storage facilities are included. 
+</div> 
 </div>
+<div class="faq-item"> 
+<div class="faq-question"> 
+What care and support services are provided? 
+<span class="icon">+</span> 
+</div> 
+<div class="faq-answer"> 
+Residents receive daily assistance, medication management, routine health check-ups, nutritious meals, 
+hygiene support, and emotional care. We also arrange hospital visits and emergency medical services when required. 
+</div> 
+</div>
+<div class="faq-item"> 
+<div class="faq-question"> 
+Are there recreational activities for residents? 
+<span class="icon">+</span> 
+</div> 
+<div class="faq-answer"> 
+Yes. We organize prayer sessions, cultural programs, birthday celebrations, 
+light exercises, storytelling sessions, and social interaction activities to keep residents mentally 
+and emotionally engaged. 
+</div> 
+</div>
+<div class="faq-item"> 
+<div class="faq-question"> 
+How is safety and security ensured? 
+<span class="icon">+</span> 
+</div> 
 <div class="faq-answer">
-We provide clean and comfortable shared and private rooms depending on availability.
-Rooms are well-ventilated, safe, and designed to ensure easy mobility for elderly residents.
-Basic furniture, bedding, and storage facilities are included.
+The premises are monitored and supervised at all times. We maintain secure entry points, emergency contacts,
+and staff availability to ensure the safety and protection of every resident. 
 </div>
 </div>
+<div class="faq-item"> 
+<div class="faq-question"> 
+Are family members allowed to visit? 
+<span class="icon">+</span> 
+</div> 
+<div class="faq-answer"> 
+Yes. Visitors are welcome during designated visiting hours. We encourage family connections while maintaining 
+privacy and comfort for residents. 
+</div> 
+</div>
+<div class="faq-item"> 
+<div class="faq-question"> 
+How can I donate and support the home? 
+<span class="icon">+</span> 
+</div> 
+<div class="faq-answer"> 
+You can donate securely through our website. Donations are used for food, medical care, maintenance, staff support,
+and overall welfare of the residents. Even small contributions make a meaningful difference. 
+</div> 
+</div>
+<div class="faq-item"> 
+<div class="faq-question"> 
+Can I volunteer or contribute in other ways? 
+<span class="icon">+</span> 
+</div> 
+<div class="faq-answer"> 
+Absolutely. Volunteers can spend time with residents, organize activities, donate essential supplies, or assist in 
+healthcare and administration. Your presence alone brings comfort and happiness to our elders. 
+</div> 
+</div>
+<!-- ASK QUESTION -->
 
-<div class="faq-item">
-<div class="faq-question">
-What care and support services are provided?
-<span class="icon">+</span>
-</div>
-<div class="faq-answer">
-Residents receive daily assistance, medication management, routine health check-ups,
-nutritious meals, hygiene support, and emotional care. We also arrange hospital visits
-and emergency medical services when required.
-</div>
-</div>
-
-<div class="faq-item">
-<div class="faq-question">
-Are there recreational activities for residents?
-<span class="icon">+</span>
-</div>
-<div class="faq-answer">
-Yes. We organize prayer sessions, cultural programs, birthday celebrations,
-light exercises, storytelling sessions, and social interaction activities
-to keep residents mentally and emotionally engaged.
-</div>
-</div>
-
-<div class="faq-item">
-<div class="faq-question">
-How is safety and security ensured?
-<span class="icon">+</span>
-</div>
-<div class="faq-answer">
-The premises are monitored and supervised at all times.
-We maintain secure entry points, emergency contacts, and staff availability
-to ensure the safety and protection of every resident.
-</div>
-</div>
-
-<div class="faq-item">
-<div class="faq-question">
-Are family members allowed to visit?
-<span class="icon">+</span>
-</div>
-<div class="faq-answer">
-Yes. Visitors are welcome during designated visiting hours.
-We encourage family connections while maintaining privacy and comfort for residents.
-</div>
-</div>
-
-<div class="faq-item">
-<div class="faq-question">
-How can I donate and support the home?
-<span class="icon">+</span>
-</div>
-<div class="faq-answer">
-You can donate securely through our website. Donations are used for food,
-medical care, maintenance, staff support, and overall welfare of the residents.
-Even small contributions make a meaningful difference.
-</div>
-</div>
-
-<div class="faq-item">
-<div class="faq-question">
-Can I volunteer or contribute in other ways?
-<span class="icon">+</span>
-</div>
-<div class="faq-answer">
-Absolutely. Volunteers can spend time with residents, organize activities,
-donate essential supplies, or assist in healthcare and administration.
-Your presence alone brings comfort and happiness to our elders.
-</div>
-</div>
-
-<!-- ASK QUESTION SECTION -->
 <div class="ask-box">
-
 <h2>Still Have Questions?</h2>
 <p>If you couldn't find your answer, ask us directly.</p>
-
 {% if session.get('user') %}
 
-    {% if success %}
-    <div style="text-align:center; margin-bottom:20px;">
-        <p style="color:green; font-weight:bold;">
-            Your question has been submitted successfully ✅
-        </p>
-
-        <a href="/user-dashboard" class="neutral-btn"> ← Back to Dashboard</a>
-    </div>
-    {% endif %}
-
-    <form action="/ask_question" method="post" style="max-width:600px; margin:auto;">
-
-        <textarea name="question"
-        placeholder="Type your question here..."
-        rows="5"
-        required></textarea>
-
-        <button type="submit">Submit Your Question</button>
-
-    </form>
-
-{% else %}
-
-<p class="login-message">
-Please login to ask a question and view replies in your dashboard.
+{% if success %}
+<div style="text-align:center; margin-bottom:20px;">
+<p style="color:green; font-weight:bold;">
+Your question has been submitted successfully ✅
 </p>
-
-<a href="/login" class="login-btn">Login Now</a>
-
-{% endif %}
-
+<a href="/user-dashboard" 
+style="display:inline-block;
+background:#2F7D6A;
+color:white;
+padding:10px 20px;
+border-radius:8px;
+text-decoration:none;
+margin-top:10px;">
+← Back to Dashboard
+</a>
 </div>
-
+{% endif %}
+<form action="/ask_question" method="post">
+<textarea name="question"
+placeholder="Type your question here..."
+rows="5"
+required></textarea>
+<button type="submit">Submit Question</button>
+</form>
+{% else %}
+<p>Please login to ask a question.</p>
+<a href="/login" class="login-btn">Login</a>
+{% endif %}
+</div>
 <a href="/contact" class="faq-contact-btn">
 Contact For More Info
 </a>
-
 </div>
 
+<!-- FOOTER -->
 <footer class="footer">
-    <p class="text-sm opacity-90">© 2026 Sharanstan Old Age Home</p>
+<p>© 2026 Sharanstan Old Age Home</p>
 </footer>
 
 <script>
-const faqItems = document.querySelectorAll(".faq-item");
+/* FAQ ACCORDION */
+const faqItems=document.querySelectorAll(".faq-item")
+faqItems.forEach(item=>{
+item.querySelector(".faq-question").addEventListener("click",()=>{
+item.classList.toggle("active")
+})
+})
 
-faqItems.forEach(item => {
-    item.querySelector(".faq-question").addEventListener("click", () => {
-        item.classList.toggle("active");
-    });
-});
+/* MOBILE MENU */
+
+function toggleMenu(){
+document.getElementById("mobileNav").classList.toggle("open")
+}
 </script>
-
 </body>
 </html>

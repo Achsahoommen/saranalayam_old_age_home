@@ -26,7 +26,7 @@ padding:12px 20px;
 }
 
 .logo img{
-height:42px;
+height:68px;
 }
 
 /* desktop links */
@@ -155,25 +155,16 @@ Updates from the Sharanstan community.
 </header>
 
 <!-- ===== BLOG GRID ===== -->
-
 <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-
 {% if posts %}
-
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
-
 {% for post in posts %}
-
 <article class="bg-white rounded-3xl shadow-sm hover:shadow-xl transition overflow-hidden flex flex-col border">
-
 <div class="h-48 sm:h-64 bg-slate-200">
-
 {% if post.image_filename %}
-
 <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
 class="w-full h-full object-cover"
 alt="{{ post.title }}">
-
 {% else %}
 
 <div class="flex items-center justify-center h-full text-slate-300 bg-slate-100">
