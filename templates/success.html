@@ -6,20 +6,15 @@
 <title>Donation Successful</title>
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 <style>
-
 /* PAGE */
-
 body{
 font-family:"Segoe UI", Arial, sans-serif;
 background:#F9FAF7;
 margin:0;
 padding:0;
 }
-
 /* CONTAINER */
-
 .donation-container{
 max-width:550px;
 margin:50px auto;
@@ -28,26 +23,20 @@ padding:35px;
 border-radius:10px;
 box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
-
 /* SUCCESS ICON */
-
 .success-icon{
 font-size:50px;
 text-align:center;
 margin-bottom:15px;
 }
-
 /* RECEIPT BOX */
-
 .receipt-box{
 background:#f4f6f5;
 padding:20px;
 border-radius:8px;
 margin-top:25px;
 }
-
 /* RECEIPT ROW */
-
 .receipt-row{
 display:flex;
 justify-content:space-between;
@@ -55,14 +44,11 @@ padding:10px 0;
 border-bottom:1px solid #ddd;
 font-size:15px;
 }
-
 .receipt-row span:first-child{
 font-weight:600;
 color:#444;
 }
-
 /* BUTTONS */
-
 .success-actions{
 margin-top:25px;
 display:flex;
@@ -70,7 +56,6 @@ justify-content:center;
 gap:15px;
 flex-wrap:wrap;
 }
-
 .download-btn{
 background:#2f7d6a;
 color:white;
@@ -79,7 +64,6 @@ border-radius:6px;
 text-decoration:none;
 font-weight:600;
 }
-
 .home-btn{
 background:#e0e0e0;
 color:#333;
@@ -88,34 +72,26 @@ border-radius:6px;
 text-decoration:none;
 font-weight:600;
 }
-
 /* MOBILE */
-
 @media(max-width:768px){
-
 .donation-container{
 margin:20px;
 padding:25px;
 }
-
 .receipt-row{
 flex-direction:column;
 align-items:flex-start;
 gap:3px;
 }
-
 .success-actions{
 flex-direction:column;
 }
-
 .download-btn,
 .home-btn{
 text-align:center;
 width:100%;
 }
-
 }
-
 </style>
 </head>
 <body>
