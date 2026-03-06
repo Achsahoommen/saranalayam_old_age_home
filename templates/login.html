@@ -1,59 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login – Sharanstan Old Age Home</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login – Sharanstan Old Age Home</title>
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* PAGE */
+
+.admin-login{
+background:#F9FAF7;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+font-family:"Segoe UI", Arial, sans-serif;
+}
+
+/* CONTAINER */
+
+.login-container{
+background:white;
+padding:40px;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+width:100%;
+max-width:420px;
+}
+
+/* ICON */
+
+.login-logo{
+text-align:center;
+font-size:40px;
+color:#2f7d6a;
+margin-bottom:15px;
+}
+
+/* FORM */
+form{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+/* INPUTS */
+
+form input{
+width:100%;
+padding:14px 16px;
+border-radius:8px;
+border:1px solid #dcdcdc;
+font-size:15px;
+box-sizing:border-box;
+margin-bottom:5px;
+}
+
+/* LABEL */
+
+form label{
+font-weight:600;
+font-size:14px;
+color:#333;
+margin-top:5px;
+}
+/* BUTTON */
+form button{
+width:100%;
+padding:14px;
+background:#2f7d6a;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+
+form button:hover{
+background:#256354;
+}
+
+/* FORGOT LINK */
+
+.forgot-link{
+text-align:right;
+margin-top:5px;
+}
+
+.forgot-link a{
+font-size:14px;
+color:#2f7d6a;
+text-decoration:none;
+}
+
+/* ERROR */
+
+.error{
+color:red;
+font-size:14px;
+margin-top:5px;
+}
+
+/* FOOTER */
+
+.login-footer{
+margin-top:20px;
+text-align:center;
+font-size:14px;
+}
+
+.login-footer a{
+color:#2f7d6a;
+font-weight:600;
+text-decoration:none;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.login-container{
+margin:20px;
+padding:25px;
+}
+
+}
+
+</style>
+
 </head>
 
 <body class="admin-login">
 
 <div class="login-container">
 
-    <div class="login-logo">
-        <i class="fas fa-user"></i>
-    </div>
-
-   <form method="POST">
-    
-    {% if request.args.get('message') %}
-        <p style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; font-size: 14px; margin-bottom: 15px; text-align: center;">
-            <i class="fas fa-check-circle"></i> {{ request.args.get('message') }}
-        </p>
-    {% endif %}
-
-    <label>Email</label>
-    <input type="text" name="identifier" placeholder="Email" required>
-
-    <label>Password</label>
-    <input type="password" name="password" placeholder="Password" required>
-
-    <button type="submit">Login</button>
-
-    <div class="forgot-link">
-        <a href="/forgot-password">Forgot Password?</a>
-    </div>
-
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
-</form>
-
-    <div class="login-footer">
-        <p>New user? <a href="/register">Register</a></p>
-        <p><a href="/">← Go to Sharanstan</a></p>
-    </div>
-
+<div class="login-logo">
+<i class="fas fa-user"></i>
 </div>
 
-<script>
-function togglePassword() {
-    const pwd = document.getElementById("password");
-    pwd.type = pwd.type === "password" ? "text" : "password";
-}
-</script>
+<form method="POST">
+
+{% if request.args.get('message') %}
+<p style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;padding:10px;border-radius:5px;font-size:14px;text-align:center;">
+<i class="fas fa-check-circle"></i> {{ request.args.get('message') }}
+</p>
+{% endif %}
+
+<label>Email</label>
+<input type="text" name="identifier" placeholder="Email" required>
+
+<label>Password</label>
+<input type="password" name="password" placeholder="Password" required>
+
+<button type="submit">Login</button>
+
+<div class="forgot-link">
+<a href="/forgot-password">Forgot Password?</a>
+</div>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+</form>
+
+<div class="login-footer">
+<p>New user? <a href="/register">Register</a></p>
+<p><a href="/">← Go to Sharanstan</a></p>
+</div>
+
+</div>
 
 </body>
 </html>

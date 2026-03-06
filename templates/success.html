@@ -1,75 +1,172 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Donation Successful</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donation Successful</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+<style>
+
+/* PAGE */
+
+body{
+font-family:"Segoe UI", Arial, sans-serif;
+background:#F9FAF7;
+margin:0;
+padding:0;
+}
+
+/* CONTAINER */
+
+.donation-container{
+max-width:550px;
+margin:50px auto;
+background:white;
+padding:35px;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+
+/* SUCCESS ICON */
+
+.success-icon{
+font-size:50px;
+text-align:center;
+margin-bottom:15px;
+}
+
+/* RECEIPT BOX */
+
+.receipt-box{
+background:#f4f6f5;
+padding:20px;
+border-radius:8px;
+margin-top:25px;
+}
+
+/* RECEIPT ROW */
+
+.receipt-row{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px solid #ddd;
+font-size:15px;
+}
+
+.receipt-row span:first-child{
+font-weight:600;
+color:#444;
+}
+
+/* BUTTONS */
+
+.success-actions{
+margin-top:25px;
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+}
+
+.download-btn{
+background:#2f7d6a;
+color:white;
+padding:12px 20px;
+border-radius:6px;
+text-decoration:none;
+font-weight:600;
+}
+
+.home-btn{
+background:#e0e0e0;
+color:#333;
+padding:12px 20px;
+border-radius:6px;
+text-decoration:none;
+font-weight:600;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.donation-container{
+margin:20px;
+padding:25px;
+}
+
+.receipt-row{
+flex-direction:column;
+align-items:flex-start;
+gap:3px;
+}
+
+.success-actions{
+flex-direction:column;
+}
+
+.download-btn,
+.home-btn{
+text-align:center;
+width:100%;
+}
+
+}
+
+</style>
+</head>
 <body>
 
 <div class="donation-container">
-
-    <div class="success-icon">💚</div>
-
-    <h2 style="text-align:center;">Thank You for Your Donation!</h2>
-    <p style="text-align:center; color:#555;">
-        Your support helps us provide better care for our elderly residents.
-    </p>
-
-    <div class="receipt-box">
-
-        <div class="receipt-row">
-            <span>Receipt Number:</span>
-            <span>{{ receipt_no }}</span>
-        </div>
-
-        <div class="receipt-row">
-            <span>Donor Name:</span>
-            <span>{{ donor.first_name }} {{ donor.last_name }}</span>
-        </div>
-
-        <div class="receipt-row">
-            <span>Email:</span>
-            <span>{{ donor.email }}</span>
-        </div>
-
-        <div class="receipt-row">
-            <span>Donation Amount:</span>
-            <span>₹{{ donor.amount }}</span>
-        </div>
-
-        <div class="receipt-row">
-            <span>Payment ID:</span>
-            <span>{{ payment_id }}</span>
-        </div>
-
-        <div class="receipt-row">
-            <span>Date:</span>
-            <span>{{ donor.date }}</span>
-        </div>
-
-        <hr>
-
-        <p style="text-align:center; font-size:14px; color:#666;">
-            This serves as your official donation receipt.
-            Eligible under Section 80G (if applicable).
-        </p>
-
-    </div>
-
-    <div class="success-actions">
-        <a href="/download-receipt/{{ receipt_no }}" class="download-btn">
-            Download Receipt (PDF)
-        </a>
-
-        <a href="/" class="home-btn">
-            Back to Home
-        </a>
-    </div>
-
+<div class="success-icon">💚</div>
+<h2 style="text-align:center;">Thank You for Your Donation!</h2>
+<p style="text-align:center; color:#555;">
+Your support helps us provide better care for our elderly residents.
+</p>
+<div class="receipt-box">
+<div class="receipt-row">
+<span>Receipt Number:</span>
+<span>{{ receipt_no }}</span>
+</div>
+<div class="receipt-row">
+<span>Donor Name:</span>
+<span>{{ donor.first_name }} {{ donor.last_name }}</span>
+</div>
+<div class="receipt-row">
+<span>Email:</span>
+<span>{{ donor.email }}</span>
+</div>
+<div class="receipt-row">
+<span>Donation Amount:</span>
+<span>₹{{ donor.amount }}</span>
+</div>
+<div class="receipt-row">
+<span>Payment ID:</span>
+<span>{{ payment_id }}</span>
+</div>
+<div class="receipt-row">
+<span>Date:</span>
+<span>{{ donor.date }}</span>
+</div>
+<hr>
+<p style="text-align:center; font-size:14px; color:#666;">
+This serves as your official donation receipt.
+Eligible under Section 80G (if applicable).
+</p>
+</div>
+<div class="success-actions">
+<a href="/download-receipt/{{ receipt_no }}" class="download-btn">
+Download Receipt (PDF)
+</a>
+<div class="back-dashboard-container">
+<a href="/user-dashboard" class="back-dashboard-btn">
+← Back to Dashboard
+</a>
 </div>
 
+</div>
 </body>
 </html>

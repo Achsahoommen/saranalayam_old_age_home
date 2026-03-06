@@ -1,102 +1,202 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Complete Donation</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete Donation</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+/* PAGE */
 
+body{
+font-family:"Segoe UI", Arial, sans-serif;
+background:#F9FAF7;
+margin:0;
+padding:0;
+}
+
+/* CONTAINER */
+
+.donation-container{
+max-width:550px;
+margin:60px auto;
+background:white;
+padding:35px;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+/* STEPS */
+
+.donation-steps{
+display:flex;
+justify-content:center;
+gap:20px;
+margin-bottom:25px;
+font-weight:600;
+}
+
+.donation-steps span{
+color:#777;
+}
+
+.donation-steps .active{
+color:#2f7d6a;
+}
+
+/* SUMMARY */
+
+.donation-summary{
+background:#f4f6f5;
+padding:20px;
+border-radius:8px;
+margin-bottom:25px;
+}
+
+/* BUTTON */
+
+.donation-next-btn{
+background:#2f7d6a;
+color:white;
+border:none;
+padding:14px 25px;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.donation-next-btn:hover{
+background:#256354;
+}
+
+/* NOTE */
+
+.donation-note{
+margin-top:15px;
+color:#666;
+font-size:14px;
+}
+
+/* BACK BUTTON */
+
+.back-dashboard-container{
+margin-top:25px;
+}
+
+.back-dashboard-btn{
+text-decoration:none;
+color:#2f7d6a;
+font-weight:600;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.donation-container{
+margin:20px;
+padding:25px;
+}
+
+.donation-steps{
+flex-direction:column;
+gap:5px;
+}
+
+.donation-next-btn{
+width:100%;
+}
+
+}
+
+</style>
+</head>
 <body>
 
 <div class="donation-container">
-
-    <div class="donation-steps">
-        <span>01. Personal Information</span>
-        <span class="active">02. Payment</span>
-    </div>
-
-    <h2>Complete Your Donation</h2>
-
-    <div class="donation-summary">
-        <p><strong>Amount:</strong> ₹{{ amount // 100 }}</p>
-        <p>Click below to proceed securely with Razorpay.</p>
-    </div>
-
-    <button 
-        id="pay-btn" 
-        class="donation-next-btn"
-        data-amount="{{ amount }}"
-        data-order="{{ order_id }}"
-        data-key="{{ key_id }}"
-    >
-    Pay ₹{{ amount // 100 }} Securely
-    </button>
-
-
-    <p class="donation-note">
-        🔒 100% Secure Payment | Powered by Razorpay
-    </p>
-    <div class="back-dashboard-container">
-        <a href="/user-dashboard" class="back-dashboard-btn">
-            ← Back to Dashboard
-        </a>
-    </div>
-
+<div class="donation-steps">
+<span>01. Personal Information</span>
+<span class="active">02. Payment</span>
 </div>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<h2>Complete Your Donation</h2>
+<div class="donation-summary">
+<p><strong>Amount:</strong> ₹{{ amount // 100 }}</p>
+<p>Click below to proceed securely with Razorpay.</p>
+</div>
+<button 
+id="pay-btn" 
+class="donation-next-btn"
+data-amount="{{ amount }}"
+data-order="{{ order_id }}"
+data-key="{{ key_id }}"
+>
+Pay ₹{{ amount // 100 }} Securely
+</button>
+<p class="donation-note">
+🔒 100% Secure Payment | Powered by Razorpay
+</p>
+<div class="back-dashboard-container">
+<a href="/user-dashboard" class="back-dashboard-btn">
+← Back to Dashboard
+</a>
+</div>
+</div>
+
 <script>
+
 document.getElementById("pay-btn").addEventListener("click", function () {
 
-    const button = this;
+const button = this;
 
-    const amount = button.dataset.amount;
-    const orderId = button.dataset.order;
-    const key = button.dataset.key;
+const amount = button.dataset.amount;
+const orderId = button.dataset.order;
+const key = button.dataset.key;
 
-    var options = {
-        key: key,
-        amount: amount,
-        currency: "INR",
-        name: "Saranalayam",
-        description: "Donation",
-        order_id: orderId,
+var options = {
+key: key,
+amount: amount,
+currency: "INR",
+name: "Sharanstan",
+description: "Donation",
+order_id: orderId,
 
-        handler: function (response) {
-            var form = document.createElement("form");
-            form.method = "POST";
-            form.action = "/payment-success";
+handler: function (response) {
 
-            var fields = {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
-            };
+var form = document.createElement("form");
+form.method = "POST";
+form.action = "/payment-success";
 
-            for (var key in fields) {
-                var input = document.createElement("input");
-                input.type = "hidden";
-                input.name = key;
-                input.value = fields[key];
-                form.appendChild(input);
-            }
+var fields = {
+razorpay_payment_id: response.razorpay_payment_id,
+razorpay_order_id: response.razorpay_order_id,
+razorpay_signature: response.razorpay_signature
+};
 
-            document.body.appendChild(form);
-            form.submit();
-        },
+for (var key in fields) {
+var input = document.createElement("input");
+input.type = "hidden";
+input.name = key;
+input.value = fields[key];
+form.appendChild(input);
+}
 
-        modal: {
-            ondismiss: function () {
-                window.location.href = "/user-dashboard";
-            }
-        }
-    };
+document.body.appendChild(form);
+form.submit();
 
-    var rzp = new Razorpay(options);
-    rzp.open();
+},
+
+modal: {
+ondismiss: function () {
+window.location.href = "/user-dashboard";
+}
+}
+};
+var rzp = new Razorpay(options);
+rzp.open();
 });
 </script>
-
-
 </body>
 </html>
