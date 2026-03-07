@@ -1,64 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+/* PAGE */
+.admin-page{
+background:#F9FAF7;
+font-family:"Segoe UI", Arial, sans-serif;
+padding:30px;
+}
+
+/* CONTAINER */
+.admin-dashboard-container{
+max-width:1100px;
+margin:auto;
+}
+
+/* HEADER */
+.admin-header{
+text-align:center;
+margin-bottom:40px;
+}
+
+.admin-header h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.admin-header p{
+font-size:18px;
+color:#2f7d6a;
+}
+
+.admin-header span{
+font-size:14px;
+color:#666;
+}
+
+/* GRID */
+.admin-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+}
+
+/* CARD */
+.admin-card{
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+text-align:center;
+text-decoration:none;
+color:#333;
+transition:0.3s;
+}
+
+.admin-card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* ICON */
+.admin-card .icon{
+font-size:35px;
+margin-bottom:10px;
+}
+
+/* TITLE */
+.admin-card h3{
+margin-bottom:8px;
+color:#2f7d6a;
+}
+
+/* TEXT */
+.admin-card p{
+font-size:14px;
+color:#666;
+}
+
+/* LOGOUT */
+.logout-card{
+background:#ffe9e9;
+}
+
+.logout-card h3{
+color:#c0392b;
+}
+
+/* TABLET */
+@media(max-width:900px){
+.admin-grid{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+/* MOBILE */
+@media(max-width:600px){
+
+.admin-page{
+padding:20px;
+}
+
+.admin-header h1{
+font-size:26px;
+}
+
+/* 2 cards per row */
+.admin-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+</style>
 </head>
 
 <body class="admin-page">
 
 <div class="admin-dashboard-container">
 
-    <div class="admin-header">
-        <h1>Admin Dashboard</h1>
-        <p>Welcome back, Admin 👋</p>
-        <span>Manage donations, daily records, and system updates</span>
-    </div>
+<div class="admin-header">
+<h1>Admin Dashboard</h1>
+<p>Welcome back, Admin 👋</p>
+<span>Manage donations, daily records, and system updates</span>
+</div>
 
-    <div class="admin-grid">
+<div class="admin-grid">
 
-        <a href="/admin/donations" class="admin-card">
-            <div class="icon">💰</div>
-            <h3>View Donations</h3>
-            <p>Check all donation transactions</p>
-        </a>
+<a href="/admin/donations" class="admin-card">
+<div class="icon">💰</div>
+<h3>View Donations</h3>
+<p>Check all donation transactions</p>
+</a>
 
-        <a href="/admin/add-blog" class="admin-card">
-            <div class="icon">✍️</div>
-            <h3>Blog Management</h3>
-            <p>Add, edit, or delete blog stories</p>
-        </a>
-        
-        <a href="/admin/update" class="admin-card">
-            <div class="icon">📝</div>
-            <h3>Update Daily Records</h3>
-            <p>Modify staff, guest & medical data</p>
-        </a>
-        <a href="/admin/inmates" class="admin-card">
-            <div class="icon">👵</div>
-            <h3>Inmate Records</h3>
-            <p>Manage residents</p>
-        </a>
+<a href="/admin/add-blog" class="admin-card">
+<div class="icon">✍️</div>
+<h3>Blog Management</h3>
+<p>Add, edit, or delete blog stories</p>
+</a>
 
-        <a href="/admin/questions" class="admin-card">
-            <div class="icon">❓</div>
-            <h3>Visitor Questions</h3>
-            <p>View and reply to user enquiries</p>
-        </a>
+<a href="/admin/update" class="admin-card">
+<div class="icon">📝</div>
+<h3>Update Daily Records</h3>
+<p>Modify staff, guest & medical data</p>
+</a>
 
-        <a href="/logout" class="admin-card logout-card">
-            <div class="icon">🚪</div>
-            <h3>Logout</h3>
-            <p>Securely exit admin panel</p>
-        </a>
+<a href="/admin/inmates" class="admin-card">
+<div class="icon">👵</div>
+<h3>Inmate Records</h3>
+<p>Manage residents</p>
+</a>
 
-    </div>
+<a href="/admin/questions" class="admin-card">
+<div class="icon">❓</div>
+<h3>Visitor Questions</h3>
+<p>View and reply to user enquiries</p>
+</a>
 
+<a href="/logout" class="admin-card logout-card">
+<div class="icon">🚪</div>
+<h3>Logout</h3>
+<p>Securely exit admin panel</p>
+</a>
+
+</div>
 </div>
 
 </body>
 </html>
-
-
