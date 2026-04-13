@@ -2,8 +2,6 @@ Saranalayam Old Age Home(renamed as Sharanstan)
 
 A web-based donation and management system designed for saranalayam old age home to streamline donations, track daily records, and verify contributions.
 
-🔗 Live Website:https://sharanstan.up.railway.app/
-
 📖 Overview
 
 Sharanstan is a Flask-based application built to improve the management of donations and daily operations in an old age home.
