@@ -46,7 +46,6 @@ Styling	         Custom CSS
 
 🚀Future Scope
 Multiple admin users can be added to manage and update the website efficiently.
-Location feature (Google Maps integration) can be included for easy future.
-reference and navigation.
+Location feature (Google Maps integration) can be included for easy future reference and navigation.
 Certificates for donors on complete donation milestones.
 QR code verification.
